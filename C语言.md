@@ -1380,8 +1380,96 @@ int num[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 time_t ts; //设置时间变量
 
 srand( (unsigned int)time(&ts));//设置时间的随机数种子
-
-num = rand()%100//num 为0-100的随机数
+//unsigned int num = time(&ts);
+//srand(num)
+int num = rand()%100//num 为0-100的随机数
 ```
 
+ ### 数组的排序
+
+找出十个数中间的最大
+
+  
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+//生成一个随机序列
+
+void main()
+{
+	time_t ts;
+	srand((unsigned int)time(&ts));
+	int a[10];
+	for(int i=0;i<10;i++)
+	{
+		a[i] = rand()%100;
+		printf("\na[%d]=%d",i,a[i]);
+	}
+	
+	for(int j=0;j<9;j++)
+	{
+		int min = j;
+		for(int k=j+1;k<10;k++)
+		{
+			if(a[k]<a[min])
+			{
+				min=k;
+			}
+		}
+		if(min!=j)
+		{
+			int temp = a[min];
+			a[min] = a[j];
+			a[j] = temp;
+		}
+
+	}
+
+	for(int m=0;m<10;m++)
+	{
+		printf("\na[%d]=%d",m,a[m]);
+	}
+}
+```
+
+### 二维数组 记a[i j]为二维数组
+
+int a  2 3   赋值为零二维数组全部是零
+
+ 注意 只能逐个引用各行各列的元素，不能整体引用，
+
+行下标和列下标均不作越界检查
+
+二位数组在内存中的赋值规律
+
+若二维数组a【3】【4】
+
+在内存中的排列顺序为a[0 0] a[0 1] a[0 2] a[0 3] a[1 0] ..... a[2 2] a[2 3]
+
+若a定义为一个二维数组，a[x-1] 代表二维数组第x行第一个元素的首地址
+
+ a[i]+j 等价于a[i j]的地址 也就是 &a [i j]
+
+```C
+//"_"下划线为占位符
+printf("%d",1)；//输出 ----> 1
+printf("\n")；
+printf("%2d",1)；//输出 ----> _1
+printf("\n")；
+printf("%3d",1)；//输出 ----> __1
+printf("\n")；
+printf("%4d",1)； //输出----> ___1
+printf("%*d",6,1)； //printf("%6d",1)；输出----> _____1
  
+
+```
+
+对于高维数组，数组元素仍然是线性连续排列的，对二维和更高维的数组最左边的下标变化最慢
+
+### 数组的查找
+
+二分法查找数据必须是有序的
+
+  
