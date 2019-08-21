@@ -1,9 +1,12 @@
-# hello-world
-- this is my first coding in github 
-- that's so amazing
-- I like it
-# 这是我在本地用中文编辑的
+### 摘要 
 
-test1
-test2
+这个仓库用来保存一些读书笔记，学习笔记，练习代码，以及一些项目心得
+
+目前在看的书
+
+- 《机器学习》周志华
+- 《精通Git》ScottChacon， Ben Straub
+- 《Verilog数字系统设计教程》夏宇闻
+- 《信道编码与MATLAB仿真》刘东华
+- 《Python语言程序设计》梁勇（Y.Daniel Liang）
 
