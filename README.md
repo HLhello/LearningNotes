@@ -10,3 +10,5 @@
 - 《信道编码与MATLAB仿真》刘东华
 - 《Python语言程序设计》梁勇（Y.Daniel Liang）
 
+- 《C程序设计》谭浩强
+
