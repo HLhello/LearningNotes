@@ -219,4 +219,4 @@ int main()
 
 - 
 
-![数据类型](E:\working_files\LearningNotes\picture\数据类型.jpeg)
+![数据类型](https://github.com/HLhello/LearningNotes/blob/master/picture/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B.jpeg)
