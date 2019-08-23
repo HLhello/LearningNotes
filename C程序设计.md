@@ -218,5 +218,5 @@ int main()
 4. 数字类型
 
 - ![数据类型]()
-- ![数据类型](github.com/HLhello/LearningNotes/blob/master/picture/数据类型.jpeg)
+- ![数据类型](https://github.com/HLhello/LearningNotes/blob/master/picture/数据类型.jpeg)
 
