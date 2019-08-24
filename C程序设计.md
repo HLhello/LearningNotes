@@ -181,7 +181,7 @@ int main()
 
 3. #### 数据的表现形式及其运算
 
-- TODO插图
+- ![常量](github.com/HLhello/LearningNotes/blob/master/picture/常量.jpeg)
 
 - **常量**，在程序的运行过程中，其值不能被改变的量称为常量。
   - 常量包括整型常量，实型常量，字符常量，字符串常量，符号常量
@@ -356,7 +356,7 @@ int main()
 
 5. #### C语句
 
-- TODO插图
+- ![c语句](https://github.com/HLhello/LearningNotes/blob/master/picture/C语句.jpeg)
 - 赋值语句
   - 赋值运算符，=
   - 复合赋值运算符，+=，-=，*=，/=，%=
