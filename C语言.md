@@ -1842,21 +1842,208 @@ int num[10] = {1,2,3,4,5,6,7,8,9,10};
 指针加1，就是加上指针指向类型   
 
 ```c
+#include<stdio.h>
+
 void main()
 {
-	int num[10] = {1,2,3,4,5,6,7,8,910};
+	int num[10] = {1,2,3,4,5,6,7,8,9,10};
 	printf("%p", num);//num就是数组第一个元素的首地址
 	printf("\n%d",sizeof(*num));//求出num指向的类型大小
 	int *p = num;//p是一个指针变量
 	for(int i=0; i<10; i++)
 	{
         printf("\n%d,%p",num[i],&num[i]);
-        printf("	%d,%p",*(num+i)，num+i     );
-        printf("	%d,%p",p[i]，&p[i]);
-        printf("	%d,%p",*(p+i)，p+i);
+        printf("	%d,%p",*(num+i),num+i);
+        printf("	%d,%p",p[i],&p[i]);
+        printf("	%d,%p",*(p+i),p+i);
 	}
+    //num[i]是*（num+i）的简写
+}
+
+```
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+void main()
+{
+    time_t ts;
+    srand((unsigned int)time(&ts));
+    int num[10];
+    int max=0;
+	for(int i=0;i<10;i++)
+    {
+        num[i] = rand()%100;
+        printf("\n%d\t,%p",num[i],num+i);
+		max = num[i]>max ? num[i]:max;
+	}
+	printf("\n%d",max);
+}//找出数组中最大值
+```
+
+```c
+//指针遍历
+void main()
+{
+    int num[10];
+    int i=0;
+    for(int *p=num;p<num+10;p++)
+    {
+        *p++;
+        printf("\n%d\t,%p",*p,p);
+    }
 }
 ```
 
-16
+#### 指整的类型
+
+如何知道指针指向的变量占几个字节
+
+int *p = &a
+
+sizeof（p）这是指针变量占几个字节
+
+sizeof（*p）这是指指针指向的变量站几个字节
+
+```c
+void main()
+{
+    int a[5] = {1,2,3,4,5};
+    printf("%x,%x",a,&a);
+    printf("\n%d,%d",sizeof(a),sizeof(*(&a)));
+    int *p = a;//指向元素的指针
+    int(*pa)[5] = &a;//指向数组的指针
+    printf("\n%d,%d",sizeof(*p),sizeof(*pa));
+}
+```
+
+### 指针引用二维数组
+
+```c
+#include<stdio.h>
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    printf("%p,%p,%p",a,&a,*a);
+    //a是一个行指针，指向一个有四个元素的数组，16
+    //&a是一个指向二维数组的指针，二维数组有12个元素，48
+    //*a是一个指向int类型数据的指针，4
+ 	printf("\n%d,%d,%d",sizeof(*a),sizeof(*&a),sizeof(**a));   
+}
+```
+
+```c
+#include<stdio.h>
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    printf("%p,%p,%p\n",a,&a,*a);
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d,%p\t",a[i][j],&a[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n%p,%p,%p",a,a+1,a+2);//a是一个行指针，指向的数据是一行有四个元素的数组，所以在a上加1是相当于加了一行，如果你指向的是大象，那么你就加一头大象
+    printf("\n%p,%p,%p",*a,*a+1,*a+2);// *a是一个指向第一行第一个元素的指针，在这个指针的基础上加1，就是加四个字节，指向一只老鼠，就加一只老鼠
+    printf("\n%p,%p,%p",*(a+1),*(a+1)+1,*(a+2)+2);
+    //a[i][j]=*(*(a+i)+j) &a[i][j] = *(a+i)+j 
+}
+```
+
+```c
+#include<stdio.h>
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    printf("%p,%p,%p\n",a,&a,*a);
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d,%p\t",a[i][j],&a[i][j]);
+        }
+        printf("\n");
+    }
+    printf("%d,%d",sizeof(*a),sizeof(**a));
+    printf("\n%p,%p,%p",a,a+1,a+2);
+    printf("\n%p,%p,%p",*a,*(a+1),*(a+2));
+    printf("\n%p,%p,%p",a[0],a[1],a[2]);
+}
+```
+
+```c
+#include<stdio.h>
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    printf("%p,%p,%p\n",a,&a,*a);
+	printf("%d,%d,%d\n",sizeof(*a),sizeof(*&a),sizeof(**a));
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d,%p\t",a[i][j],&a[i][j]);
+        }
+        printf("\n");
+    }
+	printf("%d,%d,%d",a[0][0],a[0][1],a[0][2]);
+    printf("\n%d,%d",sizeof(*a),sizeof(**a));//a是一个地址，这个地址指向的是一个数组，*a是一个数组的首地址，**a是
+    printf("\n%p,%p,%p",a,a+1,a+2);
+    printf("\n%p,%p,%p",*a,*(a+1),*(a+2));
+    printf("\n%p,%p,%p",a[0],a[1],a[2]);
+}
+0028FF08,0028FF08,0028FF08
+16,48,4
+1,0028FF08      2,0028FF0C      3,0028FF10      4,0028FF14
+5,0028FF18      6,0028FF1C      7,0028FF20      8,0028FF24
+9,0028FF28      10,0028FF2C     11,0028FF30     12,0028FF34
+1,2,3
+16,4
+0028FF08,0028FF18,0028FF28
+0028FF08,0028FF18,0028FF28
+0028FF08,0028FF18,0028FF28
+```
+
+```c
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12}l;
+    //线性的方式循环遍历一个二维数组
+    for(int *p=&a[0][0],p<&a[0][0]+12;p++)
+    {
+        printf("\n%d,%p",*p,p);
+    }
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("\n%d,%p",*(*(a+i)+j),*(a+i)+j);
+        }
+    }
+}
+```
+
+```c
+#include<stdio.h>
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    //int **p=a;错误做法
+    printf("%d",sizeof(*a));//a是一个行指针，16个字节
+    int (*p)[4] = a;
+    //int (*p)[3] = a;错误，二维数组的指针就是一个指向一维数组的指针元素是确定的
+    int i=0;
+    int j=0;
+    scanf("\n%d%d",&i,&j);
+    printf("\n%d,%d,%d,%d",i,j,p[i][j],*(*(p+i)+j));   
+}
+```
 
