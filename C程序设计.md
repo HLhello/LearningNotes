@@ -219,7 +219,7 @@ int main()
 
 4. #### 数据类型
 
-- ![数据类型](https://github.com/HLhello/LearningNotes/blob/master/picture/数据类型.jpeg)
+- ![数据类型](github.com/HLhello/LearningNotes/blob/master/picture/数据类型.jpeg)
 
 - 不同类型的存储内存及方式
 
@@ -356,7 +356,7 @@ int main()
 
 5. #### C语句
 
-- ![c语句](https://github.com/HLhello/LearningNotes/blob/master/picture/C语句.jpeg)
+- ![c语句](github.com/HLhello/LearningNotes/blob/master/picture/C语句.jpeg)
 - 赋值语句
   - 赋值运算符，=
   - 复合赋值运算符，+=，-=，*=，/=，%=
