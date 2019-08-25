@@ -1520,7 +1520,7 @@ printf（“%x”，&num）取变量 的地址
 
 指针变量 ：专门存放变量地址的变量叫指针变量
 
-```c
+```CQL
 void main()
 {
     int num = 100;
@@ -2047,3 +2047,550 @@ void main()
 }
 ```
 
+## 数组作为函数参数
+
+```c
+#include<stdio.h>
+void showa(int a[10])
+{
+    //a = a+1;这句话是对的，执行结果是没有第一位，最后一位产生一个垃圾数据，这说明，形参可以被赋值改变，他实际上就是指针
+    for(int i=0;i<10;i++)
+    {
+        printf("\n%d",a[i]);
+    }
+}
+void show10(int *p)
+{
+    for(int i=0;i<10;i++)
+    {
+        printf("\n%d",p[i]);
+    }
+}
+void showb(int b[3][4])
+{
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d\t",b[i][j]);
+        }
+    printf("\n");
+    }
+}
+void show12(int (*p)[4])
+{
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d\t",p[i][j]);
+        }
+    printf("\n");
+    }
+}
+
+void main()
+{
+    int a[10] = {1,2,3,4,5,6,7,8,9,10};
+    int b[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    //在这里的a，b是不能被赋值的他就是一个常量
+    showa(a);
+	printf("\n");
+    showb(b);	
+    printf("\n");
+    show10(a);
+    printf("\n");
+    show12(b);
+}
+```
+
+数组作为函数参数，传递的是地址，地址就是指针占4个字节
+
+函数的参数对于数组没有副本机制，为了节约内存，拷贝数组浪费空间和CPU
+
+```c
+//将数组逆序
+#include<stdio.h>
+ void change(int a[],int n)
+ {
+    for(int i=0;i<n/2;i++)
+    {
+    	int temp = a[i];
+    	a[i] = a[n-1-i];
+    	a[n-1-i] = temp;
+    }
+ }
+ void sort(int *p, int n)
+ {
+     for(int i=0;i<n-1;i++)
+     {
+         for(int j=0;j<n-1-i,j++)
+         {
+             if(*(p+j)>*(p+j+1))
+             {
+                 int temp = *(p+j);
+                 *(p+j) = *(p+j+1);
+                 *(p+j+1) = temp;
+             }
+         }
+     }
+ }
+ void main()
+ {
+ 	int a[10] = {1,2,3,4,5,6,7,8,910};
+    for(int i=0;i<10;i++)
+    {
+        printf("\n%d",a[i]);
+    }
+    change(a,10);
+    printf("\n");
+    for(int i=0;i<10;i++)
+    {
+        printf("\n%d",a[i]);
+    }
+ }
+```
+
+设置时间种子，利用冒泡排序法，将随机生成的数组进行从小到大排列
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+
+void sort(int *p, int n)
+{
+	for(int i=0;i<n-1;i++)
+	{
+		for(int j=0;j<n-1-i;j++)
+		{
+			if(*(p+j)>*(p+j+1))
+			{
+				int temp = *(p+j);
+				*(p+j) = *(p+j+1);
+				*(p+j+1) = temp;
+			}
+		}
+	}
+}
+void main()
+{
+	time_t ts;
+	unsigned int num = time(&ts);
+	srand(num);
+	//srand((unsigned int)time(&ts));
+	int a[10];
+	for(int i=0;i<10;i++)
+	{	
+		a[i] = rand()%100;
+		printf("\n%d",a[i]);
+	}
+	sort(a,10);
+	printf("\n");
+	for(int i=0;i<10;i++)
+	{
+		printf("\n%d",a[i]);
+	}
+}
+```
+
+### 函数指针
+
+函数名就是一个指针，只是因为在编译是程序为这段代码分配一段内存空间，函数名就是这段内存空间的首地址
+
+```C
+#include<stdio.h>
+#include<stdlib.h>
+#include<windows.h>
+
+void msg()
+{
+	MessageBoxA(0, "TMD", "COME ON", 0);
+}
+int add(int a, int b)
+{
+	return a + b;
+}
+void main()
+{
+	printf("%d", add(1, 10));
+	printf("%p,%p", add, msg);
+	void(*p)() = msg;
+	p();
+	int(*px)(int a, int b) = add;
+	printf("%d", px(1, 10));
+	system("pause");
+}
+
+```
+
+### 函数的返回值是指针
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+int a = 10;
+int b = 20;
+int *go()//函数返回值就是一个指针
+{
+	return &a;
+}
+void main()
+{
+	printf("%p", *(go()));
+	system("pause");
+}
+```
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+
+int *min_a(int a[], int n)
+{
+	int *p = NULL;
+	int min = a[0];
+	p = &a[0];
+	for (int i = 1; i<n; i++)
+	{
+		if (min>a[i])
+		{
+			min = a[i];
+			p = &a[i];
+		}
+	}
+	printf("\nmin=%d", min);
+	return p;
+}
+void main()
+{
+	time_t ts;
+	unsigned int num = time(&ts);
+	srand(num);
+	//srand((unsigned int)time(&ts));
+	int a[10];
+	for (int i = 0; i<10; i++)
+	{
+		a[i] = rand() % 100;
+		printf("\n%d", a[i]);
+	}
+	int*px = min_a(a, 10);
+	*px = 800;
+	printf("\n");
+	for (int i = 0; i<10; i++)
+	{
+		printf("\n%d", a[i]);
+	}
+	system("pause");
+}
+```
+
+#### 函数返回值是指针
+
+ 
+
+```c
+//不明白这个函数是干什么的！！！##TODO
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+char *mystrcpy(char *dest, char *source)
+{
+	char *last = NULL;//最后结果
+	if (dest == NULL || source == NULL)
+	{
+		return last;//直接返回空指针，没有执行任何操作
+	}
+	last = dest;
+	//没有遇到字符“\0”，就一直向前拷贝
+	//while ((*dest++ = *source++) != '\0');
+	while (*source != 0)
+	{
+		*dest = *source;
+		dest++;
+		source++;
+	}
+	return last;
+}
+void main()
+{
+	char str[40] = {0};
+	//返回拷贝好的字符串地址，进行字符串拷贝
+	printf("%s", mystrcpy(str, "hello"));
+	//函数返回指针的地址，不成功返回null，成功返回地址
+	system("pause");
+}
+```
+
+```
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+void main()
+{
+	char str[40];
+	printf("%s\n", "hello");
+	printf("%s", strcpy(str, "hello"));
+	system("pause");
+
+}
+```
+
+### 指针左值
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+    uint a = 5;//能放在赋值号左边的值就是左值
+    int *p;
+    p = &a;//p是左值，p是一个指针变量
+    int *const px;//px是一个指针常量，不能被当做左值
+    //px = &a;这句话是错误的
+    *p = 3;//指针变量，以及指针指向的数据，除非是常量，能被赋值的都是左值
+    
+}
+```
+
+  指针的两大要素：类型，地址
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+	int a = 10;
+	int b = 20;
+	printf("%p,%p", &a, &b);
+	int *p;
+	int x;
+	scanf("%x", &x);
+	//p = x;//指针包括两大要素，其一是类型，二是地址，这句话是把x当做一个整数来看，x值只具备地址属性，而不具备类型属性
+	p = (int *)x;//将x的值强制转换成带有类型属性的地址，就可以为指针变量赋值了
+	printf("%d", *p);
+	system("pause");
+}
+```
+
+void指针与空指针
+
+```c
+void main()
+{
+    int num = 10;
+    double db = 10.2;
+    int *p2 = &num;
+    double *p3 = &db;
+    
+    void *p1 = p2;//void 类型的指针可以传递地址
+    //p1 = p3;
+    //printf("%d",*p1);void 类型的指针，由于指向不明确，大小不确定，所以无法取出指针指向的内容
+    printf("%d",*(int *)p1);
+    //用于参数还有返回值，不明确指针类型的情况下传递地址需要用到空类型的指针
+    //要把他用于莫种类型的指针，需要强制转换
+    //传递地址，malloc（）
+}
+
+
+void main()
+{
+    int *p = NULL;
+    int num = 20;
+    p = &num;
+    if(p == NULL);
+    {
+        printf（“没有指向一个值”）
+    }
+}
+```
+
+
+
+#### VOID 指针与空指针
+
+```c
+//这个函数的意思memset函数接受一个void指针，并且将内存操作为想赋值的常量 
+void main()
+{
+    char str[30] = "China is great";//字符串
+    int num[5] = {1,2,3,4,5};
+    memset(str,'A',5);//从str的首地址开始，前进5个字节，并且赋值为A
+    printf("%s\n",str);
+    memset(num,0,str);//对20个字节全部赋值为0，也就是执行数组初始化为0的操作
+    for(int i=0;i<5;i++)
+    {
+        printf("\n%d",num[i]);
+    }
+     
+}
+```
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<memory.h>
+
+void main()
+{
+	void *p = malloc(20);//分配20个字节的内存
+	int *px = (int *)p;//将内存地址转换成int类型
+    //空类型的指针可以转化为任意类型的指针，
+    int *pf = (int *)p
+    //指针包含了三个信息，地址，步长，以及如何解析
+	printf("%p", p);
+	for (int i = 0; i<5; i++)
+	{
+		pf[i] = i;
+	}
+	system("pause");
+} 
+```
+
+
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+	int *p = (int *)malloc(sizeof(int));//开辟一段int大小内存的空间，并将返回的空指针转换成int类型
+	*p = 5;
+	printf("我有%d元", *p);
+	free(p);//释放内存
+	system("pause");
+}
+```
+
+```c
+//分配一个动态数组
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+void main()
+{
+	time_t ts;
+	srand((unsigned int)time(&ts));
+
+	int num;
+	scanf("%d", &num);
+	int *p = (int *)malloc(sizeof(int)*num);
+	for (int i = 0; i<num; i++)
+	{
+		p[i] = rand() % 100;
+		printf("p[%d] = %d\n", i, p[i]);
+	}
+    free(p);//释放内存
+	system("pause");
+} 
+```
+
+### 动态内存分配
+
+   编译器气的作用就是把我们写的代码翻译成机器码
+
+为什么要动态分配内存
+
+在某些场合，我们并不确定需要多大的内存，比如从文件中读数据，如果我们采用静态分配一种是开辟很大的空间，这样做浪费内存，若是只开辟很小的内存，这样对一些大的文件就会出错，所以我们需要动态分配内存，与动态分配内存相对的就是静态分配内存，这是指在程序执行时我们就提前告诉编译器我们需要多大的内存 ，
+
+动态分配机制，你需要多少，分配多少，用完的时候，可以free掉，也可以让他一直存在，在程序执行完成之后，程序被回收
+
+使用free函数释放内存空间是，只能释放一次
+
+```c
+void main()
+{	
+	while(1)
+    {
+    	void *p = malloc(1024*1024*100);//malloc分配内存，单位为字节，返回值是这一片内存的地址，类型为void空指针
+    	Sleep(1000);
+    	free(p);
+    	//void *pp = p;
+    	//free(pp);free根据地址释放，只能释放一次
+    }
+    //第一个参数是个数，第二个参数是每个的大小
+    double *p = (double *)calloc(num,sizeof(double));
+
+}
+```
+
+```
+void main()
+{
+    int num;
+    scanf("%d",&num);
+    int *p = (int *)malloc(sizeof(int)*num);
+    printf("%x",p);
+    for(int i=0;i<num;i++)
+    {
+        p[i] = i;
+        printf("\n%d,%p",p[i],&p[i]);
+    }
+    //已经分配了num个int大小的内存地址，但是还要在他后面将数组加长，所以我们就需要realloc来增加内存的分配
+    int newnum;
+    scanf("%d",&newnum);
+    int *newp = realloc(p,newnum);
+    printf("\n newp = %p",newp);
+    for(int i = num; i<newnum; i++)
+    {
+        newp[i] = i;
+        printf("\n%d,%p",newp[i],&newp[i]);
+         
+    }
+    
+}
+```
+
+malloc与calloc的区别是malloc不会初始化内存，但是calloc会自动将内存初始化为0；传入的参数也不同，malloc传入内存大小的参数，colloc传入第一个参数是个数，第二个参数是每个占用内存，大小其他一样
+
+ realloc原来已经有了一段内存，现在要在他后面增加一段内存，若是元内存后面的内存被占用，该函数会自动的将这段内存的数据移走，然后free掉
+
+```c
+void main()
+{
+    int num, addnum;
+    scanf("%d,%d",&num,&addnum);
+    printf("num = %d,addnum = %d",num,addnum);
+    int *p = (int *)malloc(sizeof(int)*num);
+    if(p == NULL)
+    {
+        printf("分配失败");
+    }
+    else
+    {
+        printf("分配成功")
+		for(int i=0;i<num;i++)
+    	{
+        	p[i] = i;
+        	printf("\n%d,%p",p[i],&p[i]);
+    	}
+    	//如果可以拓展就拓展，否则就将后面的移走，接着拓展
+    	//拓展就是在原来的地址后面增加内存
+    	//不够的情况下，就回收原来的内存，并在回收之前分配一片内存，将原来的内容拷贝过去
+    	int *px = (int *)realloc((void*)p,sizeof(int)*(addnum+num));
+		for(int i=num;i<num+addnum;i++)
+    	{
+        	p[i] = i;
+        	printf("\n%d,%p",p[i],&p[i]);
+    	}
+    	free(px);//会将所有内存都释放了
+        //释放内存值后要设置指针的值为null
+        //内存不可以反复释放，内存释放之后在此引用会出现垃圾数据
+        px = NULL;
+    }
+}
+```
+
+内存泄漏就是开辟内存后不回收
+
+指针消亡或者指针改变，在释放原指针，还是会 出现泄漏
