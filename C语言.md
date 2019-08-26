@@ -2594,3 +2594,62 @@ void main()
 内存泄漏就是开辟内存后不回收
 
 指针消亡或者指针改变，在释放原指针，还是会 出现泄漏
+
+### 指针与二维数组
+
+```c
+void main()
+{
+    int num[5] = {1,2,3,4,5};
+    printf("\n%p", num);//第一个元素的首地址，四个字节
+    printf("\n%p",&num);//一个数组的首地址，20个字节
+    printf("\n%d",sizeof(*num));
+    printf("\n%d",sizeof(*&num));
+}
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    for(int i=0;i<3;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%d,%p",*(*（a+i）+j),*（a+i）+j)
+        }
+        printf("\n")
+    }
+    printf("\n%p", a);//行数组的首地址
+    printf("\n%p",*a);//第一个元素的首地址
+    printf("\n%p",&a);//二维数组的首地址
+    printf("\n%d",sizeof(*a));
+    printf("\n%d",sizeof(**a));
+    printf("\n%d",sizeof(*&num));
+}
+
+```
+
+迷途指针
+
+```
+void main()
+{
+    int *p = (int *)malloc(sizeof(int)*10);
+    printf("%p",p)
+    for(int i=0;i<10;i++)
+    {
+    	p[i] = i;
+        printf("\n%d",p[i]);
+    }
+    
+    free(p);
+    printf("%p",p)
+    
+    for(int i=0;i<10;i++)
+    {
+        printf("\n%d",p[i]);
+    }
+    
+    system("pause");
+}
+```
+
