@@ -2630,26 +2630,288 @@ void main()
 
 迷途指针
 
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+	int *p = (int *)malloc(sizeof(int)* 10);
+	printf("%p", p);
+	for(int i = 0; i<10; i++)
+	{
+		p[i] = i;
+		printf("\n%d", p[i]);
+	}
+
+	free(p);
+	p = NULL;
+	printf("\n%p", p);
+	/*
+	for (int i = 0; i<10; i++)
+	{
+		printf("\n%d", p[i]);
+	}*/
+
+	system("pause");
+}
+```
+
+指针代码实践
+
+x86    x64
+
+32位 地址为32位
+
+64位 地址为64位 寻址能力更强 2^64 = 2^32*2^32管理海量内存
+
+debug为调试版本，附加了很多调试信息，所以较大
+
+release为发布版本，进行了代码优化
+
+
+
+
+
+## 字符串
+
+字符串在内存中按照ASCII表存储
+
+数组元素初始化的时候，
+
+对比字符数组与字符串的差别
+
+若是内容刚好和长度相等，会出错
+
+```c
+//字符数组
+//超出字符长度，出错
+char str[8] = {'n','o','t','e','p','a','d','l','0'};
+//刚好，没有'\0'结束符，输出也会出错，
+char str[8] = {'n','o','t','e','p','a','d','l'};
+//没有结束符，输出结果会出错，系统按照初始化的个数来定义数组的长度
+char str[] = {'n','o','t','e','p','a','d','l'};
+//下面是可以的数组元素初始化初值的个数小于数组长度，系统自动为剩余元素自动填充'\0'
+char str[8] = {'n','o','t','e','p','a','d'};
+printf("%s",str);//遇到'\0'为止，没有遇到就一直向前
+for(int i=0;i<8;i++)
+{
+    putchar(str[i]); 
+}//这样就可以，因为这是程序控制停止的
+
+
+```
+
+ 
+
 ```
 void main()
 {
-    int *p = (int *)malloc(sizeof(int)*10);
-    printf("%p",p)
-    for(int i=0;i<10;i++)
+    char *str = "title China is big";//常量不可以写，
+    //str指针指向的是一个常量，根据指针取出地址上的值并不能被复制
+    //*str = 'A';这句话是错误的，取出的是"title China is big"这是一个常量，不能被赋值！！！
+    printf("%d",sizeof(str));//str是字符串常量的首地址
+    printf("%d",sizeof("title China is big"));
+    printf("%p",str);
+}
+```
+
+```
+void main()
+{	
+	//数组是变量，可以被赋值 
+    char str[10] = "write";
+    //将字符串常量"write"赋值给str，从头开始填充，没有填充到的都赋值为0，0是字符'\0'所以在打印str的占的内存时，是10个字符
+   printf("str=%d,write=%d",sizeof(str),sizeof("write")); //str 的长度是10；write的长度是6，这说明在系统会自动以"write\0"存储
+    char *p = str;
+    printf("%p%p",p,str);
+    *p = 'l';
+}
+```
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	char *str = "title China is great";
+	char *p = str;//存储首地址
+	str +=6;
+    int i=0;
+    while (*str)//值为'\0'终止，*str = '\0'; 
+	{
+		putchar(*str);
+		str++;//指针向前移动
+        i++;
+	}
+    while (*str!='\0')//值为'\0'终止，*str = '\0'; 
+	{
+		putchar(*str);
+		str++;//指针向前移动
+	}
+    printf("str length = %d",i)
+	system(p);
+	system("pause");
+}
+void main()
+{
+    char str[30] = "title China is great";
+    system(str);
+    char *p = str+6;
+    while(*p != '\0')
     {
-    	p[i] = i;
-        printf("\n%d",p[i]);
+        putchar(*p);
+        p++//指针向前移动
     }
-    
-    free(p);
-    printf("%p",p)
-    
-    for(int i=0;i<10;i++)
+    while(p[0]!='\0')
     {
-        printf("\n%d",p[i]);
+        putchr(p[0]);
+        p++;
     }
-    
+}
+```
+
+## 字符数组初始化
+
+```
+void main()
+{
+    char str[100] = {"color 4f"};//花括号可以省略，C语言允许使用字符串常量初始化字符数组关于二维数组大致想相同
+    system(str);
     system("pause");
 }
 ```
 
+### 数组输入输出
+
+```
+void main()
+{
+	char str[100] = {0}
+    char *p = str;//使用指针一 定要初始化，否则会出现好多意想不到的错误，没初始化的指针称为野指针
+    //使用指针初始化要让指针指向一段可以读写的内存
+    //初始化为NULL时，在32位系统中是一段不可以读写的内存，所以会发生读写冲突  
+    scanf("%s",p);//初始化
+    printf("%s",p);//输出
+    system(p);
+    system("pause");
+    
+}
+```
+
+```
+void main()
+{
+    //char str[100] = "tasklist";这是可以的
+    //char str[100];
+    //str[100] = "tasklist";这是不可以的，str[100]代表第101个元素，越界
+    //str = "tasklist";str是数组名，是常量不可以修改
+    //char *p = "tasklist";//可以，p存储了字符串常量的首地址
+    char *p;
+    p = "tasklist";//？？与上面冲突了？？？？！！！！！
+    printf("%s",p);//输出
+    system("p");
+    system(pause);
+    
+}
+```
+
+字符串与字符数组之间的关系
+
+```c
+# include<stdio.h>
+void main()
+{
+	//字符数组存储字符串，就具备所有数组的特点
+    char str[100] = "tasklist"；
+    printf("%s\n",str)；
+    for(int i=0;i<8;i++)
+    {
+        printf("%c  %c\n",str[i],*(str+i));//下标法，和指针法输出
+    }
+    system(str);
+    system("pause");
+}
+```
+
+```
+# include<stdio.h>
+//函数的副本机制，只有数组例外，数组拷贝非常耗费时间
+void change(char str[])//数组传递过来的实际上就是指针
+{
+	printf("change = %d\n", sizeof(str));//输出指针的大小四个字节
+	*str = 'A';//改变指针指向的内容，也就是改变原来的数组	 
+	*(str + 1) = 'B';
+}
+
+void main()
+{
+	//字符数组存储字符串，就具备所有数组的特点
+	char str[100] = "tasklist";
+		printf("main = %d\n", sizeof(str));
+	change(str);
+	printf("%s\n", str);
+	system("pause");
+}
+```
+
+```
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	char str[100] = { 0 };
+	scanf("%s", str);
+	printf("%s", str);
+	gets(str);
+	puts(str);//与上面的方式等价
+	system(str);
+	system("pause");
+}
+```
+
+```c
+void main()
+{
+    char str[10] = "ABC",*p;
+    //str = "ABC";常量不可以赋值
+	p = "ABC";//可以p存储字符号串的首地址
+    //int a[5],*pA;
+    //a = {1,2,3,4,5};//不能这样初始化
+    //pA = {1,2,3,4,5};//不行，指针不可以使用数组初始化
+    int a[5] = {1,2,3,4,5}; *pA;
+}
+```
+
+
+
+```
+void main()
+{
+    char str[100] = "我有1000元";
+    int num;
+    sscanf(str,"我有%d元",&num)；
+    printf("%d",num);
+}
+```
+
+```
+void main()
+{
+    char str1[100] = "my name is hello";
+    char str2[30] = "hello";
+    char *p = strstr(str1,str2);
+    if(p == NULL)
+    {
+        printf("没找到");
+    }
+    else
+    {
+        printf("找到%p，%c",p,*p)
+    }
+}
+```
+
+8
