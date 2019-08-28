@@ -2897,7 +2897,7 @@ void main()
 }
 ```
 
-```
+```c
 void main()
 {
     char str1[100] = "my name is hello";
@@ -2914,4 +2914,327 @@ void main()
 }
 ```
 
-8
+
+
+字符串大小比较
+
+windows在字符串排序时忽略大小写
+
+strcmp大小写不一样
+
+```
+int mystrcmp(char *p1,char *p2)
+{
+    int i=0;//从第一个字符开始比较
+    while(p1[i]==p2[i]&&p1[i] ！='\0')
+    {
+        i++;
+    }
+    int num;
+    if(p1[i]=='\0'&&p2[i]=='\0')
+    {
+        num = 0;
+    }
+    else
+    {
+        num = p1[i]-p2[i];
+    }
+    return num;
+}
+void main()
+{
+    char str1[30] = "lihailong";
+    char str1[30] = "lihailong";
+    int num;
+    num = mystrcmp(str1,str2);
+    printf("%d",num);
+    system("pause");
+}
+```
+
+
+
+使用_strset来将某一字符串填充成一样的
+
+字符串逆转_strrev将字符串逆转
+
+```
+void main()
+{
+    char str[100] = "i love hello";//dtr是变量
+    char *p = "i love hello";//p是常量
+    int length1 = strlen(str);
+    int length2 = strlen(p);
+    printf("str=%d,p=%d",length1,length2);
+    
+}
+```
+
+strcpy（str, str1）;//字符串拷贝
+
+strcat（str, str2）;//  字符串粘贴
+
+
+
+
+
+常用的内存函数<memory.h>
+
+memset（参数）第一个参数是内存的首地址，第二个参数是要设置的字符，第三个参数是整数，从首地址开始前进多少字节
+
+常用语清空字符串
+
+memcpy()按照内存字节来拷贝，不管什么类型，都是拷贝二进制数据，所以四个字节的整数，也可以按照字节来拷贝
+
+```
+字符串和整数转化
+“12345” 转化 12345
+12345转化“12345”
+#include<stdio.h>
+#include<stdlib.h>
+int tonum(char *str)
+{
+	char *istr = str;//保留副本
+	int num = 0;
+	while (*str != '\0')
+	{
+		if (*str<'0' || *str>'9')
+		{
+			return -1;
+		}
+		//printf("%c",*str)
+		*str++;
+		num++;
+	}
+	printf("%d", num);
+	int lastres = 0;
+	for (int i = 0; i<num; i++)
+	{
+		lastres *= 10;
+		int wei = istr[i] - 48;
+		lastres += wei;
+		printf("\nwei = %d", wei);
+	}
+	return lastres;
+}
+void main()
+{
+	char str[10] = "12345";
+	int num =0;
+	printf("%d", tonum(str));
+	system("pause");
+}
+void main()
+{
+    printf("%d,%c",1,1);//1,编号为1的字符
+    printf("%d,%c",'1','1' );//1的编号49,‘1’
+    printf("%d,",'1'-1 )
+}
+```
+
+数字转化成字符
+
+
+
+```
+cahr *tostr(int num,char* str)
+{
+    int wei = 0;
+   for (int inum = num;inum;inum/=10)
+   {
+       wei++;
+   }
+   printf("wei=%d\n",wei);
+   
+   for (int i = wei-1;num;num/=10,wei--)
+   {	
+   		str[i] = num%10+48;
+       printf("\n%d",num%10);
+   }
+   printf("%s",str);
+}
+
+
+void main()
+{
+   int num = 123456;
+   char str[10] = {0};
+   int wei = 0;
+   for (int inum = num;inum;inum/=10)
+   {
+       wei++;
+   }
+   printf("wei=%d\n",wei);
+   
+   for (int i = wei-1;num;num/=10,wei--)
+   {	
+   		str[i] = num%10+48;
+       printf("\n%d",num%10);
+   }
+   printf("%s",str);
+    
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
