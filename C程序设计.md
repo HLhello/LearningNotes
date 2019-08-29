@@ -1050,12 +1050,289 @@ int main()
 
 - 指针变量作为函数参数
   - 函数的参数不仅可以是整型，浮点数，字符型等数据，还可以是指针类型，他的作用是将一个变量的地址送到函数中
-  - 
 
+  - ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	void swap_1(int *p1, int *p2);
+    	void swap_2(int *p1, int *p2);
+    	void swap_3(int e, int f);
+    	int a, b, c, d, e, f;
+    	int *pointer_1, *pointer_2, *pointer_3, *pointer_4;
+    	printf("Please enter two numbers:a,b\n");
+    	scanf("%d,%d", &a, &b);
+    	printf("Please enter two numbersc,d\n");
+    	scanf("%d,%d", &c, &d);
+    	printf("Please enter two numberse,f\n");
+    	scanf("%d,%d", &e, &f);
+    	pointer_1 = &a;
+    	pointer_2 = &b;
+    	pointer_3 = &c;
+    	pointer_4 = &d;
+    
+    	if (a<b)
+    	{
+    		swap_1(pointer_1, pointer_2);
+    	}
+    	printf("a = %d b = %d\n", a, b);
+    	printf("main:max = %d,min = %d\n", *pointer_1, *pointer_2);
+    	if (c<d)
+    	{
+    		swap_2(pointer_3, pointer_4);
+    	}
+    	printf("c = %d d = %d\n", c, d);
+    	printf("main:max = %d,min = %d\n", *pointer_3, *pointer_4);
+    
+    	if (e<f)
+    	{
+    		swap_3(e, f);
+    	}
+    	printf("main:e = %d f = %d\n", e, f);
+    	system("pause");
+    }
+    
+    void swap_1(int *p1, int *p2)//将地址里的数换了
+    {
+    	int temp = *p1;
+    	*p1 = *p2;
+    	*p2 = temp;
+    	printf("swap_1:max = %d,min = %d\n", *p1, *p2);
+    }
+    
+    void swap_2(int *p1, int *p2)//将指针换掉，会新创建一个指针，指针做参数是一个值传递的过程
+    {
+    	int *temp = p1;
+    	p1 = p2;
+    	p2 = temp;
+    	printf("swap_2:max = %d,min = %d\n", *p1, *p2);
+    }
+    
+    void swap_3(int e1, int f1)//将子函数中的数换了
+    {
+    	int temp = e1;
+    	e1 = f1;
+    	f1 = temp;
+    	printf("swap_3:max = %d,min = %d\n", e1, f1);
+    }
+    
+    
+    ```
 
+- 通过指针引用数组
 
+  - 首先辨析数组元素的指针
 
+    - 对于一维数组：int * p = &a[0] <==>int * p = a
+    - 数组名不代表整个数组，只代表数组首元素的地址
 
+  - 在引用数组元素时指针的运算
+
+    - 对地址进行乘除是没有意义的，比大小在数组中还可以比较出数组元素下标的大小
+
+    - 在指针指向数组元素时，可以进行加减运算，指针指向大象，指针移动时就移动一头大象的位置，指向老鼠就移动一只老鼠的大小，指针类型决定他指向谁，指针类型是在定义指针时指定的
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	int a[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+      	//方法1
+      	for (int i = 0; i < 10; i++)
+      	{
+      		printf("%d", a[i]);
+      	}
+      	//方法2
+      	for (int i = 0; i < 10; i++)
+      	{
+      		printf("%d", *(a + i));
+      	}
+      	//方法3
+      	for (int *p = a; p < (a + 10); p++)
+      	{
+      		printf("%d", *p);
+      	}
+      	//法1和法2执行效率相同，C编译系统是将a[i]转化为*（a+i）处理的
+      	//法3比前两种方法块一点，不必每次都计算地址
+      	//使用下标法更加直观
+      	//for （; a <(a+10); a++)
+      	//{
+      	//	printf("%d", a);
+      	//}a 是指针常量，不能被当做左值
+          system("pause");
+      }
+      ```
+
+    - **在使用指针变量时注意如果已经对指针进行加减操作，再次引用时要注意将指针复位**
+
+    - ```c
+      //[]可以理解为变址运算符
+      int a[10] = {1,2,3,4,5,6,7,8,9,10};
+      int *p = a;
+      1.p++;*p;//输出a[1]的值,p++使p指向下一个元素，在执行*p可以的到下一个元素的值
+      2.*p++;//输出a[0]的值，由于* 和++同优先级，结合方形从右到左，因此等价于 *（p++）
+      3.*(p++);//输出a[0]的值，相当于先将p指向的地址的值取出来，然后再执行p再执行自加运算
+      4.*(++p);//输出a[1]的值，相当于先自加，再引用
+      5.++(*p);//输出2，表示p所指向的元素加1
+      6.(*p)++;//输出1，取出a[1]的值，先输出，在加1
+      ```
+
+  - 用数组名做参数
+
+    - 在使用数组名做参数时，实参向形参传递的值是一个指向该实参数组的指针，也就是说，在子函数被调用时，传递进来的事是一个指针，对指针进行操作，也就是对数组进行操作，会改变数组在内存中的存储方式，而且要**注意**数组作为参数时没有副本机制，所以会直接主调函数中的数组也发生变化
+
+    - 其实在我看来不是没有副本机制，是根本没把数组传递进来，怎么会保存副本呢
+
+    - ```c
+      在应用数组作为参数时，以下两种方法是等价的
+      func(int arr[],int n)//arr是一个数组
+      func(int *arr,int n)
+      在该函数被调用时，系统会在func函数中建立一个指针变量arr，用来存放从主调函数传递过来的时参数组首元素的地址
+      ```
+
+    - ```c
+      //将数组中的数进行逆序
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	void revarr(int *p, int n);
+      	int n;
+      	int a[11] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11};
+      	n = 11;
+      	revarr(a, n);//调用函数将内存中的数组逆序
+      	for (int i = 0; i < n; i++)
+      	{
+      		printf("a[%d] = %d\n", i, a[i]);
+      	}
+      	system("pause");
+      }
+      //void reaver(int p[],int n)//与下面一样
+      void revarr(int *p,int n)//定义形参时，可以不指定形参数组大小，形参数组名实际上是一个指针变量，并不是真正意义的开辟一个数组空间
+      {
+      	int temp;
+      	for (int i = 0; i < n / 2; i++)
+      	{
+      		temp = p[i];
+      		p[i] = p[n - i-1];
+      		p[n - i - 1] = temp;
+      	}
+      }
+      ```
+
+    - 实际指针参数对应四种情况
+
+      - ```c
+        1.初阶版本就是数组直观好理解
+        int main()
+        {
+            int a[10];
+            . . . 
+            func(a,10);
+            . . .
+        }
+        void func(int x[],int n)
+        {
+        	. . .
+        }
+        2.形参为指针，调用时使用数组名
+        int main()
+        {
+            int a[10];
+            . . . 
+            func(a,10);
+            . . .
+        }
+        void func(int *x,int n)
+        {
+        	. . .
+        }
+        3.形参时指针，调用时用指向数组的指针
+        int main()
+        {
+            int a[10];
+            int *p = a;
+            . . . 
+            func(p,10);
+            . . .
+        }
+        void func(int *x,int n)
+        {
+        	. . .
+        }
+        4.形参是数组，调用时传递指向数组的指针
+        int main()
+        {
+            int a[10];
+            int *p = a;
+            . . . 
+            func(p,10);
+            . . .
+        }
+        void func(int x[],int n)
+        {
+        	. . .
+        }
+        ```
+
+  - **注：**关于野指针的讨论
+
+    - ```c
+      void main()
+      {
+          int a,b;
+          int *pointer_1,*pointer_2;//指针没有初始化，但是并没有被复制
+          scanf("%d,%d",&a,&b);
+          pointer_1 = &a;
+          pointer_2 = &b;
+      }
+      void main()
+      {
+          int a,b;
+          int *pointer_1,*pointer_2;
+          scanf("%d,%d",pointer_1,pointer_1);//指针没有初始化，并不知道这个指针指向哪，能不能被赋值，这样使用必然是错误的，没有初始化就被使用的就是野指针
+          pointer_1 = &a;
+          pointer_2 = &b;
+      }
+      ```
+
+  - 通过指针引用多维数组
+
+    - TODO插入二维数组图
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	int a[3][4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11,12};
+      	printf("%p,%p,%p\n", &a, a, *a);//地址相同
+      	printf("%d,%d,%d\n", sizeof(*&a), sizeof(*a), sizeof(**a));//48,16,4
+      	printf("%p,%p,%p\n", a, a[0], a[0]+0);//地址相同
+      	printf("%d,%d,%d\n", sizeof(*a), sizeof(*a[0]), sizeof(*(a[0]+0)));//16,4,4
+      	printf("%p,%p,%p\n", a, a+1, a+2);//地址相差16
+      	printf("%p,%p,%p\n", *(a), *(a + 1), *(a + 2));//地址相差16
+      	printf("%p,%p,%p,%p\n", *(a + 0), *(a + 0) + 1, *(a + 0) + 2, *(a + 0) + 3);//地址相差4--第一行四个元素的地址
+      	printf("%p,%p,%p,%p\n", *(a + 1), *(a + 1) + 1, *(a + 1) + 2, *(a + 1) + 3);
+      	printf("%p,%p,%p,%p\n", *(a + 2), *(a + 2) + 1, *(a + 2) + 2, *(a + 2) + 3);
+      	printf("%d,%d,%d,%d\n", *(*(a + 0)), *(*(a + 0) + 1), *(*(a + 0) + 2), *(*(a + 0) + 3));
+      	printf("%d,%d,%d,%d\n", *a[0], *a[0] + 1, *a[0] + 2, *a[0] + 3);
+      	printf("%d,%d,%d,%d\n", *a[0], *(a[0] + 1), *(a[0] + 2), *(a[0] + 3));
+      	printf("%d,%d,%d,%d\n", *a[1], *a[1] + 1, *a[1] + 2, *a[1] + 3);
+      	printf("%d,%d,%d,%d\n", *a[2], *a[2] + 1, *a[2] + 2, *a[2] + 3);
+      	system("pause");
+      }
+      
+      ```
+
+    - 仔细分析，应该没问题
+
+  - 指向多维数组的指针变量
+
+    - 
 
 
 

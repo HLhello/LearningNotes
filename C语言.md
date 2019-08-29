@@ -3036,7 +3036,7 @@ void main()
 
 
 
-```
+```c
 cahr *tostr(int num,char* str)
 {
     int wei = 0;
@@ -3078,27 +3078,154 @@ void main()
 
 
 
+在文件中查找文本
+
+```
+#include<stdio,h>
+#include<stdlib.h>
+
+void main()
+{
+    
+    char str[30] = "date";
+    char path[50] = "c:\\users\\...\\统计.c"
+    
+    char CMD[150];
+    sprintf(CMD,"find /n \"%s\" \"%s\" ",str,path)
+    //格式化搜索指令
+    system(CMD);
+}
+```
 
 
 
+字符串输入的注意事项
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	//scanf会将空格 回车，换行，换页，制表符当做终止符终止数据输入
+	char str[30];
+	scanf("%s", str);//通过键盘输入，初始化字符串
+	printf("%s", str);
+	char strl[30];
+	scanf("%s", strl);//通过键盘输入，初始化字符串
+	printf("%s", strl);
+	system("pause");
+}//缓冲区的概念，如果输入的时候输出了，使用退格调整都是在缓冲区内完成的，缓冲区起到缓冲键盘输入的作用，某写时候输入有错就要调整就是在缓冲区调整的，
+void main()
+{
+    char str[30];
+    gets(str);//使用键盘获取一个字符串，gets接受输入的时候保留空格，也会保留其他制表符
+    printf("%s",str);
+    system(str);
+    
+}
+
+```
 
 
 
+Unicode字符问题
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#include<windows.h>
+
+void main()
+{	
+    //使用Unicode运行
+	MessageBox(0, L"A", L"我B", 0);//只能在Unicode下正常运行，
+	MessageBoxA(  0, "A", "我B", 0);//无论多字节还是Unicode都能正常运行，我就是多字节
+	MessageBoxW(0, L"A", L"我B", 0);//无论多字节还是Unicode，我就是Unicode
+    MessageBox(0, TEXT("AWA"), TEXT("AW我B"), 0);//自动适应
+}
+
+```
 
 
 
+关于宽字符
+
+```c
+void main()
+{
+	//char字符串可以显示汉字，字符不可以，字符连在一起
+    char str[10] = "你好天朝"
+    printf("%s",str)；//输出汉字
+    char ch = '我';//汉字是宽字符一个汉字占两个字节
+    //ch在任何情况下都不能正常输出
+    //printf("%c",ch);
+    //printf("%c%c",ch);//不能输出汉字
+    printf("%c%c",str[0],str[1]);//输出一个汉字
+    //printf("%c\n%c",str[0],str[1]);也不能输出一个汉字
+}
+```
 
 
 
+```
+#include<stdio.h>
+#include<stdlib.h>
+#include<locale.h>
+void main()
+{
+	wchar_t ch = L'我';//L宽字符或者宽字符串
+	printf("%d", sizeof(ch));
+	setlocale(LC_ALL, "chs");//设置简体中文
+	wprintf(L"%wc", ch);//汉字当做一个字符
+	//注意‘L’不能省略
+	wchar_t str[100] = L"我是一个好人";
+	wprintf(L"%s", str);
+	system("pause");
+}
 
+```
 
+## 结构体
 
+数组只能同类型，如何有效组织数据
 
+结构体变量，复合型变量
 
+结构体是一种构造数据类型
 
-
-
-
+```
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+//struct不可以省略
+//nameinfo可以省略，省略后就是无名结构体
+//定义结构体并不分配内存
+//字符串定义的三种形式
+//nameinfo 是类型，myinfo才分噢诶内存  
+struct nameinfo
+{
+    char name[50];
+    char phone[50];
+    int num;
+    //结构体内部也可以包含另一个结构体
+    //结构体内部互不影响  
+}
+nameinfo myinfo ;
+void main()
+{
+   struct nameinfo myinfo;
+   myinfo.num = 100;
+   printf("%d",myinfo.num);
+   //字符串不能使用等号赋值
+   //初始化字符串1.sprintf（stdio）；2.strcpy（string）
+   sprintf(myinfo.name,"lihailong");
+   printf("\nname = %s",myinfo.name);
+   strcpy(myinfo.phone,"1555555555");
+   printf("\n phone = %s",myinfo.phone);
+   system("pause"); 
+}
+```
 
 
 

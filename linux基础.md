@@ -41,3 +41,15 @@
   **SEE ALSO（参见）**
 
   OPTIONS（选项），EXIT STATUS（退出状态），ENVIRONMENT（环境），BUGS（程序漏洞），FILES（文件），AUTHOR（作者），REPORTING BUGS（已知漏洞），HISTORY（历史）和 COPYRIGHT（版权）。
+
+软连接相当于快捷方式
+
+\u603b\u7528\u91cf 8
+lrwxrwxrwx 1 shiyanlou shiyanlou   10 6\u6708   9  2018 anaconda3 -> /anaconda3
+drwxrwxr-x 2 shiyanlou shiyanlou 4096 6\u6708   9  2018 Code
+drwxr-xr-x 2 shiyanlou shiyanlou 4096 6\u6708   9  2018 Desktop
+
+Linux中一切皆文件
+
+gou +/- rwx
+
