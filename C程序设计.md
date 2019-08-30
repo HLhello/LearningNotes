@@ -1004,7 +1004,7 @@ int main()
   - 内部函数，使用static特别声明
   - 外部函数，C语言默认函数都是外部函数，不用特别声明，当然也可以用extern声明
 
-## Cha8 善于利用指针
+## Cha8 善于利用指针  -_-! 数组和指针实在是太燃了
 
 - 指针的基本知识
 
@@ -1331,6 +1331,243 @@ int main()
     - 仔细分析，应该没问题
 
   - 指向多维数组的指针变量
+
+    - ```c
+      //尝试多写几个，想到这三个，有待补充
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	int a[3][4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+      	
+      	//1.
+      	for (int i = 0; i < 3; i++)
+      	{
+      		for (int j = 0; j < 4; j++)
+      		{
+      			printf("%4d", a[i][j]);
+      		}
+      		printf("\n");
+      	}
+      	//2.
+      	for (int i = 0; i < 3; i++)
+      	{
+      		for (int j = 0; j < 4; j++)
+      		{
+      			printf("%4d", *(*(a + i) + j));
+      		}
+      		printf("\n");
+      	}
+      	//3.
+      	for (int i = 0; i < 3; i++)
+      	{
+      		for (int j = 0; j < 4; j++)
+      		{
+      			printf("%4d", *(a[i] + j));//*a[i]+j是一种效果
+      		}
+      		printf("\n");
+      	}
+      	//4.
+          int *pp[3];
+          pp = 
+      	/*for(int *p = a; p < a + 3; p++ )
+      	{
+      		for (int j = 0; j < 4; j++)
+      		{
+      			printf("%4d",*(*p+j));
+      		}
+      		printf("\n");
+      	}*/
+      	
+      	//5.
+      	for (int *p = a[0]; p<a[0] + 12; p++)
+      	{
+      		if ((p - a[0]) % 4 == 0)
+      		{
+      			printf("\n");
+      		}
+      		printf("%4d",*p);
+      	}
+      
+      
+      
+      	system("pause");
+      }
+      
+      ```
+
+    - 一维数组的练习以及定义一个指针数组
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	//int a[3][4] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+      	int a[4] = {1,2,3,4};
+      	printf("%d\n", sizeof(a));//16
+      	int *p;
+      	p = a;
+      	for (int i = 0; i < 4; i++)
+      	{
+      		printf("%4d", *(p+i));
+      	}
+      	printf("\n");
+      	for (int i = 0; i < 4; i++)
+      	{
+      		printf("%4d", p[i]);
+      	}
+      	printf("\n");
+      	int(*pp)[4];//这是定义了一个指针数组
+      	pp = &a;//pp指向a中第一个元素
+      	printf("%d\n", sizeof(*pp));
+      	printf("%d,%d", sizeof(*pp), sizeof(*&a));
+      	printf("\n");
+      	for (int i = 0; i < 4; i++)
+      	{
+      		printf("%4d", (*pp)[i]);
+      	}
+      	printf("\n");
+      
+      
+      	system("pause");
+      }
+      
+      ```
+
+  - 用指向数组的指针做函数参数
+
+    - 两种方法：用指向变量的指针变量，用指向一维数组的指针变量
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	void average(float *p, int n);
+      	void search(float(*p)[4], int n);
+      	float score[3][4] = { { 65, 67, 70, 60 }, { 80, 87, 90, 81 }, { 90, 99, 100, 98 } };
+      	average(*score, 12);
+      	search(score, 2);
+      	system("pause");
+      
+      }
+      void average(float *p, int n)
+      {
+          printf("%d",sizeof(p));
+      	float *p_end;
+      	float sum = 0;
+      	float aver;
+      	p_end = p + n - 1;
+      	for (; p <= p_end; p++)
+      	{
+      		sum = sum + (*p);
+      	}
+      	aver = sum / n;
+      	printf("average = %5.2f\n:",aver);
+      }
+      void search(float(*p)[4], int n)
+      {
+      	int i;
+      	printf("THE score of No.%d are:\n", n);
+      	for (i = 0; i<4; i++)
+      	{
+      		printf(" %5.2f\n", *(*(p + n) + i));
+      	}
+      }
+      
+      ```
+
+- 通过指针引用字符串
+
+  - **注：**在C语言中只有**字符变量**，**没有**字符串变量
+
+  - **注：**通过字符数组名和字符指针变量可以输出一个字符串，而对于一个字符型数组，是不能企图用数组名输出他的全部元素
+
+  - ```c
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	char str[] = "I love China !";
+    	char *sstr = "I love China !";//在这里不是把"I love China !"当做变量放在sstr中，也不是把字符串赋值给*sstr，他的本质是把"I love China !"的第一个字符的地址赋值给指针变量sstr
+        //sstr被定义成一个指针变量，基类型是字符型，只能把他指向一个字符类型的数据，而不能把他指向多个字符型数据，也就是不能指向整个字符串
+        sstr = "I am a student"//这是对sstr的重新赋值，
+    	printf("%s\n", str);
+    	printf("%c\n", str[7]);
+    	printf("%s\n", sstr);//在这里sstr是地址，但是输出可以不用*为啥，我也不知道TODO
+    	system("pause");
+    }
+    ```
+
+  - 将字符串a复制到字符串b，然后输出字符串b
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+          char a[] = "I am a student";
+          char b[20];
+          for(int i=o;(a+i)!= '\0';i++)
+          {
+              *(b+i) = *(a+i);
+          }
+          *(b+i) = '\0';
+          printf("a: \n",a);
+          printf("b: \n",b);
+          
+          system("pause");
+      }
+      ```
+
+  - 字符指针做函数参数
+
+    - ```c
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	void strcp_1(char from[], char to[]);
+      	void strcp_2(char from[], char to[]);
+      	void strcp_3(char *from, char *to);
+      	char a[] = "I am a teacher";
+      	char b[] = "Your are a student";
+      	char *pa = a;
+      	char *pb = b;
+      	printf("%s,\n%s\n", a, b);
+      	strcp_3(a, b);
+      	printf("%s,\n%s\n", a, b);
+      	system("pause");
+      }	
+      void strcp_1(char from[],char to[])
+      {
+      	int i = 0;
+      	for (; from[i] != '\0'; i++)
+      	{
+      		to[i] = from[i];
+      	}
+      	to[i] = '\0';
+      }
+      void strcp_2(char from[], char to[])
+      {
+      	int i = 0;
+      	for (; from[i] != '\0'; i++)
+      	{
+      		to[i] = from[i];
+      	}
+      	to[i] = '\0';
+      }
+      void strcp_3(char *from, char *to)
+      {
+      	int i = 0;
+      	for (; *(from+i) != '\0'; i++)
+      	{
+      		*(to+i) = *(from+i);
+      	}
+      	*(to+i) = '\0';
+      }
+      ```
 
     - 
 

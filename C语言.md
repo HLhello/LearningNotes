@@ -3229,6 +3229,225 @@ void main()
 
 
 
+初始化结构体变量
+
+```
+void main()
+{
+    
+    
+}
+```
+
+- 无名结构体，结构体的数量是限量的，只能在结构体后面定义变量，在哪里初始化无所谓，如果是有名字的结构体，就可以无限创建 
+
+- 结构体不能整体引用，只能通过结构体名.成员名来引用
+
+- 结构体变量使用大括号来赋值吗，只有在创建并初始化的时候可以
+
+- 可以把一个结构体变量赋值给另一个结构体
+
+- 结构体可以互相赋值的前提是必须是同一类型
+
+- 结构变量的嵌套，一个结构体包含一个结构体
+
+- ```
+  struct mystruct
+  {
+      int num;
+      char str[100];
+  }
+  struct youstruct
+  {
+      int data;
+      struct mystruct my1;
+  }
+  
+  
+  void main()
+  {
+      
+     struct youstruct you
+     you.data = 100;
+     you.my1.num = 99
+  }
+  ```
+
+  结构体数组
+
+```
+#include<stdio.h>
+#include<stdlib.h>
+
+struct ours
+{
+    int num;//结构体类型定义的时候不可以赋初值
+    char str[100];//str是一个指针常量
+    
+};
+
+void main()
+{
+    struct ours o1 = {100,"hello China"};
+    struct ours o2 = o1;//结构体直接赋值的时候，整体，即使是字符串也可以赋值
+    printf("%d,%s",o2.num,o2.str);
+    //o1.str = o2.str;这样做是不行的，字符串不能直接赋值
+	//字符串拷贝的方式
+	sprintf(o1.str,o2.str);
+	strcpy(o1.str,o2.str);
+
+
+}
+```
+
+结构体体内嵌套结构体
+
+```
+struct tianchao
+{
+	int data;
+	char name[100];
+    struct beijing//结构体内部再次定义一个结构体，但是没有创建结构体的实例，再次定义的结构体内部的变量，会被当做母结构体的成员变量
+    {
+        char str[100];
+        int num;
+        
+    }b1
+    struct beijing b2;
+    //结构体内部定义一个结构体，创建结构体变量，该变量会直接作为母结构一个成员
+    //结构体嵌套的调用可以使用多个点来调用
+    
+}
+
+
+void main()
+{
+    struct tianchao t1;
+    //t1.beijing;如果定义在结构体内部的结构体没有实例，就不能按照点结构体名来引用他，但是结构体内部的结构体的成员变量可以被引用直接是母体实例的结构体名点成员变量 
+    t1.data = 100;
+    t1.num = 99;
+    sprintf(t1.name, "goA");
+    sprintf(t1.name, "goB");
+   printf("%d,%d,%s,%s",t1.data,t1.num,t1.name,t1.str)
+   struct tianchao t2;
+    t2.b1.num = 100;
+    sprintf(t2.b1.str,"ABC");
+    printf("%d,%s",t2.b1.num,t2.b1.str);
+     t2.b2.num = 100;
+    sprintf(t2.b2.str,"ABC");
+    printf("%d,%s",t2.b2.num,t2.b2.str);
+}
+```
+
+
+
+匿名结构体
+
+```
+匿名结构体可以随便来
+struct
+{
+    char name[50];
+    char phone[50];
+    int num;
+} a1,a2,a3；
+struct
+{
+    char name[50];
+    char phone[50];
+    int num;
+}；
+有名结构体不能重名
+struct x
+{
+    char name[50];
+    char phone[50];
+    int num;
+}；
+struct x
+{
+    char name[50];
+    char phone[50];
+    int num;
+}；
+
+void main()
+{
+    int a1.num = 100;
+    sprintf(a1.name,"ABC");
+    sprintf(a1.phone,"15144646");
+    printf("%d,%s,%s",a1.num,a1.name,a1.phone)
+}
+```
+
+
+
+结构体数组
+
+```
+#include<stdio.h>
+#include<stdlib.h>
+
+struct dangdang
+{
+    char email[30];
+    char name[30];
+    char addr[100];
+    int num;
+    int bignum;
+    char tel[20];
+    char phone[20];
+    double rmb;
+}ddd[30];第二种形式
+struct
+{
+    char email[30];
+    char name[30];
+    char addr[100];
+    int num;
+    int bignum;
+    char tel[20];
+    char phone[20];
+    double rmb;
+}wd[30];第三种形式
+
+void main()
+{
+    int a;
+    int a[5];
+    struct dangdang d1;
+    struct dangdang dd[100];//定义结构体数组第一种形式，
+    
+    
+}
+```
+
+```
+struct data
+{
+    int num;
+    float f1;
+    char str[4];
+}db[3] = {{1,1.0，"1.0"}，{2,2.0,"2.0"}，{3,3.0,"3.0"}}，
+db[3] = { 1,1.0，"1.0"，2,2.0,"2.0"，3,3.0,"3.0"};
+struct
+{
+    int num;
+    float f1;
+    char str[4];
+}db[3] = {{1,1.0，"1.0"}，{2,2.0,"2.0"}，{3,3.0,"3.0"}}，
+//db[3] = { 1,1.0，"1.0"，2,2.0,"2.0"，3,3.0,"3.0"};
+//匿名结构体不可以挨个挨个赋值
+void main()
+{
+	printf（"%d",sizeof(struct data)）
+    printf("\n%p",db);//打印第一个元素的地址
+    printf("\n%p",db[0]);//打印三个元素的地址
+    printf("\n%p",db[1]);
+    printf("\n%p",db[2]);
+    //结构体数组在内存中是挨个挨个排列的和数组相同
+}
+```
 
 
 
@@ -3236,34 +3455,13 @@ void main()
 
 
 
+对比字符串使用strcmp
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+结构体与指针
 
 
 
