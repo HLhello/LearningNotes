@@ -1536,16 +1536,31 @@ int main()
       	char *pa = a;
       	char *pb = b;
       	printf("%s,\n%s\n", a, b);
-      	strcp_3(a, b);
+      	//strcp_1(a, b);
+      	//strcp_2(a, b);
+      	//strcp_3(a, b);
+      	//strcp_1(pa, pb);
+      	//strcp_2(pa, pb);
+      	//strcp_3(pa, pb);
       	printf("%s,\n%s\n", a, b);
       	system("pause");
-      }	
-      void strcp_1(char from[],char to[])
+      }
+      void strcp_1(char from[], char to[])
       {
       	int i = 0;
       	for (; from[i] != '\0'; i++)
       	{
       		to[i] = from[i];
+      	}
+      	to[i] = '\0';
+      }
+      void strcp_11(char from[], char to[])
+      {
+      	int i = 0;
+      	while (from[i] != '\0')
+      	{
+      		to[i] = from[i];
+      		i++;
       	}
       	to[i] = '\0';
       }
@@ -1558,20 +1573,289 @@ int main()
       	}
       	to[i] = '\0';
       }
+      void strcp_21(char from[], char to[])
+      {
+      	int i = 0;
+      	while (from[i] != 0)
+      	{
+      		to[i] = from[i];
+      		i++;
+      	}
+      	to[i] = '\0';
+      }
       void strcp_3(char *from, char *to)
       {
       	int i = 0;
-      	for (; *(from+i) != '\0'; i++)
+      	for (; *(from + i) != '\0'; i++)
       	{
-      		*(to+i) = *(from+i);
+      		*(to + i) = *(from + i);
       	}
-      	*(to+i) = '\0';
+      	*(to + i) = '\0';
+      }
+      void strcp_31(char *from, char *to)
+      {
+      	for (; *from != '\0'; from++, to++)
+      	{
+      		*to = *from;
+      	}
+      	*to = '\0';
       }
       ```
 
-    - 
+    - 输入一个字符串，并且把它按照原样输出
 
+    - ```c
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      #include<stdlib.h>
+      #include<crtdefs.h>
+      
+      void main()
+      {	
+      	char datain[100];
+      	int i = 0;
+      	for (;;i++)
+      	{
+      		scanf("%c", &datain[i]);
+      		if (datain[i]=='\n') break;
+      	}
+      	for (int j = 0; j<i; j++)
+      	{
+      		printf("%c", datain[j]);
+      	}
+      	printf("%c", datain[0]);
+      
+      	system("pause");
+      
+      }
+      ```
 
+  - 使字符指针变量和字符数组的比较
+
+    - 使用**字符数组**和**字符指针变量**都能实现字符串的存储和运算，但他们之间是有区别的。
+
+    - 字符数组由若干个元素组成，每个元素中放一个字符，而字符指针变量中存放的是地址
+
+    - 不能对字符数组名赋值，可以对指针变量赋值
+
+    - ```c
+      //字符指针变量
+      char *a;
+      a = "I love China";//合法
+      //字符数组
+      char str[40];
+      str = "I love China"l;//注意这是不合法的！！！！！！！
+      str[0] = 'I';//这是可以的
+      //注意：
+      1.
+      char *a = "I love China";//合法
+      1.1.
+      char *a;
+      a = "I love China";//合法 1.与1.1等价
+      2.char str[40] = "I love China";//合法
+      2.1.
+      char str[40];2.1 与2.不等价！！！！！
+      str = "I love China"l;//注意这是不合法的！！！！！！！
+      
+      ```
+
+    - 编译时为字符数组分配若干存储单元，以存放个元素的值，而对于指针变量，只分配了一个存储单元
+
+    - ```c
+      下面是错误的
+      char *a;
+      scanf("%s",a);
+      编译时只给a分配了一个存储单元，存储单元内的值是不知道的，也就是说我们并不知道指针a指向谁，也就不知道其指向的内存的值是否是可读可写的
+      我们可以使用下面这个方法来实现字符串的输入
+      char *a, str[10];
+      a = str;
+      scanf("%s",a);
+      ```
+
+    - **指针变量的值是可以改变的，而数组名代表一个固定的值，不能改变，也就是说前者是变量，后者是常量**
+
+    - 字符数组中各元素的值是可以改变的，但是字符指针变量所指向的字符串是不可以改变的，这个这么说吧，对于字符数组来说，每个存储单元相当于是存了一个变量名和变量值，这个变量名是**a[i]**，变量值就是第（i+1）个字符，对于指针变量来说，他指向的存储单元中并没有名字，只是在这个地址中存储了一个字符，所以说他是不能改变的，也就是说他就是个常量，所以不能改变
+
+    - ```c
+      #include<stdio.h>
+      void main()
+      {
+      	char a[] = "I love China";
+      	char *b = "I love China";
+      	char *p = a;
+      	a[2] = 'r';//正确，变量可以被重新赋值
+      	//b[2] = 'r';//这不合法的，常量不能被赋值
+      	printf("%c", b[2]);//可以使用指针变量加下标的方法访问元素
+      	p[2] = 'r';//合法
+      	system("pause");
+      }
+      ```
+
+    - 用指针变量指向一个格式字符串，可以用它替代printf函数中的格式字符串
+
+    - ```c
+      char * format;
+      format = "a = %d, b = %f\n";
+      printf(format,a,b); //相当于printf（"a = %d, b = %f\n", a, b）;
+      ```
+
+- 指向函数的指针
+
+  - 在程序中定义了一个函数，在编译时，编译系统为函数代码分配一段存储空间，这段存储空间的起始地址称为这个函数的指针
+
+  - 定义一个函数指针变量
+
+    - 类型名 （*指针变量名）（函数参数列表）
+    - 这里的类型名是指函数返回值得类型
+    - 该函数指针只能指向类型名，和函数参数列表相同的函数，也就是说指针不能随便指，但是他是个变量，**可以被赋值，也可以被重新赋值**，注意前一句话，这表明函数指针是有实际意义的
+    - 对指针变量的赋值方法：指针变量名 = 函数名，不用加*，更不要加参数列表
+    - 函数指针不能进行加减运算
+
+  - 使用函数指针变量调用函数
+
+    - ```c
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      
+      void main()
+      {
+      	int mymax(int a, int b);
+      	int a, b;
+      	int ans;
+      	scanf("%d,%d", &a, &b);
+      	//定义函数指针的括号不能省略，参数类型不能省略，参数名可以省略
+      	int (*p)(int a, int b);//定义一个两输入的函数指针
+      	//定义完函数指针之后还要进行赋值，函数名字就是地址，与数组名就是其地址是一样的
+      	p = mymax;//将函数指针指向mymax
+      	//（*p）就是调用函数，括号同样不能省略，括号意味着指针结合的优先级
+      	ans = (*p)(a, b);//调用函数指针，使用ans接受返回值
+      	printf("%d", ans);
+      	system("pause");
+      }
+      int mymax(int a, int b)
+      {
+      	int max;
+      	max = a>b ? a : b;
+      	return max;
+      }
+      ```
+
+  - 用直线函数的指针做函数参数
+
+    - 指向函数的指针变量的一个重要的用途是把函数的地址做为参数传递到其他函数，这样就能在被调函数中使用实参函数，只是看起来复杂，我觉得没有二维数组和指针复杂
+
+    - ```c
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	int answer(int a, int b, int(*p)(int, int));
+      	int jia(int a, int b);
+      	int jian(int a, int b);
+      	int cheng(int a, int b);
+      	int chu(int a, int b);
+      	int a, b;
+      	char x;
+      	scanf("%d", &a);
+      	scanf("%c", &x);
+      	scanf("%d", &b);
+      	printf("%d %c %d= ?\n", a, x, b);
+      	if (x == '+') answer(a, b, jia);
+      	else if (x == '-') answer(a, b, jian);
+      	else if (x == '*') answer(a, b, cheng);
+      	else if (x == '/') answer(a, b, chu);
+      	else printf("The input is error");
+      
+      	system("pause");
+      
+      }
+      int answer(int a, int b, int(*p)(int, int))
+      {
+      	int ans;
+      	ans = (*p)(a, b);
+      	return ans;
+      }
+      int jia(int a, int b)
+      {
+      	int ans;
+      	ans = a + b;
+      	printf("%d + %d = %d", a, b, ans);
+      	return ans;
+      }
+      
+      int jian(int a, int b)
+      {
+      	int ans;
+      	ans = a - b;
+      	printf("%d - %d = %d", a, b, ans);
+      	return ans;
+      }
+      
+      int cheng(int a, int b)
+      {
+      	int ans;
+      	ans = a * b;
+      	printf("%d * %d = %d", a, b, ans);
+      	return ans;
+      }
+      
+      int chu(int a, int b)
+      {
+      	int ans;
+      	ans = (int)a / b;
+      	printf("%d / %d = %d", a, b, ans);
+      	return ans;
+      }
+      ```
+
+      ```c
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      #include<stdlib.h>
+      void main()
+      {
+      	void fun(int x, int y, int(*p)(int, int));
+      	int mymax(int, int);
+      	int mymin(int, int);
+      	int add(int, int);
+      	int a = 34, b = -21, n;
+      	scanf("%d", &n);
+      	if (n == 1)fun(a, b, mymax);
+      	else if (n == 2)fun(a, b, mymin);
+      	else if (n == 3)fun(a, b, add);
+      	system("pause");
+      }
+      void fun(int x, int y, int(*p)(int, int))
+      {
+      	int result;
+      	result = (*p)(x, y);
+      	printf("%d", result);
+      }
+      int mymax(int x, int y)
+      {
+      	int z;
+      	z = x > y ? x:y;
+      	return z;
+      }
+      
+      int mymin(int x, int y)
+      {
+      	int z;
+      	z = x < y ? x:y;
+      	return z;
+      }
+      int add(int x, int y)
+      {
+      	return x + y;
+      }
+      ```
+
+- 返回指针的函数
+
+  - 一个函数可以返回一个整数值，字符型，实型值等，也可以返回指针型的数据，也就是地址，概念都一样，返回的值的类型是指针类型而已
+  - 定义返回指针的函数的一般形式：类型名 * 函数名（参数列表）
+  - 
 
 
 
