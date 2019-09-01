@@ -665,6 +665,8 @@ int main()
 
 - TODO：插图
 
+- ！[函数调用](<https://github.com/HLhello/LearningNotes/blob/master/picture/%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8.jpeg>)
+
 - **递归调用**——在调用一个函数的过程中，有出现直接或间接的调用该函数本身，称为函数的递归调用
 
   - 程序中不应该出现无终止的递归调用，需要控制递归调用的次数
@@ -894,6 +896,8 @@ int main()
   - 在C语言中，每一个变量和函数都有两个属性，数据类型和存储类型。存储类型已经讲过，存储类别值得是数据在内存中的存储方式（如动态存储和静态存储）
 
   - ###### TODO插图
+
+  - ![存储类别](https://github.com/HLello/Learningnotes/blob/master/picture/存储类别.jpeg)
 
   - 在定义和声明变量和函数时 ，一般应同时制定数据类型和存储类别，也可以采用默认方式指定（系统隐含的指定为某一种存储类别）
 
@@ -1302,6 +1306,8 @@ int main()
   - 通过指针引用多维数组
 
     - TODO插入二维数组图
+
+    - ！[二维数组](<https://github.com/HLhello/LearningNotes/blob/master/picture/%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84.png>)
 
     - ```c
       #include<stdio.h>
@@ -1851,22 +1857,229 @@ int main()
       }
       ```
 
-- 返回指针的函数
+- **返回指针的函数** TODO####
 
   - 一个函数可以返回一个整数值，字符型，实型值等，也可以返回指针型的数据，也就是地址，概念都一样，返回的值的类型是指针类型而已
+
   - 定义返回指针的函数的一般形式：类型名 * 函数名（参数列表）
-  - 
+
+  - ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	float score[][4] = { { 60, 70, 90, 90 }, { 56, 89, 67, 88 }, { 34, 78, 90, 66 } };
+    	float * mysearch(float (*pinter)[4], int n);
+    	float *p;
+    	int k;
+    	scanf("%d", &k);	
+    	p = mysearch(score, k);
+    
+    	for (int i = 0; i<4; i++)
+    	{
+    		printf("%5.2f\t", *(p + i));
+    	}
+    	system("pause");
+    }
+    float * mysearch(float (*pointer)[4], int n)
+    {
+    	float *pt;
+    	pt = *(pointer + n);
+    	return pt;
+    }
+    ```
+
+    ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	float score[][4] = { { 90, 70, 90, 90 }, { 56, 89, 67, 88 }, { 34, 78, 90, 66 } };
+    	float * mysearch(float (*pinter)[4]);//
+    
+    	for (int i = 0; i<3; i++)
+    	{
+    		p = mysearch(score+i);
+    		if (p == *(score + i))
+    		{
+    			for (int j = 0; j < 4; j++)
+    			{
+    				printf("%5.2f\t", *(p + j));
+    			}
+    			printf("\n");
+    		}
+    		
+    	}
+    	system("pause");
+    }
+    float * mysearch(float (*pointer)[4])//输入的参数是列控制指针
+    {
+    	float *pt;
+    	pt = NULL;
+    	for (int i = 0; i < 4; i++)
+    	{
+    		if (*(*pointer+i) < 60)
+    		{
+    			pt = *pointer;
+    			break;
+    		}
+    	}
+    	return pt//返回的参数也是列控制指针
+    }
+    ```
+
+- 指针数组和多重指针
+
+  - 一个数组，若其元素均为指针类型数据，称为指针数组，也就是说，指针数组中每一个元素都存放一个地址，相当于一个指针变量，指针数组比较常用来指向某个字符串，使字符串的处理更加灵活方便，可以分别定义一些字符串，然后用指针数组中的元素分别指向字符串
+
+  - 定义一维数组的一般形式为 **类型名 * 数组名 [指针长度]**
+
+    - 注：没有括号，中括号的优先级比星号的优先级高，所以会先和中括号结合，然后在寻址取值
+
+  - ```c
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	void print(char *name[], int n);
+    	void sort(char *name[], int n);
+    	char * name[] = { "BHaiLong", "Dhailou", "CLiHailong", "Ahello", "Elihailong" };
+    	int n = 5;
+    	sort(name, n);
+    	print(name, n);
+    	system("pause");
+    }
+    void sort(char *name[], int n)//程序肯定有错，但程序是通的 TODO
+    {
+    	char *temp;
+    	int i,j, k;
+    	for (i = 0; i < n - 1;i++)
+    	{
+    		k = i;
+    		for (j = i + 1; j<n; j++)
+    		{
+    			if (strcmp(name[k], name[j])>=0) k = j;
+    			if (k != j)
+    			{
+    				temp = name[i];
+    				name[i] = name[k];
+    				name[k] = temp;
+    			}
+    		}
+    	}
+    }
+    void print(char *name[], int n)
+    {
+    	int i;
+    	for (i = 0; i<n; i++)
+    	{
+    		printf("%s\n", name[i]);
+    	}
+    }
+    ```
+
+- 指向指针数据的指针
+
+  - 顾名思义指向指针的指针
+
+  - 定义一个指向指针的指针的一般形式 ：类型名 ** 指针变量名
+
+  - ```c
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	char * name[] = { "BHaiLong", "Dhailou", "CLiHailong", "Ahello", "Elihailong" };
+    	char **p;
+    	for (int i = 0; i<5; i++)
+    	{
+    		p = name + i;
+    		printf("%s\n", *p);
+    	}
+    	system("pause");
+    }
+    ```
+
+  - ```c
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	int a[5] = { 1, 2, 3, 4, 5 };
+    	int *num[5] = { &a[0], &a[1], &a[2], &a[3], &a[4] };//num[i] = &a[i]
+    	int **p, i;
+    	p = num;
+    	for (i = 0; i<5; i++)
+    	{
+    		printf("%d", a[i]);
+    		printf("%d", *num[i]);
+    		printf("%d", *(*(p + i)));
+    		printf("%d", *(*p + i));
+    	}
+    	system("pause");
+    
+    }
+    ```
+
+- 指针参数作main函数的形参
+
+  - 通常main函数是没有参数的，但是有没有一种情况是我们在调用某个程序时要指定一些参数，比如我们使用cmd中的某些命令时：函数名 参数1，参数2，..... 这种情况
+
+- 指针小结
+
+  - 首先要准确的弄清楚指针的含义，**指针就是地址，凡是指针出现的地方，都可以用指针代替**，例如变量的指针就是变量的地址，指针变量就是地址变量
+  - **指向**，地址就意味着指向，通过地址能找到具有该地址的对象，对于指针变量来说把谁的地址存放在指针变量中，就说此指针**指向**谁！
+  - 指针变量的类型与含义
 
 
 
+  - | 变量定义       | 类型表示      | 含义                                                    |
+    | -------------- | ------------- | ------------------------------------------------------- |
+    | int i          | int           | 定义整形变量i                                           |
+    | int *p         | int *         | 定义p为指向整形数据的变量                               |
+    | int a[5]       | int  [5]      | 定义有5个元素的整型数组a                                |
+    | int *p[4]      | int  *  [4]   | 定义指针数组p，他由4个指向整型数据的指针元素组成        |
+    | int （*p）[4]  | int  (*)  [4] | p为指向包含4个元素的一维数组的指针变量                  |
+    | int func（）   | int ( )       | func为返回整型函数值得函数                              |
+    | int *func（）  | int  * （）   | func为返回一个指针的函数，该指针指向整型数据            |
+    | int （*p）（） | int （*）（） | p为指向函数的指针，该函数返回一个整型值                 |
+    | int **p        | int **        | p为一个指针变量，它指向一个指向整型数据的指针变量       |
+    | void * p       | void *        | p为一个指针变量，基类型为void（空类型）不指向具体的对象 |
 
+  - 指整运算，加减运算，赋值运算
 
+  - 指针变量可以有空值 **p = NULL**，即该指针变量不指向任何变量，在这里要注意，p的值是NULL与p未被赋值是两个不同的概念
 
+# C语言指针的讨论
 
+## 1.指整的概念辨析
 
+## 2.指针与一维数组
 
+## 3.指针与二维数组
 
+## 4.指针与动态数组
 
+## 5.指针数组
+
+## 6. 指整与函数，形参，返回值
+
+先熟悉一下概念，使劲把他们记下了
+
+| 变量定义       | 类型表示      | 含义                                                    |
+| -------------- | ------------- | ------------------------------------------------------- |
+| int i          | int           | 定义整形变量i                                           |
+| int *p         | int *         | 定义p为指向整形数据的变量                               |
+| int a[5]       | int  [5]      | 定义有5个元素的整型数组a                                |
+| int *p[4]      | int  *  [4]   | 定义指针数组p，他由4个指向整型数据的指针元素组成        |
+| int （*p）[4]  | int  (*)  [4] | p为指向包含4个元素的一维数组的指针变量                  |
+| int func（）   | int ( )       | func为返回整型函数值得函数                              |
+| int *func（）  | int  * （）   | func为返回一个指针的函数，该指针指向整型数据            |
+| int （*p）（） | int （*）（） | p为指向函数的指针，该函数返回一个整型值                 |
+| int **p        | int **        | p为一个指针变量，它指向一个指向整型数据的指针变量       |
+| void * p       | void *        | p为一个指针变量，基类型为void（空类型）不指向具体的对象 |
 
 
 
