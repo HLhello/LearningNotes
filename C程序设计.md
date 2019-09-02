@@ -2081,11 +2081,188 @@ int main()
 | int **p        | int **        | p为一个指针变量，它指向一个指向整型数据的指针变量       |
 | void * p       | void *        | p为一个指针变量，基类型为void（空类型）不指向具体的对象 |
 
+## 9.用户建立自己的数据类型
+
+- C语言允许用户自加建立由不同类型数据组合成的组合型数据结构，称为结构体
+
+- 定义一个结构体类型的一般形式为
+
+  ​	**struct    结构体名**    //结构体名由用户指定，又称为结构体标签
+
+  ​	**{**
+
+  ​		**成员1；**	//成员列表又称域表，成员命名规则与变量命名相同
+
+  ​		**成员2；**
+
+  ​		**. . .**
+
+  ​	**}；**
+
+- 定义结构体类型变量的一般形式
+
+  - 先声明结构体类型名，再定义该结构体类型的变量
 
 
 
+  - |    结构体类型名     |    结构体变量名    |
+    | :-----------------: | :----------------: |
+    | struct     结构体名 |    结构体变量名    |
+    | struct      student | student1，student2 |
 
+- 成员可以属于另一个结构体类
 
+  ​	**struct    结构体名**    //结构体名由用户指定，又称为结构体标签
+
+  ​	**{**
+
+  ​		**成员1；**	//成员列表又称域表，成员命名规则与变量命名相同
+
+  ​		**成员2；**
+
+  ​		**struct 结构体名 结构体变量名**
+
+  ​		**. . .**
+
+  ​	**}；**	
+
+- 不指定类型名而直接定义结构体类型变量
+
+  ​	**struct**
+
+  ​	**{**
+
+  ​		**成员列表**
+
+  ​	**}；变量名列表**
+
+  - **结构体类型**和**结构体变量**是不同的概念，不要混同。只能对变量赋值、存取、或运算，而不能对一个类型赋值、存取或运算，在编译时，对类型是不分配空间的，只对变量分配空间
+  - 结构体类型中的成员名可以与程序中的变量名相同，但二者不代表同一个对象
+  - 对结构体变量中的成员可以单独使用，他的作用与地位相当于与普通变量，只是引用方式不同
+
+- 结构体变量的初始化和引用
+
+  - ```c
+    #include<stdio.h>
+    int main()
+    {
+        struct Student  //声明一个结构体类型
+        {
+            long int num;  //以下4行结构体的成员
+            char name[20];
+            char sex;
+            char addr[20];
+        }a = {10101,"LiLIn",'M',"123 BeiJing Road"};//定义一个结构体变量a并初始化
+        printf("No.:%ld\nname:%s\nsex:\naddress:%s\n".a.num,a.name,a.sex,a.addr)
+    }
+    //允许对某一成员初始化，为初始化的成员为零，与数组可以类比以下
+    ```
+
+  - 使用结构体白能量中成员的值，引用的一般方法为 
+
+    ​	 **结构体变量名.成员名**，如：student1.num
+
+  - "**.**" 是成员运算符，他在所有的运算符中**优先级最高**，因此无论什么情况点号**左右两边的值都可以看做一个整体**
+
+  - 如果成员本身又属于一个结构体类型，则要用若干个成员运算符，一级一级的找到最低一级的成员，若果要把它当做一个变量来操作，就必须找到最低的一级。对**结构体变量的成员**可以当普通变量一样进行各种运算
+
+  - 同类型的结构体变量可以互相赋值
+
+  - ```C
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    struct person
+    {
+    	char name[20];
+    	int count;
+    }leader[3] = { "AA", 0, "BB", 0, "CC", 0 };//定义结构体变量
+    
+    void main()
+    {
+    	char leader_name[20];
+    	//struct person leader[3] = { "AA", 0, "BB", 0, "CC", 0 };//在程序内声明同样可以
+    	for (int i = 0; i<10; i++)
+    	{
+    		scanf("%s", &leader_name);
+    		for (int j = 0; j<3; j++)
+    		{
+    			if (strcmp(leader_name, leader[j].name) == 0) leader[j].name,leader[j].count++;//使用strcmp判断输入的名字
+    		}
+    	}
+    	printf("\nresult:");
+    	for (int i = 0; i<3; i++)
+    	{
+    		printf("%5s:%d\n", leader[i].name, leader[i].count);
+    	}
+    	system("pause");
+    }
+    ```
+
+  - 定义结构体变量数组的一般形式：**结构体类型  数组名[数组长度] = {初值列表}；**
+
+  - 初值列表是数组长度个，怎么说呢，结构体变量的数组在内存中是挨个挨个排列的，而每个结构体变量数组元素中的成员在内存中也是挨个挨个排列的
+
+  - 在这里复习**const int N = 5;** 与 **#define N 5;**这两句话在一般时候等效
+
+- 结构体指针
+
+  - 所谓结构体指针就是指向结构体变量的指针，一个结构体变量的起始地址就是这个结构体变量的指针，如果把一个结构体变量的起始地址存放在一个指针变量中，那么这个指针就是结构体指针
+
+  - 指向结构体变量的指针定义的一般形式
+
+    ​	struct Student * pt  //pt可以指向struct Student类型的变量或数组元素
+
+  - ```c
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	struct Student  //声明一个结构体类型
+    	{
+    		long int num;  //以下4行结构体的成员
+    		char name[20];
+    		char sex;
+    		int score;
+    	};
+    	struct Student stu_1;
+    	struct Student *p;//定义一个指向该结构体类型的指针
+    	p = &stu_1;
+    	stu_1.num = 10101;
+    	strcpy(stu_1.name, "Lilin");//注意这个字符串的赋值方式，不能使用等号赋值
+    	stu_1.sex = 'M';
+    	stu_1.score = 88;
+    	printf("No.:%ld\nname:%s\nsex:%c\nscore%5d\n", stu_1.num, stu_1.name, stu_1.sex, stu_1.score);
+    	printf("No.:%ld\nname:%s\nsex:%c\nscore%5d\n", (*p).num, p->name, (*p).sex, (*p).score);//(*p).name 等价与p->num 注意这一点，使用这一点更加直观 
+    	system("pause");
+    }
+    ```
+
+- 指向结构体数组的指针
+
+  - ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    struct person
+    {
+    	char name[20];
+    	int count;
+    }leader[3] = { "AA", 0, "BB", 0, "CC", 0 };//定义结构体变量
+    void main()
+    {
+    	struct person *p;
+    	for (p = leader; p<leader + 3; p++)
+    	{
+    		printf("%s      %d\n", p->name, p->count);
+    	}
+    	system("pause");
+    }
+    //(++p)->name 先自加在引用 
+    //(p++)->name 先引用再自加
+    ```
+
+  - 
 
 
 
