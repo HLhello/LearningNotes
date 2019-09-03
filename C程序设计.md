@@ -2249,22 +2249,234 @@ int main()
     	char name[20];
     	int count;
     }leader[3] = { "AA", 0, "BB", 0, "CC", 0 };//定义结构体变量
+    
     void main()
     {
-    	struct person *p;
-    	for (p = leader; p<leader + 3; p++)
+    	struct person *p;//该指针指向的类型是person
+    	//在对p进行运算时，移动的内存就是结构体大小的内存
+    	for (p = leader; p<leader + 3; p++)//将结构体变量数组的首地址leader赋值给p
     	{
-    		printf("%s      %d\n", p->name, p->count);
+    		printf("%s      %d\n", p->name, (*p).count);//这两种引用结构体成员的方式等价
     	}
+    	
+    	//定义pp是一个指向结构体的指针，如果给他赋值结构体变量成员的首地址，也就是对pp赋值为 p = leader[1].name,在编译时会发出警告信息，指针运算移动的大小仍然是一个结构体类型的大小
+        struct person *pp;//该指针指向的类型是person
+    	pp = (struct person *)leader[0].name;
+    	for (int i = 0; i < 3; i++)
+    	{
+    		printf("%s\n", pp + i);
+    	}
+    
+    
     	system("pause");
     }
     //(++p)->name 先自加在引用 
     //(p++)->name 先引用再自加
     ```
 
-  - 
+  - 用结构体变量和结构体变量的指针做函数参数
+
+    - 将一个结构体变量的值传递给另一个参数有三种方法
+
+      - 用结构体变量的成员做参数
+      - 用结构体变量做实参
+      - 用指向结构体变量的指针作为实参
+
+    - ```、c
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      #include<stdlib.h>
+      #define N 3
+      struct student
+      {
+      	int num;
+      	char name[30];
+      	float score[3];
+      	float aver;
+      };
+      
+      void main()
+      {
+      	void input(struct student stu[]);
+      	struct student mymax(struct  student[]);
+      	void print(struct student stu);
+      	struct student stu[N];//定义一个结构体变脸数组
+      	struct student *p = stu;	//定义的是指向结构体变量数组的指针
+      	input(p);//传入的是指向结构体变量的
+      	print(mymax(p));
+      	system("pause");
+      }
+      //调用input时，实参是指针变量p，形参是结构体数组，传递的是结构体数组元素的首地址
+      //调用max时，实参时指针变量p，形参是结构体数组，传递的是结构体元素的地址，返回值是结构体类型的数据
+      //调用print时，实参是结构体变量（结构体数组元素），形参是结构体变量，传递的是结构体变量中各成员的值
+      void input(struct student stu[])//参数为结构体变量数组
+      {
+      	float totalscore = 0;
+      	for (int i = 0; i<N; i++)
+      	{	
+      		printf("student id: ");
+      		scanf("%d", &stu[i].num);
+      		printf("student name: ");
+      		scanf("%s", &stu[i].name);
+      		for (int j = 1; j <= 3; j++)
+      		{
+      			printf("score[%d]: ", j);
+      			scanf("%f", &stu[i].score[j-1]);
+      			totalscore = totalscore + stu[i].score[j-1];
+      			printf("%f", totalscore);
+      		}
+      		stu[i].aver = totalscore / 3;
+      		totalscore = 0;
+      	}
+      }
+      struct student mymax(struct  student stu[])//参数为结构体变量数组
+      {	
+      	int m = 0;
+      	for (int i = 0; i < N; i++)//比较之后取出下标
+      	{
+      		if (stu[i].aver>stu[m].aver) m = i;//m始终是比较大的下标
+      	}
+      	return stu[m];
+      }
+      void print(struct student stud)//参数为结构体变量
+      {
+      	printf("student id: %d\n", stud.num);
+      	printf("student name: %s\n",stud.name);
+      	for (int j = 1; j <= 3; j++)
+      	{
+      		printf("score[%d]: %f",j, stud.score[j-1]);
+      	}
+      	printf("\naver score: %f\n", stud.aver);
+      }
+      
+      
+      ```
+
+- 链表
+
+  - 链表是一种常见的数据结构，他是动态的进行存储分配的一种结构，从本质上来说，链表是结构体中的一种，可以说是嵌套，也可以说是递归，举个例子幼儿园的老师牵第一个小朋友，第一个小朋友牵第二个小朋友，以此类推.  .  .
+
+  - 用数组存放数据时，必定实现固定数组的长度，如果无法确定数组元素的个数，便会将数组元素个数定义的足够大以适应每种不同的情况，这样做显然会浪费内存，链表则没有这种缺点，他根据需要开辟内存
+
+  - 链表的一般结构
+
+    - 每个节点包括两部分 **用户需要用的实际数据**和**下一个节点的地址**
+    - head指向第一个元素，第一个元素指向下一个元素，表尾指向NULL，链表到此结束
 
 
+
+    - | head                         | A(实际数据) | B(实际数据) | C(实际数据) | . . . . . .     | last(实际数据) |
+      | ---------------------------- | ----------- | ----------- | ----------- | --------------- | -------------- |
+      | 指针变量保存第一个元素的地址 | 地址        | 地址        | 地址        | **. . . . . .** | NULL           |
+
+    - 显然，建立链表使用结构体变量是最合适的链表这种数据结构，必须利用指针才能实现，也就是一个节点应该包含一个指针变量，用来存放下一节点的地址
+
+      ​	**struct     结构体名**
+
+      ​	**{**
+
+      ​		**实际数据；**
+
+      ​		**struct   结构体名 * next；		//next是指针变量，指向结构体变量**
+
+      ​	**}**；
+
+    - ```c
+      //这是一个简单的静态列表，所有的节点都是在程序中定义的，不是临时开辟的，也不能用完后释放
+      #include<stdio.h>
+      struct student		//声明结构体变量
+      {
+      	int stuid;
+      	float score;
+      	struct student * next;
+      };//注意这个；老忘
+      void main()
+      {
+      	struct student a, b, c, *head, *p;//定义三个结构体变量作为链表的节点
+      	a.stuid = 10101; a.score = 89.5;
+      	b.stuid = 10103; b.score = 90;
+      	c.stuid = 10105; c.score = 85.5;//对于结构体变量的成员赋值
+      	head = &a;//指定链表的头，将链表的第一个节点赋值给链表的头
+      	a.next = &b;//指定下一个节点的地址
+      	b.next = &c;//指定下一个节点的地址
+      	c.next = NULL;//链表结束，将下一个位置设置为NULL表示链表结束
+      	p = head;//设置一个取值的指针，指向链表的头
+      	do
+      	{
+      		printf("%ld %5.1f\n", p->stuid, p->score);
+      		p = p->next;//等效于(*p).next
+      	} while (p != NULL);
+      	system("pause");
+      }
+      ```
+
+  - 建立动态列表
+
+    - 所谓建立动态列表是指在程序执行过程中，从无到有的建立起一个链表，也就是一个一个的开辟节点和输入各节点的数据并且建立前后相连的关系
+
+    - ```c
+      //这个程序不会，TODO没看懂，可能是这回心思比较乱吧
+      #define _CRT_SECURE_NO_WARNINGS
+      #include<stdio.h>
+      #include<stdlib.h>
+      #define LEN sizeof(struct student)
+      struct student
+      {
+      	long stuid;
+      	float score;
+      	struct student *next;
+      };
+      int n;
+      struct student *creat(void)
+      {
+      	struct student * head;
+      	struct student *p1, *p2;
+      	n = 0;
+      	p1 = p2 = (struct student *)malloc(LEN);
+      	scanf("%ld,%f", &p1->stuid, &p1->score);
+      	head = NULL;
+      	while (p1->stuid != 0)
+      	{
+      		n = n + 1;
+      		if (n == 1) head = p1;
+      		else p2->next = p1;
+      		p2 = p1;
+      		p1 = (struct student *)malloc(LEN);
+      		scanf("%ld,%f", &p1->stuid, &p1->score);
+      	}
+      	p2->next = NULL;
+      	return head;
+      }
+      //输出链表的函数
+      void print(struct student *head)
+      {
+      	struct student *p;
+      	printf("\nNow,these %d records are :\n", n);
+      	p = head;
+      	if (head != NULL)
+      	{
+      		do
+      		{
+      			printf("%ld %5.1f\n", p->stuid, p->score);
+      			p = p->next;
+      		} while (p != NULL);
+      	}
+      }
+      
+      int main()
+      {
+      	struct student *head;
+      	head = creat();
+      	print(head);
+      	//printf("\nnum:%ld\nsocre:%5.1f\n", pt->stuid, pt->score);
+      	system("pause");
+      	return 0;
+      }
+      ```
+
+- 共用体类型
+
+  - 有时候想用同一段内存单元存储不同类型的变量，例如我们想把一个整型变量，一个字符型变量，和一个实型变量放在同一个内存地址开始的内存单元中，由于
 
 
 
