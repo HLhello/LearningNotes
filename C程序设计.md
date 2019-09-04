@@ -2361,54 +2361,55 @@ int main()
   - 链表的一般结构
 
     - 每个节点包括两部分 **用户需要用的实际数据**和**下一个节点的地址**
+
     - head指向第一个元素，第一个元素指向下一个元素，表尾指向NULL，链表到此结束
 
+  - | head                         | A(实际数据) | B(实际数据) | C(实际数据) | . . . . . .     | last(实际数据) |
+    | ---------------------------- | ----------- | ----------- | ----------- | --------------- | -------------- |
+    | 指针变量保存第一个元素的地址 | 地址        | 地址        | 地址        | **. . . . . .** | NULL           |
+
+  - 显然，建立链表使用结构体变量是最合适的链表这种数据结构，必须利用指针才能实现，也就是一个节点应该包含一个指针变量，用来存放下一节点的地址
+
+  - **struct     结构体名**
+
+    **{**
+
+    ​	**实际数据；**
+
+    ​	**struct   结构体名 * next；		//next是指针变量，指向结构体变量**
+
+    **}**；
 
 
-    - | head                         | A(实际数据) | B(实际数据) | C(实际数据) | . . . . . .     | last(实际数据) |
-      | ---------------------------- | ----------- | ----------- | ----------- | --------------- | -------------- |
-      | 指针变量保存第一个元素的地址 | 地址        | 地址        | 地址        | **. . . . . .** | NULL           |
 
-    - 显然，建立链表使用结构体变量是最合适的链表这种数据结构，必须利用指针才能实现，也就是一个节点应该包含一个指针变量，用来存放下一节点的地址
-
-      ​	**struct     结构体名**
-
-      ​	**{**
-
-      ​		**实际数据；**
-
-      ​		**struct   结构体名 * next；		//next是指针变量，指向结构体变量**
-
-      ​	**}**；
-
-    - ```c
-      //这是一个简单的静态列表，所有的节点都是在程序中定义的，不是临时开辟的，也不能用完后释放
-      #include<stdio.h>
-      struct student		//声明结构体变量
-      {
-      	int stuid;
-      	float score;
-      	struct student * next;
-      };//注意这个；老忘
-      void main()
-      {
-      	struct student a, b, c, *head, *p;//定义三个结构体变量作为链表的节点
-      	a.stuid = 10101; a.score = 89.5;
-      	b.stuid = 10103; b.score = 90;
-      	c.stuid = 10105; c.score = 85.5;//对于结构体变量的成员赋值
-      	head = &a;//指定链表的头，将链表的第一个节点赋值给链表的头
-      	a.next = &b;//指定下一个节点的地址
-      	b.next = &c;//指定下一个节点的地址
-      	c.next = NULL;//链表结束，将下一个位置设置为NULL表示链表结束
-      	p = head;//设置一个取值的指针，指向链表的头
-      	do
-      	{
-      		printf("%ld %5.1f\n", p->stuid, p->score);
-      		p = p->next;//等效于(*p).next
-      	} while (p != NULL);
-      	system("pause");
-      }
-      ```
+  ```c
+  //这是一个简单的静态列表，所有的节点都是在程序中定义的，不是临时开辟的，也不能用完后释放
+    #include<stdio.h>
+    struct student		//声明结构体变量
+    {
+    	int stuid;
+    	float score;
+    	struct student * next;
+    };//注意这个；老忘
+    void main()
+    {
+    	struct student a, b, c, *head, *p;//定义三个结构体变量作为链表的节点
+    	a.stuid = 10101; a.score = 89.5;
+    	b.stuid = 10103; b.score = 90;
+    	c.stuid = 10105; c.score = 85.5;//对于结构体变量的成员赋值
+    	head = &a;//指定链表的头，将链表的第一个节点赋值给链表的头
+    	a.next = &b;//指定下一个节点的地址
+    	b.next = &c;//指定下一个节点的地址
+    	c.next = NULL;//链表结束，将下一个位置设置为NULL表示链表结束
+    	p = head;//设置一个取值的指针，指向链表的头
+    	do
+    	{
+    		printf("%ld %5.1f\n", p->stuid, p->score);
+    		p = p->next;//等效于(*p).next
+    	} while (p != NULL);
+    	system("pause");
+    }
+  ```
 
   - 建立动态列表
 
@@ -2476,7 +2477,542 @@ int main()
 
 - 共用体类型
 
-  - 有时候想用同一段内存单元存储不同类型的变量，例如我们想把一个整型变量，一个字符型变量，和一个实型变量放在同一个内存地址开始的内存单元中，由于
+  - 有时候想用同一段内存单元存储不同类型的变量，例如我们想把一个整型变量，一个字符型变量，和一个实型变量放在同一个内存地址开始的内存单元中，以上三个变量在内存中所占的字节数不同，但都从同一地址开始，也就是使用覆盖技术，后一个数据覆盖了前面的数据
+
+  - 共用体变量的成员工用一段内存，这句话表明在 一个时刻共用体的成员只有一个具有有效值，存储单元只能有唯一的内容，
+
+  - 共用体类型定义的一般形式
+
+    ​	**union    共用体名** 
+
+    ​	**{**
+
+    ​		**成员列表**
+
+    ​	**}变量列表；**
+
+  - 共用体与结构体
+
+    - 共用体与结构体的定义形式是相同的，但意义是不同的
+    - 结构体变量所占内存长度是所有成员占内存长度之和，共用体变量所占内存长度是最长的成员长度
+    - 结构体变量每个成员是有各自独立的内存单元，而**共用体成员共用一段内存**
+
+- 枚举类型
+
+  - 如果一个变量只有几个可能的值，则可以定义为枚举类型，所谓枚举，就是把所有可能的值一一列举出来，变量的值只限于列举的范围之内
+
+  - 枚举类型定义的一般形式
+
+    ​	**enum    枚举名   {枚举元素列表}**
+
+    例：enum    weekday{sun, mon, tue, wed, thu, fri, sat}
+
+    ​	定义枚举类型变量    enum weekday   workday， weekday
+
+  - C编译对枚举类型的枚举元素按常量处理，故称枚举常量，既然常量那么他就不能被赋值，即枚举元素不能被赋值
+
+  - 每一个枚举元素都代表一个整数，C语言编译按照定义时的顺序默认他们为0,1,2,3,4,5. . . 
+
+    即：workday = mon； 也就是  workday = 1；printf（“%d”，workday）；输出为1
+
+    也可以人为的指定枚举元素的数值，在定义变量时显式的指出
+
+    即：enum    weekday{sun=7, mon=1, tue, wed, thu, fri, sat}  workday， week_day；
+
+    指定枚举型常量sun的值为7，mon的值为1，以后顺序加1，sat为6
+
+  - 枚举元素也可以用来作判断比较，在if语句中或者在switch语句中都是比较好用的
+
+  - ```c
+    //这个程序不会，TODO没看懂，可能是这回心思比较乱吧
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    
+    enum color{red,yellow,blue,white,black};
+    
+    void main()
+    {
+    	enum color i, j, k, pri;
+    	int n, loop;
+    	n = 0;
+    	for (i = red; i <= black; i++)
+    	{
+    		for (j = red; j <= black; j++)
+    		{
+    			if (i != j)
+    			{
+    				for (k = red; k <= black; k++)
+    				{
+    					if ((k != i) &&( k != j))
+    					{
+    						n = n + 1;
+    						printf("%-4d", n);
+    						for (loop = 1; loop <= 3; loop++)
+    						{
+    							switch (loop)
+    							{
+    							case 1:pri = i; break;
+    							case 2:pri = j; break;
+    							case 3:pri = k; break;
+    							default:break;
+    							}
+    							switch (pri)
+    							{
+    							case red:printf("%-10s", "red"); break;
+    							case yellow:printf("%-10s", "yellow"); break;
+    							case blue:printf("%-10s", "blue"); break;
+    							case white:printf("%-10s", "white"); break;
+    							case black:printf("%-10s", "black"); break;
+    							}
+    						}printf("\n");
+    					}
+    				}
+    			}
+    		}
+    	}
+    	printf("\ntotal:%5d", n);
+    	system("pause");
+    }
+    ```
+
+- 使用typedef声明新类型名
+
+  - 从前面已知，处理简单的类型，C程序中还会用到许多看起来比较复杂的类型，包括结构体类型，共用体类型，枚举类型，指针类型，数组类型等，这些类型形式复杂，在开发时不留神就会出错，所以我们可以使用typedef来将复杂的类型名用一个比较简单的名字重新声明
+
+  - 注：使用typedef并不是新生成一种类型，而是将复杂类型名转换成简单类型名
+
+  - 这样做的目的是便于使用，在程序开发时也能做到统一协调，能做到一改全改，不用再每个使用到该类型的地方都修改
+
+  - 使用一个typedef定义一个新类型名的一般方法是
+
+     	1. 先按照定义变量的方法写出定义体（如：int a[100]）
+     	2. 将变量名转化为新类型名（如： int NUM[100]）
+
+        ​      	3. 在最前面加上关键字typedef（如：typedef int NUM[100]）
+           	4. 然后可以用新类型名去定义变量（如：NUM a，即等效于 int a[100]）
+
+  - ```c
+    struct Date
+    {
+        int month;
+        int day;
+        int year;
+    };
+    struct Date birthday;//定义结构体类型变量
+    struct Date *ppp;//定义结构体类型变量指针
+    
+    struct 
+    {
+        int month;
+        int day;
+        int year;
+    }Date;//匿名结构体只能在他后面定义结构体变量
+    
+    typedef struct
+    {
+        int month;
+        int day;
+        int year;
+    }Date;
+    
+    Date birthday;
+    Date * p;
+    ```
+
+  - typedef与#define有相似之处
+
+    - 例如   typedef int count  与  #define count  int这两句话看似是一个意思，但事实上他们二者是不同的
+    - #define是在预编译时处理的，他只能做简单的字符串替换，而typedef是在编译阶段处理的，他并不是简单地字符串替换，而是将某一种类型的名字换掉，在 程序执行时定义功能与之等效
+
+## Cha10 对文件的输入输出
+
+- 在程序设计中，文件主要有两种类型，程序文件和数据文件
+
+  - 程序文件包括源程序文件.c，目标文件.obj，可执行文件.exe，每个文件的意义在开始的时候已经说过
+  - 数据文件，文件内容不是程序，而是程序运行时需要读写的数据
+  - C的数据文件由一连串的字符组成而不考虑行的界限，两行数据并不会自动加分隔符
+
+- 文件名
+
+  - 一个文件要有一个唯一的文件标识，以便用户识别和引用，文件标识包括三部分别
+    - 文件路径，文件名主干，文件后缀
+    - 例：D:\cc\temp\    file1    .    dat
+  - TODO 插图
+
+- 文件类型指针，文件指针
+
+  - 每个被使用的文件都在内存中开辟一个相应的文件信息区，用来存放文件的有关信息，这些信息都保存在一个结构体变量中，该结构体类型是由结构体声明的，在stdio.h中被声明
+
+  - ```c
+    typedef struct
+    {
+    	short level;					//缓冲区满或者空的程度
+    	unsigned flags;					//文件状态标志
+    	char fd;						//文件描述符
+    	unsigned char;					//如缓冲区无内容不读取字符
+    	short bsize;					//缓冲区的大小
+    	unsigned char * buffer;			//数据缓冲区的位置
+    	unsigned char * curp;			//指针当前的指向
+    	unsigned istemp;				//临时文件指示器
+    	short token;					//用于有效性检查
+    }FILE;								//使用typedef重新声明，FILE文件可以定义该类型变量
+    //例：
+    FILE f1;							//定义了一个结构体变量
+    FILE *fp							//定义了一个指向结构体的文件指针	
+    ```
+
+- 打开文件与关闭文件
+
+  - 在打开文件的同时，一般指定一个指针变量指向该文件，也就是建立起指针变量与文件之间的练习，这样就可以通过该指针变量进行读写了
+
+  - 所谓关闭是指撤销文件信息区和文件缓冲区，是文件指针变量不再指向该文件，显然就无法进行对文件的读写了
+
+  - fopen函数
+
+    - fopen("al","r");  //al是要打开文件的名字，使用文件方式为读入
+
+    - fopen函数的返回值是指向al文件的文件指针（即al文件信息区的起始地址），通常将fopen函数的返回值赋值给文件指针
+
+    - ```c
+      FILE *fp;				//定义一个指向文件的指针指针
+      fp = fopen("al","r");	//将fopen函数的返回值赋值给文件指针变量
+      //这样fp就和文件al联系上了，也就是说fp指向了al文件
+      ```
+
+    - 
+
+      | 文件使用方式参数  | 含义                                     | 如果指定的文件不存在 |
+      | ----------------- | ---------------------------------------- | -------------------- |
+      | “r”（只读）       | 为了输入数据，打开一个已经存在的文本文件 | error                |
+      | “w”（只写）       | 为了输出数据，打开一个文本文件           | right                |
+      | “a”（追加）       | 向文本文件尾添加数据                     | error                |
+      | “r+”（读写）      | 为了读和写，打开一个文本文件             | error                |
+      | “W+”（读写）      | 为了读和写，建立一个新的文本文件         | right                |
+      | “a+”（读写）      | 为了读和写，打开一个文本文件             | error                |
+      | “rb”（只读）      | 为了输入数据，打开一个二进制文件         | error                |
+      | “wb”（只写）      | 为了输出数据，打开一个二进制文件         | right                |
+      | “ab”（追加）      | 向二进制文件尾添加数据                   | error                |
+      | “rb+”,“wb+”,“ab+” | 操作二进制文件                           | error，right，error  |
+
+    - ```c
+      #include<stdio.h>
+      if(fp = fopen("file1","r")) == NULL)
+      {
+          printf("cannot open this file\n");
+          exit(0);//exit函数的作用是关闭所有文件，终止正在执行的程序
+      }
+      ```
+
+  - fclose函数
+
+    - 在使用完一个文件后应该关闭它，以防止它再被误用，关闭就是撤销文件信息区，和文件缓冲区，使文件指针不再指向该文件
+    - 关闭文件指针的一般形式：**fclose（文件指针）**
+
+- 顺序读写数据文件
+
+  - 对文件读写数据的顺序和数据在文件中的物理顺序是一致的，顺序读写需要用库函数实现
+
+  - 
+
+    | 函数名 | 调用形式        | 功能                                                         | 返回值                                                      |
+    | ------ | --------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+    | fgetc  | fgetc(fp)       | 从fp指向的文件中读入一个字符                                 | 读成功，带回所读的字符；失败则返回文件结束标志EOF（即-1）   |
+    | fputc  | fputc(fp)       | 把字符ch写到文件指针变量fp所指向的文件中                     | 输出成功，返回值就是输出的字符；输出失败，则返回EOF（即-1） |
+    | fgets  | fgets(str,n,fp) | 从fp指向的文件中读入一个长度为（n-1）的字符串，存放到字符数组str中 | 读成功，则返回地址str；失败则返回NULL                       |
+    | fputs  | fputs(str,fp)   | 把str所指向的字符串写到文件指针变量所指向的文件中            | 输出成功，返回0；否则返回非0值                              |
+
+  - fgets函数的函数原型（函数头） **fgets( char *str, int n, FILE *fp)**
+
+    - n为要求得到的字符个数
+
+  - fputs函数的函数原型（函数头） **fputs( char *str, int n, FILE *fp)**
+
+  - ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	FILE *fp;
+    	char ch, filename[10];
+    	printf("输入文件名：");
+    	scanf("%s", filename);
+    	fp = fopen(filename, "w");//打开文件并使fp指向此文件
+    	if (fp == NULL)//判断当fp为NULL时，则终止函数
+    	{
+    		printf("cannot open this file\n");
+    		exit(0);
+    	}
+    	ch = getchar();//在使用scanf输入文件名时，回车后才能从缓冲区驶入到程序中，所以这个getchar用来接收一个回车
+        //如果少一个getchar那么回车会最为输入文件的第一个字符
+        printf("输入存入的字符串(以#结束):");//输入提示
+    	ch = getchar();//接收从键盘输入的最后一个字符
+    	while (ch != '#')//当输入#时结束循环
+    	{
+    		fputc(ch,fp);//向磁盘文件输出一个字符
+    		putchar(ch);//将输出的字符显示在屏幕上
+    		ch = getchar();//再接收从键盘输入的一个字符
+    	}
+    	fclose(fp);//关闭文件
+    	putchar(10);//向屏幕输出一个换行符
+    	system("pause");
+    }
+    ```
+
+  - ```c
+    //讲一个文件备份到另一个文件内容中
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	FILE *fp,*fto;
+    	char ch, filename1[10], filename2[10];
+    	printf("输入文件名：");
+    	scanf("%s", filename1);
+    	fp = fopen(filename1, "w");
+    	if (fp == NULL)
+    	{
+    		printf("cannot open this file\n");
+    		exit(0);
+    	}
+    	ch = getchar();
+    	printf("输入存入的字符串(以#结束):");
+    	ch = getchar();
+    	while (ch != '#')
+    	{
+    		fputc(ch,fp);
+    		putchar(ch);
+    		ch = getchar();
+    	}
+    	fclose(fp);
+    
+    	printf("输入文件名：");
+    	scanf("%s", filename2);
+    	fto = fopen(filename2, "w");
+    	if (fto == NULL)
+    	{
+    		printf("cannot open this file\n");
+    		exit(0);
+    	}
+    	ch = getchar();
+    	printf("输入存入的字符串(以#结束):");
+    	fp = fopen(filename1, "r");
+    	ch = fgetc(fp);//指针从当前读写位置自动后移
+    	while (feof(fp))//ch != EOF,这两个条件一样，使用函数feof(fp)可以检测传入函数的文件指针是否结束
+    	{
+    		fputc(ch, fto);
+    		putchar(ch);
+    		ch = fgetc(fp);
+    	}
+    	fclose(fp);
+    	fclose(fto);
+    
+    	putchar(10);
+    	system("pause");
+    }
+    ```
+
+  - ```c
+    //课本上的//有错，也不知道哪有错，TODO     -_-!
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    void main()
+    {
+    	FILE *in, *out;
+    	char ch, infile[10], outfile[10];
+    	printf("输入读文件的名字：");
+    	scanf("%s", infile);
+    	printf("输入写文件的名字：");
+    	scanf("%s", outfile);
+    	in = fopen(infile, "r");
+    	if (infile == NULL)//判断当fp为NULL时，则终止函数
+    	{
+    		printf("cannot open this file\n");
+    		exit(0);
+    	}
+    	out = fopen(outfile, "w");
+    	if (outfile == NULL)//判断当fp为NULL时，则终止函数
+    	{
+    		printf("cannot open this file\n");
+    		exit(0);
+    	}
+    	ch = fgetc(in);
+    	while (ch != EOF);
+    	{
+    		ch = fgetc(in);
+    		fputc(ch, out);
+    		putchar(ch);
+    	}
+    	putchar(10);
+    	fclose(in);
+    	fclose(out);
+    	system("pause");
+    }
+    ```
+
+  - ```c
+    //从键盘读入若干个字符串，对他们按照字母大小写顺序排序，然后把拍好序的字符串送到磁盘文件保护
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    #include<string.h>
+    void main()
+    {
+    	FILE *fp;
+    	char str[3][10], temp[10];
+    	int i, j, k, n = 3;
+    	printf("Enter strings\n");
+    	for (i = 0; i<n; i++)
+    	{
+    		gets(str[i]);
+    	}
+    	for (i = 0; i<n - 1; i++)
+    	{
+    		k = i;
+    		for (j = i + 1; j<n; j++)
+    		{
+    			if (strcmp(str[k], str[j])>0)k = j;
+    		}
+    		if (k != i)
+    		{
+    			strcpy(temp, str[i]);
+    			strcpy(str[i], str[j]);
+    			strcpy(str[j], temp);
+    		}
+    	}
+    	fp = fopen("string.dat", "w");
+    	if (fp == NULL)
+    	{
+    		printf("cannot open file");
+    		exit(0);
+    	}
+    	printf("\nThe new sequence:\n");
+    	for (i = 0; i<n; i++)
+    	{
+    		fputs(str[i], fp);
+    		fputs("\n", fp);
+    		printf("%s\n", str[i]);
+    	}
+    	system("pause");
+    }
+    ```
+
+  - ```c
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    void main()
+    {
+    	FILE *fp;
+    	char str[3][10];
+    	int i = 0;
+    	fp = fopen("string.dat", "r");
+    	if (fp == NULL)
+    	{
+    		printf("cannot open file");
+    		exit(0);
+    	}
+    	while (fgets(str[i], 10, fp) != NULL)
+    	{
+    		printf("%s", str[i]);
+    		i++;
+    	}
+    	fclose(fp);
+    	system("pause");
+    
+    }
+    ```
+
+- 使用格式化的方式读写文件
+
+  - fprintf( 文件指针，格式字符串，输出列表 )
+  - fscanf( 文件指针，格式字符串，输出列表 )
+  - 使用fprintf和fscanf函数对磁盘文件进行读写，使用方便，容易理解，但由于输入时要将文件中的ASCII转换为二进制格式
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
