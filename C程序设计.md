@@ -2929,11 +2929,134 @@ int main()
 
   - fprintf( 文件指针，格式字符串，输出列表 )
   - fscanf( 文件指针，格式字符串，输出列表 )
-  - 使用fprintf和fscanf函数对磁盘文件进行读写，使用方便，容易理解，但由于输入时要将文件中的ASCII转换为二进制格式
+  - 使用fprintf和fscanf函数对磁盘文件进行读写，使用方便，容易理解，但由于输入时要将文件中的ASCII转换为二进制形式保存在内存变量中，在输入时又要将内存中的二进制形式转换为字符，要花费较多时间，因此在内存与磁盘频繁交换数据的情况下，最好不用fprintf和fscanf函数
 
+- 使用二进制方式向文件读写一组数据
 
+  - 在程序中不仅需要一次输入输出一个数据，而且常常需要一次输入输出一组数据，在这是我们使用fread和fwrite读写一个数据块
 
+  - fread和fwrite函数在读写时是以二进制形式进行的，在向磁盘写数据时，直接将内存中一组数据原封不动，不加转换的赋值到磁盘文件上，在读入时也是将磁盘文件中若干字节的内容一批读入内存
 
+  - fread( buffer, size, count, fp )
+
+  - fwrite( buffer, size, count, fp ) 
+
+  - buffer：是一个地址，对于fread来说，它是用来存放从文件读入数据的存储区的地址，对于fwrite来说，是要把从此地址开始的存储区中的数据向文件输出（以上指的是起始地址）
+
+  - size：要读取的字节数
+
+  - count：要读些多少个数据项，每个数据项长度为size
+
+  - fp：FILE文件指针
+
+  - ```c
+    //这个程序能跑，但是没调好，也有不能理解的地方 TODO
+    #define _CRT_SECURE_NO_WARNINGS
+    #include<stdio.h>
+    #include<stdlib.h>
+    #define size 3
+    struct student
+    {
+    	char name[10];
+    	int stuid;
+    	int age;
+    }stud[size],outstud[size];
+    void save()
+    {
+    	FILE *fp;
+    	int i;
+    	fp = fopen("stu.dat", "wb");
+    	if (fp == NULL)
+    	{
+    		printf("cannot open file");
+    		exit(0);
+    	}
+    	for (i = 0; i<size; i++)
+    	{
+    		if (fwrite(&stud[i], sizeof(struct student), 1, fp) != 1)
+    		{
+    			printf("file write error");
+    		}
+    	}
+    	fclose(fp);
+    }
+    
+    void load(FILE *fp)
+    {
+    	FILE *fp;
+    	int i;
+    	fp = fopen("stu.dat", "rb");
+    	if (fp == NULL)
+    	{
+    		printf("cannot open file");
+    		exit(0);
+    	}
+    	printf("\n");
+    	for (i = 0; i<size; i++)
+    	{
+    		fread(&outstud[i], sizeof(struct student), 1, fp);
+    		printf("%-10s%4d%4d\n", outstud[i].name, outstud[i].stuid, outstud[i].age);
+    	}
+    }
+    void main()
+    {
+    	int i;
+    	printf("enter data of students:\n");
+    	for (i = 0; i<size; i++)
+    	{
+    		scanf("%s%d%d", stud[i].name, stud[i].stuid, stud[i].age);
+    	}
+        FILE *pfrom  *pto;
+        pfrom = fopen("stu.dat", "rb");
+        pto = fopen("stu.dat", "rb");
+        load(*pfrom)
+    	save();
+    	load(*pto);
+    	system("pause");
+    }
+    ```
+
+- 随机读写数据文件
+
+  - 随机访问不是按照数据在文件中的物理位置次序进行读写，而是可以对任何位置上的数据进行访问，显然 这种方法比顺序访问有效的多
+
+  - 文件位置标记
+
+    - 为了对读写进行控制，系统为每个文件设置了一个文件读写位置标记，用来指示接下来要读些的下一个字符的位置
+    - 一般情况下，在对字符文件进行顺序读写时，文件位置标志指向文件开头，这时对文件进行读写操作，就读一个字符，然后文件位置标记向后移一个位置
+
+  - 文件位置标记的定位以及关于文件指针的函数
+
+    - 可以强制是文件文件位置标记指向人们指定的位置
+
+    - rewind（fp）：使用rewind函数使文件位置标记指向文件开头，该函数的作用就是使文件位置标志指向文件开头，该函数没有返回值
+
+    - fseek( 文件类型指针，位移量， 起始点)：显而易见，该函数的作用是将文件指针从起始点移动位移量个单位后指向的位置
+
+      - 注：位移量是long型数据，在数字 后要加大写L
+
+      - 
+
+        | 起始点       | 名字     | 数字代表 |
+        | ------------ | -------- | -------- |
+        | 文件开始位置 | SEEK_SET | 0        |
+        | 文件当前位置 | SEEK_CUR | 1        |
+        | 文件末尾位置 | SEEK_END | 2        |
+
+      - ```c
+        例：
+        fseek(fp,100L,0);//将文件位置向前移动到距离文件开头100个字节处
+        fseek(fp,50L,1); //将文件位置标记向前移到距离当前位置50个字节处
+        fseek(fp,-10L,2);//将文件位置标记向后移动到距离文件结束10个字节处
+        ```
+
+    - ftell（fp）：使用ftell函数测定文件位置标标记的当前位置，返回值为long型数据，若返回-1则表明文件位置出错
+
+    - ferror（fp）：在调用各种文件输入输出函数时，出现错误，除了这些函数自身的返回值外，还可以用ferror函数检查，返回值为0，表示没有出错 ，返回值为非零值，则表明有错。使用fopen函数打开文件时，ferror的初始值自动设置为0
+
+    - clearerr(fp)：clearerr的作用是使文件错误标志和文件结束标志止为0
+
+本书于2019年9月5日15:14:31读完成，习题与TODO内容会陆续补充
 
 
 
