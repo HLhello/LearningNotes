@@ -3498,7 +3498,7 @@ void main()
 
 枚举类型
 
-   枚举类型的一般形式，限定作用范围在这个循环内
+枚举类型的一般形式，限定作用范围在这个循环内
 
 如果没有一个初始赋值，就会从0循环到最后一个，每次加1
 
@@ -3514,37 +3514,276 @@ typedef给类型一个别称
 
 
 
+共同
 
 
 
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+typedef struct info
+{
+	char name[20];
+	long long phone;
+}info, *pinfo;
+
+
+void main()
+{
+	info info1;
+	strcpy(info1.name, "海龙");
+	info1.phone = 1555555555;
+	printf("%s,%lld\n", info1.name, info1.phone);
+
+	pinfo info2;
+	info2 = (pinfo)malloc(sizeof(info));
+	sprintf(info2->name, "嗨喽");
+	info2->phone = 1555555555;
+	printf("%s,%lld\n", info2->name, info2->phone);
+	system("pause");
+}
+```
 
 
 
+```c
+//遍历枚举型常量
+#include<stdio.h>
+#include<stdlib.h>
+
+enum week { week1, week2, week3, week4, week5, week6, week7 };
+int num[] = { 56, 58, 59, 13, 14, 85, 94 };
+
+void main()
+{
+	printf("----------------------------\n");
+	printf("本周作死人数\n");
+	printf("----------------------------\n");
+	for (enum week weeks = week1; weeks <= week7; weeks++)
+	{
+		printf("\n%d周有%d人作死",weeks+1,num[weeks]);
+	}
+	system("pause");
+}
+```
 
 
 
+共用体不能对所有的成员初始化，供用体初始化的时候只能初始化1个成员
+
+共用体可以嵌套在结构体内，甚至可以在结构体内定义一个共用体
 
 
 
+指针与地址
+
+```
+void main()
+{
+	int num = 10;
+	int data = 10;
+	printf("%d,%p\n%d,%p\n", num, &num, data, &data);
+	int *p;
+	scanf("%p", &p);
+	*p = 5;
+	printf("%d\n", *p);
+	int *pp;
+	int pdata;
+	scanf("%x", &pdata);
+	pp = (int*)pdata;
+	*pp = 10;
+	printf("%d\n", *pp);
+
+	system("pause");
+}
+```
+
+字符串数组与指针的差别
+
+```c
+void main()
+{
+    char *p = "asdfafgh";//p是一个指针，存储了常量字符转的地址
+    char str[10] = "asdsaasf";//str是一个数组，接收了常量字符串的赋值
+    printf("%s,%s",p,str);
+    printf("%d,%d",sizeof(p),sizeof(str) );
+    //*p = A;常量不可以修改
+    str[0] = "A";
+    printf("\n%s,%s",p,str);//数组变量可以修改
+}
+```
+
+```c
+double *p = NULL；
+//这个是指针地址为空
+double *p; *p=NULL;
+//这个是指针指向地址的数据为空
+```
+
+ 
+
+```c
+300500 double db = 10.9;
+400500 double *p = 300500
+500500 double **pp = &p// = 400500 
+       printf("%d",**pp)---->输出10.9
+       printf("%d",*pp)----->输出300500
+       printf("%d",pp)------>输出
+```
+
+```c
+//内存泄漏
+void main()
+{
+	while(1)
+    {
+        malloc(1024*1024*10);
+        Sleep(1000);
+    }
+}
+//使用内存而不释放，随着时间流逝会把内存耗尽
+```
+
+```c
+#include<stdio.h>
+
+//在使用字符数组时，数组长度最好长于字符串的长度
+//   '/0'的作用，起到一个结束符的作用
+void main()
+{
+	char a[5] = "hello";
+	printf("%s,%d\n", a, sizeof(a));
+	char b[6] = "hello";
+	printf("%s,%d\n", b, sizeof(b));
+	char c[] = "hello";
+	printf("%s,%d\n", c, sizeof(c));
+	system("pause");
+}
+```
+
+**注：*p++  等价于 *（p++），意味着自加操作的有限级高于星号**
+
+```c
+//删除字符
+void main()
+{
+	char str[20] = "hello,hailou ok";
+	char ch = 'o';
+	char *p = str;
+	while (*p != '\0')
+	{
+		if (*p == ch)
+		{
+			char *p1 = p;
+			char *p2 = p + 1;
+			while (*p2 != '\0')
+			{
+				*p1 = *p2;//字符串向前移动
+				p1++;//指针向前移动
+				p2++;//指针向前移动
+			}
+			*p1 = '\0';
+		}
+		else
+		{
+			p++;
+		}
+	}
+	printf("%s", str); 
+	system("pause");
+}
+```
+
+```C
+//有错，不知道哪错了TODO
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void main()
+{
+	char allstr[100] = "hello,hailou,hello,hailong,hello c";
+	char str[10] = "hello";
+	char *p;
+	while ((p = strstr(allstr, str)) != NULL)
+	{
+		int length = strlen(str);
+		char *p1 = p;
+		char *p2 = p + length;
+		while (*p2 != '\0');
+		{
+			*p1 = *p2;
+			p1++;
+			p2++;
+		}
+		*p1 = '\0';
+	}
+	printf("%s", allstr);
+	system("pause");
+}
+```
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 
+void execmd(char *cmd, char *result)
+{
+	char buffer[128] = { 0 };//定义一个字符缓冲区
+	FILE *pipe = _popen(cmd, "r");//创建一个管道，执行指令，把管道当做文件来处理  
+	if (pipe == NULL)
+	{
+		printf("运行失败");
+		return;
+	}
+	else
+	{
+		while (!feof(pipe))//判断是否到了文件末尾，没有就继续，feof到了文件末尾，返回非0，否则返回0
+		{
+			if (fgets(buffer, 128, pipe)); //读取文件到缓冲区
+			{
+				strcat(result, buffer);//链接字符串，将结构保存到result
+			}
 
+		}
+		_pclose(pipe);//关闭管道
+	}
 
+}
+void main()
+{
+	char output[8096] = { 0 };//定义了一个字符串，接受输出
+	execmd("tasklist", output);//执行指令，将结果保存到output
+	printf("%s", output);//输出结果
+	if(strstr(output,"QQ.exe") == NULL)
+	{
+        printf("\nQQ不存在")；
+	}
+	else
+	{
+        printf("\nQQ存在 ")
+	}
+	system("pause");
+}
+```
 
+```
+void mymemcpy(void *_Dst, const void *_src, unsigned int Size)//*constvoid *src,避免传入的字符串被意外修改
+{
+	char *tmp = _Dst;//用字符指针存储要被写入 内存首地址，所以按照字节来拷贝
+	const char *s = _Src;//用字符指针存储内存首地址，所以按照字节来拷贝
+	while(Size)
+	{
+        *tmp++ = *s++ ;
+	}
+	return _Dst;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 
 
