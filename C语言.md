@@ -4724,28 +4724,39 @@ void main()
 
 
 
-```
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
 void main()
 {
-    
-    FILE *fp;
-    char path[100] = "";
-    fp = fopen(path,"r");
-    if(fp ==NULL)
-    {
-        printf("failed");
-    }
-    else
-    {
-        printf("success");
-        char ch = fgetc(fp);
-        while(!feof(fp))
-        {
-            putchar = ch;
-            ch = fgetc(fp);
-        }
-        fclose(fp);
-    }
+
+	FILE *fp;
+	char ch;
+	char path[100] = "C:\\Users\\Administrator\\Desktop\\num.txt";
+	fp = fopen(path, "r");
+	if (fp == NULL)
+	{
+		printf("failed");
+	}
+	else
+	{
+		printf("success");
+		//char ch = fgetc(fp);
+		//while(!feof(fp))
+		//{
+		//    putchar = ch;
+		//    ch = fgetc(fp);
+		//}
+		do
+		{
+			ch = fgetc(fp);
+			putchar(ch);
+		} while (!feof(fp));//while(ch != EOF);
+
+		fclose(fp);
+	}
+	system("pause");
 }
 ```
 
