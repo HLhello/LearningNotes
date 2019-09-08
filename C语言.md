@@ -4297,3 +4297,455 @@ struct
 
 
 
+### 文件
+
+不是内存，不是CPU，都是外部介质
+
+   文件：存储在外部介质上的的数据的集合，是操作系统数据管理的单位
+
+ 文本文件与二进制文件
+
+文本文件按照ASCII码存储的，每一个字符都有一个ASCII对应
+
+二进制文件在存储数据方面效率比较高
+
+ 流的概念，使用了流就可以忽略文件如何读取，如何接受，只要指定从哪到哪就行
+
+缓冲文件系统
+
+文件缓冲区
+
+重定向
+
+1.exe > N.txt,该命令将程序输出输出到N.txt
+
+1.exe < N.txt,该命令将N.txt中的数据输入到1.exe
+
+这就是利用了缓冲区，本来要写到屏幕输出文件的，重定向到文本文件中  
+
+文本文件与二进制文件的区别，（Windows） 
+
+文本文件
+
+写入的时候文本会将换行符10\n，ASCII码解析为回车符,13\r，换行符10\n
+
+读取的时候将回车符和换行符解析成换行符
+
+二进制文件
+
+原样输入输出
+
+文本文件与二进制文件 linux中没有区别
+
+文件的处理方法及fflush
+
+在对函数进行操作时，并不是马上将操作执行到磁盘内，而是先写到缓冲区中，等文件关闭时一并写入磁盘，这样做的目的是避免频繁操作，损伤磁盘寿命
+
+fflush(文件指针)，该函数的作用是执行以后将文件缓冲区的操作立马写入磁盘  
+
+重定向以及文件扫描
+
+```
+void main()
+{
+	char buf[5] = { 10, 10, 10, 10, 10 };
+	FILE *pfa, *pfb;
+	char patha[40] = "C:\\Users\\Administrator\\Desktop\\a.txt";
+	char pathb[40] = "C:\\Users\\Administrator\\Desktop\\b.txt";
+	pfa = fopen(patha, "w");
+	if (pfa == NULL)
+	{
+		printf("cannot open file ");
+		exit(0);
+	}
+	else
+	{
+
+		fwrite(buf, 1, 5, pfa);
+		fclose(pfa);
+	}
+	pfb = fopen(pathb, "wb");
+	if (pfa == NULL)
+	{
+		printf("cannot open file ");
+		exit(0);
+	}
+	else
+	{
+
+		fwrite(buf, 1, 5, pfb);
+		fclose(pfb);
+	}
+	system("pause");
+}
+```
+
+
+
+```c
+void main()
+{
+    char  str[100] = {0};
+    fscanf(stdin,"%s",str);//扫描键盘文件输入
+    fprintf(stdout,"str = %s\n",str);//输出在屏幕文件中 
+    system(str);
+ 	//scanf,和printf 是fscanf和fprintf的特例，    
+}
+```
+
+文件型的结构体
+
+ 
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+	char ch = 0;
+	printf("当前获取的字符是%c\n", ch);
+	printf("缓冲区的有效数据是%d\n", stdin->_cnt);
+	printf("指向缓冲区的指针%p\n", stdin->_ptr);
+	printf("缓冲区的起始地址%p\n", stdin->_base);
+	printf("缓冲区的大小%d\n", stdin->_bufsiz);
+	ch = getchar();
+	printf("当前获取的字符是%c\n", ch);
+	printf("缓冲区的有效数据是%d\n", stdin->_cnt);
+	printf("指向缓冲区的指针%p\n", stdin->_ptr);
+	printf("缓冲区的起始地址%p\n", stdin->_base);
+	printf("缓冲区的大小%d\n", stdin->_bufsiz);
+	fflush(stdin);有效数据清零指整回到起始地址
+	printf("当前获取的字符是%c\n", ch);
+	printf("缓冲区的有效数据是%d\n", stdin->_cnt);
+	printf("指向缓冲区的指针%p\n", stdin->_ptr);
+	printf("缓冲区的起始地址%p\n", stdin->_base);
+	printf("缓冲区的大小%d\n", stdin->_bufsiz);
+	rewind(stdin);//文件回到开头，指针回到起始地址
+	stdin->_cnt = 0;//有效数据清零，缓冲区没有有效字符
+	stdin->_ptr = stdin->_base;//让文件当前指针指回到文件起始位置
+	printf("当前获取的字符是%c\n", ch);
+	printf("缓冲区的有效数据是%d\n", stdin->_cnt);
+	printf("指向缓冲区的指针%p\n", stdin->_ptr);
+	printf("缓冲区的起始地址%p\n", stdin->_base);
+	printf("缓冲区的大小%d\n", stdin->_bufsiz);
+
+	system("pause");
+} 
+```
+
+w文件操作步骤，
+
+打开，知道路径，分配缓冲区
+
+读写操作
+
+关闭 释放缓冲区，及资源
+
+stdin 标准输入文件指针，系统分配为键盘
+
+stdout 标准输出文件指针，系统分配为显示器
+
+stderr 标准错误输出文件指针，系统分配为显示器
+
+```c
+void main()
+{
+    printf("\nhello !!!!");
+    fprintf("stdout,"\n hello !!!!!");
+    //上面这两句话没有任何区别，fprintf函数不仅可以输出在stdout屏幕文件上，也可以输出在其他文件上
+    puts("hello");
+    fputs("hello",stdout);
+    //puts只是显示器的输出
+    //fputs可与会输出到任何文件
+    putchar('A');
+    fputc('A',stdout);
+	//putchar只是显示器的输出
+    //fputc可与会输出到任何文件
+            
+}
+```
+
+ 
+
+```
+void main()
+{
+	int num;
+	scanf("%d",&num);
+	printf("num=%d",num)
+	scanf(stdin,"%d",&num);
+	printf(stdout, "num=%d",num)
+}
+```
+
+
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+//stderr 错误文件
+//stderr 始终在显示器显示，stdout如果被重定向会写入到文件中
+void main()
+{
+	fprintf(stderr, "你遇到的错误是%s，重试次数是%d\n", "权限不够",3);
+	fprintf(stdout, "你遇到的错误是%s，重试次数是%d\n", "权限不够", 3);
+	system("pause");
+}
+```
+
+
+
+处理宽字符putw，getw
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	int w = _getw(stdin);//从键盘获取输入四个字节
+
+	_putw(w, stdout);//显示器输出
+	putchar(10);
+	//可以输出两个汉字，一个汉字两个字节，int用于容纳两个汉字的二进制，
+	//输入1,2，两个字符加两个回车符，回车会被当做1个字符
+	_putw(97,stdout);//后面有三个字节的空字符
+	putchar(10);
+	putchar(97);putchar(97);putchar(97);putchar(97);
+	//对比后发现一个_putw输出四个字符
+	system("pause");
+}
+```
+
+
+
+文件打开模式
+
+r代表read w代表write a代表追加 b代表二进制  +代表可读可写  t代表text
+
+注：文件操作为r时，该文件必须存在，不存在打开失败
+
+注：文件操作为w时，若文件存在该文件的内容会被清空，若文件不存在会新建文件
+
+注： 文件操作为a时，文件不存在会建立文件，文件存在，写入的数据会被加到文件尾，即原文件的数据不清空 
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	char path[40] = "";
+    FILE *fp;
+    fp = fopen(path,"r");
+    if(fp == NULL)
+    {
+        printf("文件打开失败");
+    }
+    else
+    {
+        printf("file has opend");
+        while(!feof(fp))
+        {
+            char ch = fgetc(fp);
+            putchar(ch);
+        }
+        int res = fputc('A',pf);
+        if(res == -1)
+        {
+            printf("failed write");
+        }
+        else 
+        {
+            printf("success write");
+        }
+        fclose(fp); 
+    }
+    
+}
+```
+
+
+
+```c
+//access
+void main()
+{	
+	//_access 函数的参数：0判断是否存在，2判断是否存在，4判断是否可读，6判断是否可读可写
+    printf("%d",_access("文件夹路径"，0))；//如果返回值为非0 则证明文件夹不存在
+    //windows文件夹基本都是可读可写
+    printf("%d",_access("文件路径"，0))；
+    //返回非0值表示文件不存在
+}
+```
+
+
+
+fclose每打开一个文件，就要关闭一个文件
+
+不关闭文件的后果
+
+```c
+#include<stdio.h>
+void main()
+{
+    FILE *pf;
+    char path[40] = "路径";
+    pf = fopen(path,"w");
+    if(pf == NULL)
+    {
+        pringf("cannot open ")
+    }
+    else
+    {
+        char ch = getchar();
+        while(!feof(pf))//使用ctrl+z可以强制停止文件输入
+        {
+            fputc(ch, pf);
+            ch = getchar();
+        }
+        fclose(pf);//fclose有一个动作就是将文件缓冲区的内容，写入到文本，如果程序意外关闭，没有调用fclose，文件数据丢失
+        //而且如果没有调用fclose，也不能使用ctrl+z关闭文件
+    }
+}
+```
+
+
+
+按照内存块的方式读写文件
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+
+void main()
+{
+	int num[100];
+	for (int i = 0; i<100; i++)
+	{
+		num[i] = i;
+	}
+	FILE * pf;
+	pf = fopen("C:\\Users\\Administrator\\Desktop\\num.txt", "wb");
+	
+	if (pf == NULL)
+	{
+		printf("cannot open file");
+	}
+	else
+	{
+		int res = 0;
+		res = fwrite(num,sizeof(int),100,pf);
+		//res写成功多少个
+		//第一个参数表示写入内容块的首地址
+		//第二个参数写入内容元素的大小
+		//第三个参数写多少个元素
+		//第四个参数写入到哪个文件
+		if (res == 100)
+		{
+			printf("write success");
+		}
+		else
+		{
+			printf("写入失败");
+		}
+		fclose(pf);
+	}
+
+	system("pause");
+}
+```
+
+
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	int num[100];
+	for (int i = 0; i<100; i++)
+	{
+		num[i] = i;
+	}
+	FILE *pf;
+	pf = fopen("C:\\Users\\Administrator\\Desktop\\num.txt", "rb");
+	if (pf == NULL)
+	{
+		printf("cannot open file");
+	}
+	else
+	{
+		int res = 0;
+		res = fread(num, sizeof(int), 100, pf);//读取文件写入内存
+		if (res == 100)
+		{
+			printf("read success");
+		}
+		else
+		{
+			printf("read failed");
+		}
+		for (int i = 0; i<100; i++)
+		{
+			printf("\nnum[%d] = %d", i, num[i]);
+		}
+
+		fclose(pf);
+	}
+	system("pause");
+}
+```
+
+
+
+在cmd命令行中可以使用type路径，以及文件名查看文本
+
+ 
+
+```c
+//传统做法
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	char path[100] = "C:\\Users\\Administrator\\Desktop\\num.txt";
+	char showcmd[200];
+	sprintf(showcmd, "type %s", path);
+	system(showcmd);
+	system("pause");
+
+}
+```
+
+
+
+```
+void main()
+{
+    
+    FILE *fp;
+    char path[100] = "";
+    fp = fopen(path,"r");
+    if(fp ==NULL)
+    {
+        printf("failed");
+    }
+    else
+    {
+        printf("success");
+        char ch = fgetc(fp);
+        while(!feof(fp))
+        {
+            putchar = ch;
+            ch = fgetc(fp);
+        }
+        fclose(fp);
+    }
+}
+```
+
