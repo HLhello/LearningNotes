@@ -4760,3 +4760,487 @@ void main()
 }
 ```
 
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+
+
+char * reverse_string(char* s)
+{
+	int n = 0;
+
+	while (*(s+n) !='\0')
+	{
+		n++;
+	}
+	printf("%d", n);
+	for (int i = 0; i<n / 2; i++)
+	{
+		char temp = s[i];
+		s[i] = s[n-i-1];
+		s[n - i - 1] = temp;
+	}
+	
+	for (int i = 0; i < n; i++)
+	{
+		printf("%c", *(s+i));
+	}
+	return s;
+}
+
+
+void main()
+{
+	char * s = "This is a test";
+	//char s[80] = "This is a test";
+	printf("%s", s);
+	char *rev_s = reverse_string(s);
+	
+
+	system("pause");
+}
+```
+
+
+
+
+
+按照格式化的方式读写文件
+
+```
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+	fprintf(stdout,"%s%d","珠峰的高度是"，8848);
+	char str[100];
+	int num;
+	scanf("%s%d"str,num);//从键盘获取输入
+	printf("str = %s,num = %d",str,num);
+	scanf(stdin,"%s%d"str,num);//从键盘文件获取输入
+	printf("str = %s,num = %d",str,num);
+	
+	
+    system("pause");
+}
+```
+
+```c
+void main()
+{
+    FILE *fp;
+    fp = fopen("","w");
+    if(fp == NULL)
+    {
+        printf("cannot open file");
+        exit(0);
+    }
+    else
+    {
+        for(int i=0;i<10;i++)
+        {
+        	//格式化字符串写入数据
+            fprintf(fp,"%s%d","珠峰的高度是",i);	
+        }
+    }
+    fclose(fp);
+    system("pause");
+}
+```
+
+
+
+```c
+void main()
+{
+    FILE *fp;
+    fp = fopen("","r");
+    if(fp == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+    	char str[100];
+    	int num =0;
+    	while(!feof(pf))//文件没有到末尾，返回值为0
+    	{	//scanf需要回车来作为间隔读取数据，尤其是字符串必须回车
+    	//字符串没有回车，无法获取后续的数据 
+        	fscanf(fp,"%s\n%d\n",str, &num);
+        	printf("str = %s,num = %d",str,num )
+    	}
+    	fclose(fp);
+    }
+    
+}
+```
+
+
+
+```c
+//如何检测错误
+//ferror函数
+void main（）
+{
+	FILE *fp;
+	fp = ("lujing","r");
+	if(fp == NULL)
+	{
+        printf("cannot open file");
+        exit(0);
+	}
+	else
+	{
+        printf("success");
+        fputs("the under sky heros")
+        if(ferror(fp)==0)
+        {
+        	printf("all right"); 
+        }
+        else
+        {
+            printf("error opeation");
+        }
+	}
+
+    system（"pause");
+    
+}
+```
+
+
+
+```c
+void main()
+{
+    char psth[80] = "lujing ";
+    FILE fp =fopen(path,"w");
+    //this file only read,so,the program will interupt
+    //creat a pointer for the path file
+    if(fp == NULL)
+    {
+        printf("cannot open file");
+        exit(0);
+        perror("the error is:");
+    }
+    else
+    {
+    	//if a pointer for file was null,cannot writen,and cannot read
+        //fputs("hello",fp);
+        //fclose(fp);
+    }
+    
+}
+```
+
+
+
+```c
+//clearerr function deal with error with file's pointer
+void main()
+{
+    FILE *pf = fopen("path of only read","w");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+        perror("the error is:");
+    }
+    else
+    {
+        fputs("hello world",pf);
+        rewind(pf)//reset the pf to the top of file
+        char ch = fgetc(pf);
+        if(ch = EOF)//EOF:end of file
+        {//判断是否到了文件末尾
+            if(feof(pf))//如果返回非零值则说明到达文件末尾
+            {
+                printf("the end of file");
+                clearerr(pf);//重置文件流状态
+            }
+            if(ferror(pf))//判断是否是出错的如果出错使用clearerr函数重置文件流状态
+            {
+                printf("this opeation is not right");
+                clearerr(pf);//重置文件流状态
+            }//如果不重置状态，那么文件还是有错的所以还会执行下面的if语句
+            if(ferror(pf))
+            {
+                printf("this opeation is not right");
+                clearerr(pf);//重置文件流状态
+            }
+        }
+        fclose(pf)
+    }
+    
+    
+}
+```
+
+
+
+
+
+文件只读使用写的方式打开就会出错
+
+在写的状态下读写就会出错，如何判断文件是出错停止还是文件到末尾停止使用两个函数feof（pf）,fclearerr(fp)
+
+clearerr(pf)重置文件流状态
+
+
+
+
+
+文件定位
+
+rewind（FILE*fp），让文件指针回道文件开头
+
+```c
+void main()
+{
+    FILE *pf;
+    pf = fopen("path","r");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            putchar(ch);
+        }
+        rewind(pf);
+        char str[100] = {0};
+        while(fgets(str,100,pf)!=NULL)
+        {
+            printf("%s",str);
+        }
+        fclose(pf);
+        
+    }
+    system("pause");
+}
+```
+
+
+
+
+
+ftell函数，得到文件指针的当前位置
+
+```
+void main()
+{
+     FILE *pf;
+    pf = fopen("path","r");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            if(ch == 'a')
+            {
+            	int length = ftell(pf)
+                printf("\n\nfind o,距离开头%d个字节\n\n",length )
+            }
+            putchar(ch);
+        }
+        int size = ftell(pf);//到了文件末尾可以回去文件大小
+        rewind(pf);
+        char str[100] = {0};
+        while(fgets(str,100,pf)!=NULL)
+        {
+            printf("%s",str);
+        }
+        fclose(pf);
+        
+    }
+    system("pause");
+}
+```
+
+
+
+
+
+```c
+void main()
+{
+    FILE *pf;
+    pf = fopen("path","r+");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+     	printf("success");
+        fseek(pf,0,SEEK_END);
+        fputs("////锄禾日党务")；
+    }
+```
+
+
+
+
+
+文本文件换行解析为两个字符，linux下是正常的
+
+ 移动指针 的函数fsee，可以移动到指定的字节
+
+```c
+void main()
+{
+    FILE *pf;
+    pf = fopen("path","r+");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+        printf("文件打开成功");
+        //移动到尾部进行写入
+        fseek(pf,0,SEEK_END);
+        fputs("锄禾日党务",pf);//五个汉字十个字节
+        fflush(pf);//将缓冲区的问价能立刻写入到文件
+        fseek("汗滴禾下土",pf);//将锄禾日当午替换为汗滴禾下土
+        fclose(pf);
+    }
+}
+```
+
+
+
+
+
+```c
+//读取后面几个字节
+void main()
+{
+        FILE *pf;
+    pf = fopen("path","r+");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+        printf("文件打开成功");
+        //移动到尾部进行写入
+        fseek(pf,8,SEEK_SET);
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            putchar(ch);
+        }
+        fseek(pf,0,SEEK_SET);
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            putchar(ch);
+        }
+        rewind(pf);
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            if(ch == 'b');
+            {
+       			 fseek(pf,-3,SEEK_CUR);         
+                fput('1',pf);
+                fput('1',pf);
+                fput('1',pf);
+       			break;         
+            }
+        }
+       rewind(pf);
+        while(!feof(pf))
+        {
+            char ch = fgetc(pf);
+            if(ch == 'm');
+            {
+       			fseek(pf,1,SEEK_CUR);         
+                fput('1',pf);
+                fput('2',pf);
+       			break;         
+            }
+        }
+        fclose(pf);
+    
+}
+```
+
+
+
+fseek修改二进制文件
+
+```c
+void main()
+{
+        FILE *pf;
+    pf = fopen("path","r+");
+    if(pf == NULL)
+    {
+        printf("cannot open file");
+    }
+    else
+    {
+    	printf("success");
+    	double db[10] = {1.1,2.2,3.3,4.4,5.5,6.6,7.7,8.8,9.9,10.
+    	10}
+    	
+    	fwrite(db,sizeof(double),10,pf);
+    	rewind(pf);
+    	{//修改最后一个字节
+            fseek(pf,-8,SEEK_END);
+            double data = 1000.10;
+            fwrite(&data,sizeof(double),1,pf);
+    	}
+    	rewind(pf);
+    	double dbr[10] = {0};
+    	fread(dbr,sizeof(double),10,pf);
+    	for(int i=0;i<10;i++)
+    	{
+            printf("%f\n",dbr[i]);
+    	}
+    	fclose(pf);
+    }
+```
+
+
+
+C语言删除文件
+
+```c
+void main()
+{
+    char *Filename = "path"
+    int res =remove(Filename);//删除文件，传入路径
+    printf("%d",res)
+    if(res == 0)
+    {
+        printf("remove success");
+    }
+}
+
+```
+
+
+
+```
+#inlcude<io.h>
+void main()
+{
+    char path[100] = "C:\\XXXXXX";_mktmp修改的目标，后面六个是格式会生成X
+    char *newname = _mktemp(path);//传入路径，根据模板生成唯一的目录名 
+    printf("%s,%s",newname,path);
+    char cmd[100];
+    sprintf(cmd,"md %s",path);
+    system(cmd);
+}
+```
+
