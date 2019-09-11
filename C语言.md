@@ -5244,3 +5244,360 @@ void main()
 }
 ```
 
+\
+
+```c
+//统计文件中各种字符的个数
+void main()
+{
+    char path[100]  = "path";
+    FILE *pf;//创建文件指针
+    pf = fopen(path,"r");//打开文件，
+	if(pf == NULL)
+    {
+        printf("cannot open file");
+        exit(0);
+    }
+    else
+    {
+        char ch;
+        int numA = 0;
+        int numa = 0;
+        int num0 = 0;
+        int numn = 0;
+        int numo = 0;
+        int numk = 0;
+        while ((ch = fgetc(pf)) !=EOF)
+        {
+            if(ch>='A'&&ch<='Z')
+            {
+                numA++;
+            }
+            else if(ch>='a'&&ch<='z')
+            {
+                numa++;
+            }
+            else if(ch>='0'&&ch<='9')
+            {
+                num0++;
+            }
+            else if(ch = '\n')
+            {
+                numn++;
+            }
+            else if(ch = ' ')
+            {
+                numk++;
+            }
+            else
+            {
+                numo++;
+            }
+        }
+        printf("%d,%d,%d,%d,%d,%d",numA,numa,num0,numn,numk,num0);
+        fclose(pf);
+    }
+	system("pause");
+}
+```
+
+
+
+
+
+
+
+编程实现搜索文件
+
+```
+void main()
+{
+	char path[100] = "搜索的目录";
+	//搜索文件名用的通配符，*.txt代表任何文本
+	//1.*代表开头的任何文件，
+	//*.*代表任何文件
+	//1.txt代表精确查找
+	char filename[30] = "*.txt";
+	//保存输出结果的文件
+	char putputpath ="结果保存的文件";
+	char = cmd[512];
+	sprintf(cmd,"for /r \"%s\" %%i in (%S) do @echo %%i >> \"%s\"",path,filename,outputparth);
+	system(cmd);
+	char show(200);
+	sprintf(show, "type %s",outputpath);  
+	system("show");
+    system("pause");
+}
+```
+
+在cmd中检索文件
+
+for /r 检索文件夹路径 in %i  (*.txt) do @echo %i
+
+for 循环
+
+/r 按照路径搜索
+
+检索文件的路径
+
+%i  (*.txt)  每一个txt文件
+
+do 执行
+
+@echo 输出
+
+ %i 输出文件路径
+
+for /r 检索文件夹路径 %a in (*) do @ findstr / im "关键词"  "%a"
+
+for 
+
+ /r
+
+检索文件夹路径 
+
+%a in (*) 
+
+do
+
+ @ findstr / im "关键词" 
+
+"%a"
+
+ 在C语言中 
+
+```c
+sprintf(cmd,"for /r %s %%a in (*) do @findstr /im \"%s\" \"%%a\">> %s",path,str,outputpath)
+```
+
+ 输出%需要两个%连在一起 
+
+
+
+如何统计一段文本有多少汉字
+
+一个汉字两个字节
+
+```c
+void main()
+{
+    printf("%d",sizeof("我"));//输出为3，因为还有'\0'
+    printf("%d",sizeof("我是"));//输出为5
+    char str[5] = "我的";
+    //"%c%c"字符连载一起可以输出，"%c %c"不行，中间有空格
+    printf("%c%c",str[0],str[1]);//可以成功输出我
+    
+    
+}
+```
+
+
+
+```c
+void main()
+{
+    FILE *fp;
+    fp = fopen("path","r");
+    if(fp == NULL)
+    {
+        printf("cannot open file"))
+    }
+    else
+    {	
+        //获取字符，fgetc的返回值是int，不用int，ASCII码没有问题，但是汉字就会出现问题
+        //int 占四个字节，用int存储汉字的编码
+        //使用char就不行哈
+        int  ich;//获取字符
+        int nume = 0;//标记多少个英文字符
+        int num0 = 0;//标记多少个数字
+        int numc = 0;//标记多少个汉字
+        while((ch = fgetc(fp))!=EOF)
+        {
+            
+            if((ich>='A'&&ich<='Z')||(ich>='a'&&ich<='z'))
+            {
+                nume++;
+            }
+            else if(ich>='0'&&ich<='9')
+            {
+                num0++;
+            }
+            else if(ich >128)
+            {
+                ich = fgetc(pf);
+                numc++;//双字符自增
+            }
+              
+        }
+        printf("%d,%d,%d",nume,num0,numc);
+    }
+    system("pause");
+}
+```
+
+
+
+
+
+```c
+void main()
+{
+    FILE *fp;
+    fp = fopen("path","r");
+    if(fp == NULL)
+    {
+        printf("cannot open file"))
+    }
+    else
+    {	
+        //获取字符，fgetc的返回值是int，不用int，ASCII码没有问题，但是汉字就会出现问题
+        //int 占四个字节，用int存储汉字的编码
+        //使用char就不行哈
+        int  ich;//获取字符
+        int nume = 0;//标记多少个英文字符
+        int num0 = 0;//标记多少个数字
+        int numc = 0;//标记多少个汉字
+        while((ch = fgetc(fp))!=EOF)
+        {
+            
+            if((ich>='A'&&ich<='Z')||(ich>='a'&&ich<='z'))
+            {
+                nume++;
+            }
+            else if(ich>='0'&&ich<='9')
+            {
+                num0++;
+            }
+            else if(ich >128)
+            {
+            	//G BK编码
+				intiwh = fgetc(pf);
+				if(ich>=0x81&&ich	)
+            }
+              
+        }
+        printf("%d,%d,%d",nume,num0,numc);
+    }
+    system("pause");
+}
+```
+
+ 
+
+文件加密解密
+
+```c
+void jia()
+{
+    FILE *pfr;//
+    FILE *pfw;//
+    char pathr[100] = "pathr\\1.txt";
+    char pathw[100] = "pathr\\1jia.txt";
+    pfr = fopen(pathr,"r");
+    pfw = fopen(pathw,"w");
+    if(pfr == NULL||pfw ==NULL)
+    {
+        printf("cannot open file");
+        return
+    }
+    while (!feof(fpr))
+    {
+        char ch = fgetc(pfr);
+        ch = ch +1;
+        fputc(ch,pfw);
+    }
+	fclose(pfw);
+	fclose(pfr);
+	
+}
+void main()
+{
+    jia();
+}
+```
+
+```错、
+//异或加密
+void jia(int pass)
+{
+    FILE *pfr;//
+    FILE *pfw;//
+    char pathr[100] = "pathr\\1.txt";
+    char pathw[100] = "pathr\\1jia.txt";
+    pfr = fopen(pathr,"r");
+    pfw = fopen(pathw,"w");
+    if(pfr == NULL||pfw ==NULL)
+    {
+        printf("cannot open file");
+        return
+    }
+    while (!feof(fpr))
+    {
+        char ch = fgetc(pfr);
+        //异或加密
+        ch = ch^pass
+        fputc(ch,pfw);
+    }
+	fclose(pfw);
+	fclose(pfr);
+	
+}
+```
+
+
+
+```c
+//字符串加密
+//加密最好按照二进制的方式加密保证绝对精却
+//文本方式解析会出错
+void jia(char pass,int length)
+{
+    FILE *pfr;//
+    FILE *pfw;//
+    char pathr[100] = "pathr\\1.txt";
+    char pathw[100] = "pathr\\1jia.txt";
+    pfr = fopen(pathr,"rb");
+    pfw = fopen(pathw,"wb");
+    if(pfr == NULL||pfw ==NULL)
+    {
+        printf("cannot open file");
+        return
+    }
+    while (!feof(fpr))
+    {
+        char ch = fgetc(pfr);
+		//如果加密数组完成，就继续重新开始
+		if(i>length-1)
+		{
+            i=0; 
+		}
+		ch = ch +pass[i]//字符的移位加密
+		i++；
+		
+    }
+	fclose(pfw);
+	fclose(pfr);
+	
+}
+```
+
+
+
+移位加密
+
+ch = ch + pass
+
+ch = ch - pass
+
+异或加密
+
+ch = ch ^pass
+
+ch = ch^pass
+
+字符串加密
+
+传入字符串和字符串密码的长度
+
+加密按照二进制加密
+
