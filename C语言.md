@@ -5601,3 +5601,170 @@ ch = ch^pass
 
 加密按照二进制加密
 
+ 
+
+文件中检索字符串
+
+```c
+void main()
+{
+    char str[30] = "date";//查找的字符串
+    char path[50] = "path";//查找文件的路径
+    char cmd[150];
+    sprintf(cmd,"find /n  \"%s\"  \"%s\"",str,path)
+    system(cmd);
+}
+```
+
+find   /N   [检索字符串]【drive】【path】【filename】
+
+在linux中  使用
+
+grep -n “检索的字符串”  “文件路径”、
+
+
+
+dos命令窗下   dir 文件目录
+
+删除目录  dos  rd
+
+临时文件
+
+
+
+```c
+void main()
+{
+    FILE *tempfile
+    ptemp = tempfile()
+    if(ptemp == NULL)
+    {
+        printf("cannot open file");
+        return;
+    }
+    fputs("hahahahahha",ptmp);
+    revwind(ptemp);
+    char str[512];
+    fgets(str,512,ptemp);
+    put(str);
+    fclose(tempfile);
+    system("pause");
+}
+```
+
+
+
+临时文件用完了自动删除的文件
+
+
+
+
+
+### 指针与数组名
+
+```从、
+void test()
+{
+    char *p1;
+    int *p2;
+    double *p3;
+    printf("p1=%d,p2=%d,p3=%d",sizeof(p1),sizeof(p2),sizeof(p3));
+    printf("\n*p1=%d,*p2=%d,*p3=%d",sizeof(*p1),sizeof(*p2),sizeof(*p3));
+}
+
+void main()
+{
+    int a[3][4] = {1,2,3,4,5,6,7,8,9,10,11,12};
+    printf("%p",a);//数组名存储数组的首地址
+    //数组名是一个常量，不可以修改
+    printf("\na = %p, &a = %p,*a = %p",a,&a,*a);
+    printf("\na = %d, &a = %d,*a = %d",sizeof(a),sizeof(& a),sizeof(*a));
+    
+    
+}
+```
+
+
+
+四维数组
+
+```c
+void main()
+{
+    int a[2][3][4][5];
+     printf("\n%p,a);
+    printf("\n%d",sizeof(a));
+    printf("\n%d",sizeof(a)/sizeof(int));
+    for (int *p = &a[0][0][0][0],i=0;p<&a[0][0][0][0]+120;p++,i++)
+    *p = i;
+    for(int i=0;i<2;i++)
+    {
+        for(int j=0;j<3;j++)
+        {
+            for(int k=0;k<4;k++)
+            {
+                for(int l=0;l<5;l++)
+                {
+                    printf("%7d",a[i][j][k][l]);
+                    printf("%7d",*(*(*(*(a+i)+j)+k)+l)）
+                }
+            }
+        }
+    }
+    
+}
+```
+
+
+
+指针数组
+
+```c
+void main()
+{
+    char *p[5]  = {"calc","notepad","tasklist","mspaint"	,"write"};
+    printf("%d\n",sizeof(p));//输出20个字节
+   for(int i =0;i<5;i++) 
+   {
+       printf("%s   %c\n",p[i],*p[i]);
+       //*p[i] = 'l';字符串是常量不可以被赋值
+   }
+   //冒泡排序
+   for(int i=0;i<5-1;i++)
+   {
+       for(int j=0;j<5-1-i;j++)
+   		if(*p[j]>p[j+1])
+   		{
+            char *pt;
+            pt = p[j];
+            p[j] = p[j+1];
+            p[j+1] = pt;//交换两个指针
+   		}
+   }
+      for(int i =0;i<5;i++) 
+   {
+       printf("%s   %c\n",p[i],*p[i]);
+       //*p[i] = 'l';字符串是常量不可以被赋值
+   }
+    
+}
+```
+
+
+
+二维数组与指针的区别
+
+ 二维数组是的长度是固定的，恶意修改
+
+指针数组是不固定的，指针数组是记录了字符串开始的首地址，指向的是一个常量，不能修改
+
+二维数组用于字符串固定的情况，同时字符串需要修改的情况
+
+指针数组用于字符串不需要修改，
+
+顺序要调整的情况
+
+二维数组地址不可以变换，数据可以变化
+
+指针数组，指向的数据不可以变化，地址可以变化
+
