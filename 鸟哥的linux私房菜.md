@@ -277,8 +277,51 @@
   - 例先进入/var/spool/mail/目录，在进入/var/spool/cron/
       - 1： cd /var/spool/mail
     - 2： cd ../cron
-- 
-
-
-
-​       
+  - 相对路径是指相对于目前的工作目录的路径
+  - 相对路径在某些情况下是比较放便，但是绝对路径保证任何时候路径都是正确的
+  
+  
+  - cd change directory变换目录
+  - pwd print working directory 显示当前路径
+  - mkdir  make directory创建一个新目录
+  - rmdir remove directory删除一个目录
+  - 一般登录linux系统后都会在自己的家目录下
+  - 使用mkdir创建新目录时，默认情况下是要一层一层的创建目录
+	- 使用 -p这个参数可以创建父目录
+  - 关于可执行文件路径的变量 $PATH
+  - 复制cp移动mv和删除rm
+  - 在默认的条件中，cp的来源文件与目的文件的权限是不同的
+	- 准确的说如果root使用一般命令复制的文件，文件的所有者仍然是root账户
+	- 而目的文件的使用者不是root，并没有root权限，所以在复制文件时要注意保证目的文件的使用者可以正常使用文件
+  - mv可以移动文件，也可以将文件重命名，如果要移动多个文件，最后一个是目录
+  - 文件内容查询
+	- cat tac less more head tail
+  - touch有修改文件时间的功能
+    - 当然也能用来创建一个文件
+  - 文件与目录的默认权限与隐藏权限
+    - umask就是指定目前使用者在创建文件或者目录时或的权限默认值
+	- 设置文件的默认权限，umask xyz  就可以设置文件的权限
+  - 文件的隐藏权限 SUID  SGID  SBIt
+	- 上述三个权限分别对应421，
+	- suid针对user，sgid针对群组，sbid针对文件
+    - suid代表党使用者执行binary程序时没在执行过程中使用者会暂时具有程序拥有者的权限
+	- sgid代表使用者在这个目录下面新建的文件之群组都会与该目录的群组名称相同
+	- sbit代表在该目录下使用者创建的文件只有自己与root能够删除
+  - 利用file指令来查看文件的类型
+	- 文件类型 ASCII,Binary,data
+  - 指令与文件的搜索
+    - 一般我们不常使用find命令，因为find命令特别费硬盘
+	- 所以我们一般先使用whereis或者locate来检查
+	- locate在使用时直接在后面输入文件的部分名称
+  - 时间参数atime，ctime，mtime
+    - access time（atime） statustime（ctime）  modificationtime（Mtime）
+  - TODO page，340，exercise
+  
+  
+  
+  
+  
+  
+  - 
+  
+	
