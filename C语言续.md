@@ -179,4 +179,176 @@ void main()
 }
 ```
 
- 
+ ### 函数高级
+
+函数副本机制
+
+```c
+//在编译一次，TODO
+#include<stdio.h>
+#include<stdlib.h>
+void change(int num)
+{
+	num = 8;
+	printf("\nchange num = %d", num);
+	printf("\nchange = %p", &num);
+}
+
+void changep(int *num)
+{
+	* num = 7;
+	printf("\nchangep num = %d", num);
+	printf("\nchangep = %p", &num);
+}
+void main()
+{
+	int num = 10;
+	printf("\nnum = %d", num);//输出10
+	printf("\nmain = %p", &num);
+
+	num = 9;
+	printf("\nnum = %d", num);//输出9
+	printf("\nmain = %p", &num);
+	
+	change(num);
+	printf("\nnum = %d", num);//输出为多少？
+	
+	changep(&num);
+	printf("\nnum = %d", num);//输出为多少？    
+	
+	system("pause");
+}
+```
+
+  指针也有副本机制
+
+无论传递什么参数，函数都有副本机制
+
+改变一个变量，需要传入变量的地址
+
+改变一个指针变量，需要指针变量的地址
+
+### 结构体数组组作为函数参数
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+struct csdn
+{
+	char user[40];
+	char passward[40];
+	char email[40];
+
+};
+
+
+// void find(struct csdn cdata[5], char *str) 
+void find(struct csdn *cdata[5], char *str)
+{
+	printf("\nfind中cdata占%d个字节",sizeof(cdata));
+	for (int i = 0; i<5; i++)
+	{
+		if (strcmp(cdata[i].user, str) == 0)
+		{
+			printf("\n找到 %s, %s, %s", cdata[i].user, cdata[i].passward, cdata[i].email);
+		}
+		else
+		{
+			printf("\nnot find");
+		}
+	}
+
+}
+
+
+void main()
+{
+	struct csdn cdata[5] = { { "hello", "1945452344", "asdfasweedf@qq.com" },
+	{ "hasdflo", "194542454", "asdfasdddtf@qq.com" },
+	{ "hxcvlo", "19454567754", "asdfajklhsdf@qq.com" },
+	{ "hewelo", "1941215454", "asdertfasdf@qq.com" },
+	{ "hsdllo", "1945456784", "dfasdf@qq.com" } };
+	for (int i = 0; i<5; i++)
+	{
+		printf("%s %s %s\n", cdata[i].user, cdata[i].passward, cdata[i].email);
+
+	}
+	printf("\ncdata占%d个字节",sizeof(cdata));
+	printf("\nstruct csdn占%d个字节",sizeof(struct csdn));
+	printf("\n\n\n");
+	find(cdata, "hewelo");
+	system("pause");
+}
+```
+
+
+
+ return局部变量
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+//函数的参数，函数内部定义的局部变量，函数执行完成的时候，就会被操作系统回收
+//内存会被其他程序所用
+void go(int num)
+{
+    int x = 10;
+    printf("\nnum = %d,x = %d",num,x);
+    printf("\n&num = %p,&x = %p",&num,&x);
+    
+}
+void main()
+{
+	go(3);
+	printf("hello");
+    system("pause");
+}
+```
+
+return副本机制
+
+```c
+//函数的参数，还有定义的临时变量，函数执行完成之后都会被函数回收给其他函数用
+//函数的返回值有副本机制，也就是编译器自动将返回值赋值一份，所以即使函数运行完成，即使函数运行完成，函数变量回收，值仍然正确
+int sum(int a,int b)
+{
+    int c = a+b;
+    priontf("%d,%p",c,&c);
+    return c;
+}
+void main()
+{
+    int num = sum(1,2);
+    printf("%d",num); 
+    
+}
+```
+
+函数返回值声明周期
+
+```c
+#include<stdio.h>
+#include<stdllib.h>
+int add(int a,int b)
+{
+    int z = a+b;
+    return z;//插入断点
+}
+int print(int num)
+{
+    printf("%p",&num)
+    return num;
+}
+//如果返回全局变量，变量会一直存在   
+void main()
+{
+    printf("%d",add(1,2));//为什么返回值已经被销毁，还能输出
+    //这是由于返回值的副本机制，返回的时候，另外在保存一份，
+    //插入断点
+    printf("%d",print(188));
+    printf("\n\n");
+    printf
+}
+```
+
