@@ -352,3 +352,202 @@ void main()
 }
 ```
 
+
+
+
+
+跨函数使用内存
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+//不要返回指向栈内存的指针
+//栈返回的时候内容会被清除
+//凡是没有用到malloc并且在函数内部定义分配数组或者变量都是栈
+char *getmum()
+{
+	char str[100] = "123456789";
+	//栈上，系统自动分配自动回收
+	//函数调用的时候分配，函数结束的时候回收
+    char *p = str;//存储数组的首地址
+	//插入断点
+    return  p;
+}
+
+void main()
+{
+	char *pstr = NULL;//定义一个空指针
+    //插入断点
+	pstr = getmum();//获取内存的首地址
+	//插入断点
+    if (pstr != NULL)
+	{
+        //插入断点
+		strcpy(pstr, "hello world");//拷贝成功了
+        //插入断点
+		printf("%s", pstr);//调用printf的时候内存被自动回收了，所以无法显示
+        //插入断点
+	}
+	system("pause");
+}
+```
+
+关于栈和堆的理解
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+char *getmum()
+{
+	//动态分配的内存只有自己能回收
+	char *p = (char *)malloc(100);//指针转换
+    for(int i=0;i<100;i++)//对内存实现清零
+    {
+        p[i] = 0;
+    }
+
+	return  p;
+}
+void main()
+{
+	char *pstr = NULL;
+	//插入断点
+	pstr = getmum();//
+	//插入断点
+	if (pstr != NULL)
+	{
+		//插入断点
+		strcpy(pstr, "hello world");//
+		//插入断点
+		printf("%s", pstr);//
+		//插入断点
+	}
+    free(pstr);//回收内存
+	system("pause");
+
+}
+```
+
+只读存储区
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void main()
+{
+	char*p = "hello china";//定义一个指针，存储只读存储区字符转的地址
+	printf("%d,%d",sizeof(p),sizeof("hello china"));//输出失身么
+	//*p='A';只读存储区只能读不能写
+	system("pause");
+}
+char * getmum()
+{
+	//这片内存在静态存储区，不会被回收
+	//p会被回收
+    char *p = "hello china,hello hello";
+    printf("%p", p);
+    //return有副本机制
+    return p;
+}
+void main()
+{
+    char *pstr = getmum()
+    printf("%s",pstr);
+    //*pstr='A';只读存储区不能输入
+    system("pause");
+}
+```
+
+函数返回的指针不能指向栈内存
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+int* go()
+{
+    int a = 10;//a在栈上
+    printf("%p",&a);
+    int *p = &a;
+    return p;
+}
+void main()
+{
+	int *px = go();//获取指针
+	printf("%d",*px);//输出数值
+	printf("\n");//栈自动回收利用了内存
+	printf("%d",*px);//不能正确输出
+	system("pause");
+}
+int* goN()
+{
+    int a[5] = {1,2,3,4,5};//a在栈上
+    printf("%p",&a);
+    int *p = &a;
+    return p;
+}
+void main()
+{
+	int *px= goN();
+    for(int i = 0;i<5;i++)
+    {
+        printf("%d",*(px+i));
+    }
+    system("pause");
+}
+```
+
+函数返回值应该指向堆
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+char *getccc()
+{
+	char *p = (char*)malloc(1);
+	printf("%p\n", p);
+	*p = 'A';
+	return p;
+}
+void main()
+{
+	char *pch = getccc();
+	printf("\n");
+	printf("%c", *pch);
+    free(pch);
+	system("pause");
+}
+char *getccc1()
+{
+	char *p = (char*)malloc(10);
+	printf("%p\n", p);
+	for(int i = 0,num = 65;i<10;i++,num++)
+    {
+        p[i] = num;//给每个字符赋值
+    }
+	return p;
+}
+
+void main()
+{
+	char *pch = getccc1();
+	for(int i=0;i<10;i++)
+    {
+        printf("%c",pch[i]);
+    }
+    free(pch);
+	system("pause");
+}
+```
+
+ 指向堆的数组
