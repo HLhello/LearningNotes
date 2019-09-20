@@ -551,3 +551,284 @@ void main()
 ```
 
  指向堆的数组
+
+```c
+//堆可以跨函数使用
+//除非自己释放，否则永远占用
+int *getint()
+{
+    int *p = NULL;
+    p = (int *)malloc(sizeof(int)*10);
+    for(int i=0;i<10;i++)
+    {
+        p[i] = i;
+    }
+    return p;
+}
+
+void main()
+{
+    int *p = getint();
+    for(int i=0;i<10;i++)
+    {
+        printf("%d",p[i]);
+    }
+    free(p); 
+}
+```
+
+结构体作为函数参数
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct info
+{
+	char name[50];
+	long long phone;
+};
+//函数的副本机制，函数的参数新建了一个变量接受meinv的值
+//info1的改变不影响美女
+void showinfo(struct info info1)
+{
+	strcpy(info1.name, "hailou");
+	printf("\n%s,%d", info1.name, info1.phone);
+
+}
+//函数的副本机制，所以改变一个外部变量，需要变量的地址 
+void changeinfo(struct info *p)
+{
+
+	strcpy(p->name, "HL");
+	printf("\n%s,%d", p->name, p->phone);
+
+}
+void main()
+{
+	struct info meinv = { "hello", 13899887766 };
+	printf("%s,%d", meinv.name, meinv.phone);
+	changeinfo(&meinv);
+	system("pause");
+
+}
+```
+
+对于结构体，内容很少可以传值，内容很多，最好传址，
+
+函数改变一个结构体，需要传递结构体的地址
+
+结构体变量的成员可以被当做普通变量来处理
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct zhanghu
+{
+	int num;
+	int data;
+}; 
+void change(int a, int b)
+{
+	a = 9, b = 100;
+}
+void changep(int *a, int *b)
+{
+	*a = 9, *b = 100;
+}
+void main()
+{
+	struct zhanghu zh1 = { 1, 100 };
+	printf("%d,%d", zh1.num, zh1.data);
+	//change(zh1.num, zh1.data);
+	changep(&zh1.num, &zh1.data); 
+		printf("%d,%d", zh1.num, zh1.data);
+	system("pause");
+}
+```
+
+
+
+返回值为结构体
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+struct info
+{
+	char name[50];
+	int num;
+};
+struct info getstruct(char *p, int num)
+{
+	struct info info1;//创建结构体，临时中间变量，栈区，函数调用完后被回收
+	info1.num = num;
+	strcpy(info1.name, p);
+	return info1;//return副本机制，在调用函数后能返回，但是函数调用结束，程序执行里一个操作，内存就会被释放
+}
+//指针返回的时候，不能返回指向栈区的内存
+struct info * getstructp(char *p, int num)
+{
+	struct info info1;//
+	info1.num = num;
+	strcpy(info1.name, p);
+	return &info1;//
+}
+struct info * getstructpm(char *p, int num)
+{
+	struct info *pinfo = (struct info*)malloc(sizeof(struct info));
+	pinfo->num = num;
+	strcpy(pinfo->name, p);
+	return pinfo;
+}
+
+void main()
+{
+	//struct info mm = getstruct("hello china", 10);
+	//struct info * mm = getstructp("hello china", 10);
+	struct info * mm = getstructpm("hello china", 10);
+	printf("%d,%s", mm->num, mm->name);
+	system("pause");
+}
+```
+
+指针数组作为函数参数
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+void runandprint(char *command[])
+{
+	
+	for (int i = 0; i<5; i++)
+	{
+		printf("\n%s", command[i]);
+		system(command[i]);
+	}
+//printf("sizeof(command) = %d", sizeof(command));
+}
+void main()
+{
+	char *cmd[] = { "calc", "notepad", "tasklist", "ipconfig", "mspaint" };
+	printf(sizeof(cmd));//20个字节。每个指针四个字节
+	runandprint(cmd);
+	system("pause");
+}
+```
+
+递归的讨论
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+double go(int n)
+{
+	if (n == 1)
+	{
+		return 1.0;
+	}
+	else if (n == 2)
+	{
+		return 2.0;
+	}
+	else
+	{
+		return go(n - 1) + go(n - 2);
+	}
+
+}
+
+void main()
+{
+	printf("%f", go(10));
+	double a[50];
+	a[0] = 1;
+	a[1] = 2;
+	for (int i = 2; i<10; i++)
+	{
+		a[i] = a[i - 1] + a[i - 2];
+		printf("\n%f", a[i]);
+	}
+	system("pause");
+}
+```
+
+判断数组是否递增
+
+```c
+void main()
+{
+    int a[10] = {1,2,3,4,5,6,7,8,9,10};
+    int flag = 1;
+    for(int i = 0;i<10;i++)
+    {
+        if(a[i]>a[i+1])
+        {
+            flag = 0;
+            break;
+        }
+    }
+    if(flag == 0)
+    {
+        printf("biger");
+    }
+    else
+    (
+    printf("not biger"));
+}
+```
+
+
+
+```c
+//判断数组是否是递增的
+#include<stdio.h>
+#include<stdlib.h>
+int a[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+int isbiger(int n)//递增返回1，非递增返回0
+{
+	if (n == 8)
+	{
+		return a[n]<a[n + 1];
+	}
+	else
+	{
+		return (a[n] < a[n + 1]) && isbiger(n + 1);
+	}
+}
+
+void main()
+{
+	printf("%d", isbiger(0));
+	system("pause");
+}
+```
+
+
+
+```c
+void main()
+{
+    int num;
+    scanf("%d",num);
+    printf("num = %d",num);
+    int lastres = 0;
+    while(num)//num == 0时终止
+    {
+        lastres *=10;
+        int wei = num%10;
+        lastres = wei*10;
+        ;astres+= wei;
+        num /=10;
+        
+    }
+}
+```
+
