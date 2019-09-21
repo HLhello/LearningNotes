@@ -832,3 +832,160 @@ void main()
 }
 ```
 
+递归的要素
+
+```c
+//终止条件
+//循环要素，递进机制
+#include<stdio.h>
+#include<stdlib.h>
+int go(int n)
+{
+    if(n==1)
+    {
+        return 1;//循环终止条件
+    }
+    else
+    {
+        return n*go(n-1);
+    }
+}
+
+
+void main()
+{
+	printf("%d",go(5));
+    system("pause");
+}
+```
+
+汉诺塔
+
+```c
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+int go(int n)
+{
+	if (n == 1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 2 * go(n - 1) + 1;
+	}
+}
+void honi(int n, char A, char B, char C)
+{
+	if (n == 1)
+	{
+		printf("\n%c->%c", A, C);
+	}
+	else
+	{
+		honi(n - 1, A, C, B);//确定谁是辅助盘
+		printf("\n%c->%c", A, C);
+		honi(n - 1, B, A, C);
+	}
+}
+void main()
+{
+	int n;
+	scanf("%d", &n);
+	int times = go(n);
+	printf("\n%d", times);
+	honi(n, 'A', 'B', 'C');
+	system("pause");
+}
+```
+
+循环的效率更好一些，省去了函数调用的时间
+
+但是递归能实现的，循环不一定能实现，循环能实现的，递归不一定能实现
+
+为了速度，尽量使用循环
+
+为了间接，最好使用递归
+
+```c
+#include<Windows.h>
+HWND win;//寻找窗口名
+void opentaobao()
+{
+	//打开淘宝
+    ShellExecuteA(0,"open","path\\taobao.exe",0,0,1);
+}
+void closetaobao()
+{
+	//关闭淘宝
+    system("taskkill /f /im 进程名");
+}
+void playedtaobao()
+{
+    win = FinWindowA("窗口类型"，"窗口名");
+    if(win == NULL)
+    {
+        printf("找不到")；
+    }
+    SetwindowTextA(win,"找不到")； 
+}
+void main()
+{
+    opentaobo();
+    
+    closetaobo();
+}
+```
+
+  函输小结
+
+ C语言函输参数传递有传值和传址两种参数
+
+改变一个变量，需要变量的地址
+
+函输返回同样有值和地址之分，但应该注意不要返回直线局部变量，也就是栈内存的指针
+
+数是C语言的核心
+
+作为两种有效组织数据集的手段，结构和数组在函数中有着广泛的应用，结构体变量本质上可以当成是普通变量来使用
+
+函数实现时，是通过栈来实现的 
+
+编译时先整体读取代码，结束时就已经到达函数尾部，然后把每个操作压入栈中，最后按照顺序执行，依次出栈
+
+```
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+//传递一个数组，对数组进行排序
+int * sort(int *p,int n)
+{
+	for (int i = 0; i<n - 1; i++)
+	{
+		for (int j = 0; j<n-1-i; j++)
+		{
+			if (p[j]<p[j+1])
+			{
+				int temp = p[j];
+				p[j] = p[j+1];
+				p[j+1] = temp; 
+			}
+		}
+	}
+	return p;
+}
+void main()
+{
+	int a[10] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+	int num = sizeof(a) / sizeof(int);
+	int *p = sort(a, num);
+	for (int i = 0; i < num; i++)
+	{
+		printf("%d,%d\n", a[i],p[i]);
+
+	}
+	system("pause");
+}
+```
+
