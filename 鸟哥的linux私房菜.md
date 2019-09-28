@@ -20,6 +20,7 @@
 
 
 
+
 - 文件容量常常使用二进制来计算，网速也可以说是传输二进制的速度
 
 - 速度一般用十进制来衡量  
@@ -276,11 +277,11 @@
   - 【 . . 】（两个点）：代表上一层目录，也可以使用【../】来表示
   - 例先进入/var/spool/mail/目录，在进入/var/spool/cron/
       - 1： cd /var/spool/mail
-    - 2： cd ../cron
+        - 2： cd ../cron
   - 相对路径是指相对于目前的工作目录的路径
   - 相对路径在某些情况下是比较放便，但是绝对路径保证任何时候路径都是正确的
-  
-  
+
+
   - cd change directory变换目录
   - pwd print working directory 显示当前路径
   - mkdir  make directory创建一个新目录
@@ -316,16 +317,14 @@
   - 时间参数atime，ctime，mtime
     - access time（atime） statustime（ctime）  modificationtime（Mtime）
   - TODO page，340，exercise
+
   
-  
-  
-  
+
+
   认识linux文件系统
   - 
+
   
-  
-  
-  
+
+
   - 
-  
-	
