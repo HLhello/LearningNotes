@@ -1476,5 +1476,225 @@ const是有类型检查的
 
 宏的作用域就是他所在的源文件
 
- 宏定义的嵌套，在预处理时会实现层层替换，
+ 宏定义的嵌套，在预处理时会实现层层替换
+
+```c
+#define M 10
+
+。。。
+。。。
+。。。
+
+#undef M  //限定宏定义的作用域，#define M 10 ----> M结束
+
+```
+
+带参数的宏
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+		宏名		要替换的字符串
+#define ADD(x)   3*x
+#define cube(x)  x*x*x
+//define可以传入任何参数，这样的作用是节省程序编译的时间
+void main()
+{
+    printf("%d",ADD(3));
+    printf("%f",cube(4) );
+    system("pause");
+}
+```
+
+文件包含
+
+ include<>从系统的目录开始搜索
+
+include""从当前的目录开始搜索，也可以指定目录
+
+ 一般情况不要包含c源文件
+
+条件编译
+
+让某些代码参与编译，让某些代码不用编译
+
+预编译的工作
+
+文件包含，宏定义，条件编译
+
+代码调试的宏
+
+```c
+__DATE__ 进行预处理的日期
+__FILE__ 代表当前源代码的字符串文字
+__LINE__ 代表当前源代码的行号的整数常量
+__TIME__ 代表当前源文件编译时间
+__FUNCTION__ 代表当前所在的函数名
+```
+
+
+
+
+
+
+
+define与const 的差别
+
+赋值会自动进行类型转换
+
+const是有数据类型的，发现类型不同就会自动进行强制数据转换，并且发出警告
+
+C语言的一种变量是对内存空间的抽象
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#define S(x) system(pause)
+#define SS(x) sysyem(#x) //自动给参数转换为“x”，转换为字符串 
+//C语言中的变量是对内存的一种抽象
+#define printfNUM(x) printf("%s = %d",#x,x)
+
+
+void main()
+{
+    system("notepad");
+    S("calc");
+    SS(calc);
+    SS(notepad);
+    int a1 = 10, a2=20, a3=30;
+    printf("a1 = 10",a1,a1);
+    //printf("%s = %d",a1,a1);报错
+    printfNUM(a1);//输出 a1 = 10;
+    
+}
+```
+
+
+
+
+
+```C
+//宏连接
+#include<stdio.h>
+#include<stdlib.h>
+#define I(x) I##x   //两个##起到连接的作用,把两个标识符粘在一起
+#define P(x) printf("%s = %d",#x,x)
+void main()
+{
+    int I(1),I(2),I(3);
+    I1 = 111;
+    I2 = 222;
+    I3 = 333；
+    P(I(1));
+    P(I(2));
+    P(I(3));
+    system("pause");
+}
+```
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+#define P(x) printf##x
+void printf1()
+{
+    printf("11111");
+}
+void printf1()
+{
+    printf("22222");
+}
+void printf1()
+{
+    printf("33333");
+}
+void main()
+{
+    P(1)();
+    system("pause");
+      
+}
+```
+
+
+
+
+
+const 本质是伪常量，const变量一旦初始化后无法直接赋值
+
+并不是完全只读的，无法直接赋值，可以间接赋值
+
+利用强制转换可以去掉const属性，就可也间接修改const的值 
+
+const变量在栈区，不再静态区只有个栈区会自动回收变量
+
+根据内存中的特点来判断一个变量在不在栈区
+
+静态区不会被反复释放利用
+
+const无法用于数组初始化
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+void main()
+{
+    const int num = 10;
+    //num = 11;编译不通过const只是限定一个变量无法直接被赋值
+    const int *p = &num;//定义一个指针指向一个常量，存储num的地址
+    int *pv = (int *)p;//对指向常量的指针进行强制转换
+    *pv = 8;//对指针指向的内容进行赋值
+    printf("%d",num);//间接的改变了一个常量
+    
+    system("pause");
+}
+```
+
+
+
+
+
+简单链表
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+struct info
+{
+    int num;
+    void *p;    
+};
+void main()
+{
+    //静态模式
+    struct info info1;
+    info1.num = 123;
+    info1.p = &info1.num;//空指针可以存储任何地址
+    printf("%d,%p",info1.num,info1.p);
+}
+```
+
+
+
+```
+#include<stdio.h>
+#include<stdlib.h>
+
+struct info
+{
+    int num;
+    void *p;    
+};
+void main()
+{
+    
+    struct info *pinfo
+    pinfo = (struct info *)malloc(sizeof(struct info));
+    //pinfo -> num = 125;
+    //pinfo -> p = &pinfo ->num;
+    //printf("%d,%p",pinfo->num,pinfo->p);
+    (*pinfo).num= 125;//*加上指针就取出了结构体的内容，等价于一个结构体
+}
+```
 
