@@ -1677,7 +1677,7 @@ void main()
 
 
 
-```
+```c
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -1697,4 +1697,163 @@ void main()
     (*pinfo).num= 125;//*加上指针就取出了结构体的内容，等价于一个结构体
 }
 ```
+
+简单静态链表
+
+```c
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node {
+	int num;
+	struct node *pnext;
+};
+void main()
+{
+	struct node n1, n2, n3, n4, n5;
+	struct node *p;
+	
+	n1.num = 1;
+	n2.num = 2;
+	n3.num = 3;
+	n4.num = 4;
+	n5.num = 5;
+
+	p = &n1;
+	n1.pnext = &n2;
+	n2.pnext = &n3;
+	n3.pnext = &n4;
+	n4.pnext = &n5;
+	n5.pnext = NULL;
+	printf("\n%d", p->num);
+	printf("\n%d", p->pnext->num);
+	printf("\n%d", p->pnext->pnext->num);
+	printf("\n%d", p->pnext->pnext->pnext->num);
+	printf("\n%d", p->pnext->pnext->pnext->pnext->num);
+	//链表循环访问
+	while(p!=NULL)
+	{
+        printf("\n%d",p->num);
+        p = p->num;//指针从后向前访问，这样做会影响指针变量
+	}
+	//创建指针副本
+	p = &n1;
+	struct node * px;
+	PX = P;
+	while(px!=NULL)
+	{
+        printf("\n%d",px->num);
+        px = px->num;//这样做不会影响指针变量
+	}
+    //删除一个元素
+    n2.pnext = n3.pnext;
+    //插入一个节点
+    //尾部插入
+    struct node n6;
+    struct num = 6;
+    n6.pnext = NULL;
+    n5.pnext = &n6;
+    //在中间插入
+    struct node n7;
+    n7.num = 10;
+    n7.pnext = n2.pnext;
+    n2.pnext = &n7; 
+	//链表的查找与修改 
+	PX = P;
+	while(px!=NULL)
+	{
+        if(px->num == 10)
+        {
+            px.num = 8;
+        }
+        printf("\n%d",px->num);
+        px = px->num;//这样做不会影响指针变量
+	}   
+	system("pause");
+	
+}
+```
+
+动态链表
+
+```c
+void main()
+{
+    struct node *p1,*p2,*p3,*p4,*p5;
+    p1 = (struct node *)malloc(sizeof(struct node));
+	p2 = (struct node *)malloc(sizeof(struct node));
+	p3 = (struct node *)malloc(sizeof(struct node));
+	p4 = (struct node *)malloc(sizeof(struct node));
+	p5 = (struct node *)malloc(sizeof(struct node));
+	p1 ->num =1;
+	p2 ->num =2;
+	p3 ->num =3;
+	p4 ->num =4;
+	p5 ->num =5;//初始化结构体数据
+	struct node *p;
+	p = p1;
+	p1 ->pnext =&n2;
+	p2 ->pnext =&n3;
+	p3 ->pnext =&n4;
+	p4 ->pnext =&n5;
+	p5 ->pnext =NULL;//连接
+	printf("\n%d", p->num);
+	printf("\n%d", p->pnext->num);
+	printf("\n%d", p->pnext->pnext->num);
+	printf("\n%d", p->pnext->pnext->pnext->num);
+	printf("\n%d", p->pnext->pnext->pnext->pnext->num);
+    //遍历
+    struct node *px = p;
+    do
+    {
+        printf("\n%d", px -> num);
+        px = px ->num;
+    }whille(px != NULL);
+    //修改
+    for(struct node *py = p;py != NULL;py=py->pnext)
+    {
+		if(py -> num == 3)
+        {
+            py ->num 30; 
+        }
+    }
+    //删除
+    p2 ->pnext = p3->pnext;
+    free(p3);
+    //尾部插入
+    struct node *p6;
+    p6 = (struct node *)malloc(sizeof(struct node));
+    p6->num = 6;
+    p6->pnext = NULL;
+    p5->nuxt = p6;
+    //中间插入
+	struct node *p10;
+    p10 = (struct node *)malloc(sizeof(struct node));
+    p10->num = 10;
+    p10->pnext = p2->pnext;
+    p2 ->pnext = p10;
+    p5->nuxt = p6; 
+    
+}
+```
+
+
+
+作为静态数组，无法变长，一旦分配内存，就固定了，不可以增加
+
+外部的内存可以访问，但是外部内存可能被使用，也可能没有被使用
+
+没有被使用的情况下，越界偶尔会成功，但是越界的内存如果出现被分配走了，程序就会出现bug
+
+越界到已经使用过的内存上，必然分配失败
+
+静态数组在栈上，不能处理较大的数组，最多占用1M的内存
+
+
+
+栈在C语言中是一种数据结构
+
+类似于下端封闭，上面开口
+
+  
 
