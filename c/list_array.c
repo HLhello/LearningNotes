@@ -11,6 +11,10 @@
 
 #define MAXSIZE 20
 
+//typedef 将C语言中的类型定义换个名字,不会的可以看看typedef的使用
+typedef int Status; 			//Status 定义函数的类型，该类型的函数的放回值是整形的状态变量
+typedef int ElemType; 			//希望使用什么类型的数据结构可以将int替换成希望的类型 
+
 /*
 ADT 线性表（List）
 Data
@@ -26,12 +30,6 @@ Operation
 	ListLength（L）：
 endDat
 */
-
-
-
-//typedef 将C语言中的类型定义换个名字,不会的可以看看typedef的使用
-typedef int Status; 			//Status 定义函数的类型，该类型的函数的放回值是整形的状态变量
-typedef int ElemType; 			//
 
 typedef struct 					//定义线性表的顺序存储的结构代码
 {								//三要素：线性表的起始位置data,
@@ -147,7 +145,7 @@ Status ListDelete(SqList *L, int i, ElemType *e)
 	
 	return OK;
 }
-/*
+
 //测试删除指定位置数据的函数
 void main()
 {
@@ -164,7 +162,7 @@ void main()
 	}
 	printf("\nStatus = %d", s);
 }
-*/
+
 
 
 
