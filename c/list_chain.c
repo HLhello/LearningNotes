@@ -181,8 +181,8 @@ Status ListDelete(LinkList L, int i, ElemType *e)
 	
 	return OK;
 }
-/**/
-//测试从线性链表中取值的函数
+/*
+//测试从线性链表中删除元素的函数
 void main()
 {
 	int s;
@@ -214,10 +214,47 @@ void main()
 	}
 	printf("del_node = %d\nStatus = %d\n", del_node, s);
 }
+*/
 
-
-
-
+/*	单链表的整表创建
+ *	初始条件：随机产生n个元素的值，建立带表头节点的单链线性表
+ *	操作结果：成功的建立线性表
+ *	问题：
+ */
+Status CreateListHead(LinkList *L,int n)
+{
+	int i;
+	LinkList p;
+	time_t theTime;
+	srand((unsigned int)time(&theTime));
+	*L = (LinkList)malloc(sizeof(Node));
+	(*L)->next = NULL;
+	for(i=0;i<n;i++)
+	{
+		p = (LinkList)malloc(sizeof(Node));
+		p->data = rand()%100;
+		p->next = (*L)->next;
+		(*L)->next = p;
+	}
+	
+	return OK;
+}
+/**/
+//
+void main()
+{
+	int s;
+	LinkList L;
+	s = CreateListHead(&L,5);
+	LinkList p = (LinkList)malloc(sizeof(Node));
+	p->next = L;
+	for(int i=0;i<5;i++)
+	{
+		printf("Node[%d] = %-5d\n",i,p->data);
+		p = p->next;
+	}
+	printf("Status = %d\n",s);
+}
 
 
 
