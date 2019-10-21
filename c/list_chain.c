@@ -218,7 +218,7 @@ void main()
 
 /*	单链表的整表创建
  *	初始条件：随机产生n个元素的值，建立带表头节点的单链线性表
- *	操作结果：成功的建立线性表
+ *	操作结果：成功的建立线性表，头插法
  *	问题：
  */
 Status CreateListHead(LinkList *L,int n)
@@ -228,33 +228,129 @@ Status CreateListHead(LinkList *L,int n)
 	time_t theTime;
 	srand((unsigned int)time(&theTime));
 	*L = (LinkList)malloc(sizeof(Node));
+	(*L)->data = n;
 	(*L)->next = NULL;
 	for(i=0;i<n;i++)
 	{
 		p = (LinkList)malloc(sizeof(Node));
-		p->data = rand()%100;
+		p->data = i;//rand()%100;
 		p->next = (*L)->next;
 		(*L)->next = p;
+		//free(p);
 	}
 	
 	return OK;
 }
-/**/
-//
+
+/*
+//测试头插法
 void main()
 {
 	int s;
 	LinkList L;
 	s = CreateListHead(&L,5);
 	LinkList p = (LinkList)malloc(sizeof(Node));
-	p->next = L;
+	p = L->next;
 	for(int i=0;i<5;i++)
 	{
 		printf("Node[%d] = %-5d\n",i,p->data);
 		p = p->next;
 	}
+	printf("the Length of list L is %d\n",L->data);
 	printf("Status = %d\n",s);
 }
+*/
+/*	单链表的整表创建
+ *	初始条件：随机产生n个元素的值，建立带表头节点的单链线性表
+ *	操作结果：成功的建立线性表，尾插法
+ *	问题：
+ */
+
+Status CreateListTail(LinkList *L,int n)
+{
+	int i;
+	LinkList p,r;
+	time_t theTime;
+    srand((unsigned int)time(&theTime));
+    *L = (LinkList)malloc(sizeof(Node));
+    (*L)->data = n;
+	r = *L;
+    for(i=0;i<n;i++)
+    {
+    	p = (LinkList)malloc(sizeof(Node));
+    	p->data = i;//rand()%100;
+    	r->next = p;
+		r = p;
+    }
+    r->next = NULL;
+    return OK;
+}
+/*
+//测试尾插法
+void main()
+{
+	int s;
+	LinkList L;
+	s = CreateListTail(&L,5);
+	LinkList p = (LinkList)malloc(sizeof(Node));
+	p = L->next;
+	for(int i=0;i<5;i++)
+	{
+		printf("Node[%d] = %-5d\n",i,p->data);
+		p = p->next;
+	}
+	printf("the Length of list L is %d\n",L->data);
+	printf("Status = %d\n",s);
+}
+*/
+
+/*	单链表的整表删除
+ *	初始条件：顺序线性表L已经存在
+ *	操作结果：将L重置为空表
+ *	问题：
+ */
+Status ClearList(LinkList *L)
+{
+	LinkList p,q;
+	(*L)->data = 0;
+	p = (*L)->next;
+	while(p)
+	{
+		q = p->next;
+		free(p);
+		p = q;
+	}
+	(*L)->next = NULL;
+	
+	return OK;
+}
+/*
+//测试整表的删除
+void main()
+{
+	int iscreate, isclear;
+	LinkList L;
+	iscreate = CreateListTail(&L,5);
+	LinkList p = (LinkList)malloc(sizeof(Node));
+	p = L->next;
+	for(int i=0;i<5;i++)
+	{
+		printf("Node[%d] = %-5d\n",i,p->data);
+		p = p->next;
+	}
+	printf("the Length of list L is %d\n",L->data);
+	printf("iscreate = %d\n",iscreate);
+	
+	isclear = ClearList(&L);
+	printf("the Length of list L is %d\n",L->data);
+	printf("isclear = %d\n",isclear);
+}
+*/
+
+
+
+
+
 
 
 
