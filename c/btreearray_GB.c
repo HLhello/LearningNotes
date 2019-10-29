@@ -134,7 +134,6 @@ Status Root(SqBitree T,TElemType *e)
 TElemType Value(SqBitree T, Position e)
 {
 	return T[(int)pow(2,e.level-1)+e.order-2];
-	
 }
 
 //初始条件：二叉树T存在，e是T中某个节点的位置
@@ -200,12 +199,72 @@ Status Print(SqBitree T)
 	return OK;
 }
 
+Status visit(TElemType c)
+{
+	printf("%d",c);
+	return OK;
+}
+
+
+//遍历二叉树 根左右（前序）
+void PreTraverse(SqBitree T, int e)
+{
+	visit(T[e]);//root
+	if(T[2*e+1]!=0)//left
+	{
+		PreTraverse(T,2*e+1);
+	}
+	if(T[2*e+2]!=0)//right
+	{
+		PreTraverse(T,2*e+2);
+	}
+}
+
+//遍历二叉树 左根右（中序）
+void InTraverse(SqBitree T, int e)
+{
+	if(T[2*e+1]!=0)//left
+	{
+		PreTraverse(T,2*e+1);
+	}
+	visit(T[e]);//root
+	if(T[2*e+2]!=0)//right
+	{
+		PreTraverse(T,2*e+2);
+	}
+}
+
+//遍历二叉树 左右根（后序）
+void PostTraverse(SqBitree T, int e)
+{
+	if(T[2*e+1]!=0)//left
+	{
+		PreTraverse(T,2*e+1);
+	}
+	if(T[2*e+2]!=0)//right
+	{
+		PreTraverse(T,2*e+2);
+	}
+	visit(T[e]);//root
+}
+
+//前序遍历二叉树（中序）（后序）
+Status OrderTraverse(SqBitree T)
+{
+	if(!BiTreeEmpty(T))
+	{
+		PreTraverse(T,0);
+	}
+	printf("\n");
+	return OK;
+}
+
 
 
 
 void main()
 {
-	Status init_x,crea_x,isempty_x,depth_x,root_x,ass_x,par_x,pri_x;
+	Status init_x,crea_x,isempty_x,depth_x,root_x,ass_x,par_x,pri_x,pre_x;
 	TElemType e,e1;
 	SqBitree T;
 	init_x = InitBiTree(T);
@@ -229,6 +288,8 @@ void main()
 	printf("%d\n",par_x);
 	pri_x = Print(T);
 	printf("%d\n",pri_x);
+	pre_x = OrderTraverse(T);
+	printf("%d\n",pre_x);
 }
 
 
