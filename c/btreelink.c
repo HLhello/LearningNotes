@@ -10,10 +10,9 @@
 #define FALSE 0
 
 #define MAXSIZE 100 //存储空间初始分配量
-#define MAX_TREE_SIZE 100 // 二叉树的最大结点数
 
 typedef int Status;
-typedef int TElemType;
+typedef char TElemType;
 
 /*
  * ADT 树（tree）
@@ -44,6 +43,40 @@ typedef struct BiTreeNode
 	struct BiTreeNode *rchild;
 }BitreeNode,*Bitree;
 
+int index;
+typedef char String[24];
+String str;
+
+Status StrAssign(String T, char *chars)
+{
+	int i;
+	if(strlen(chars)>MAXSIZE)
+	{
+		return OK;
+	}
+	else
+	{
+		T[0] = strlen(chars);
+		for(i=1;i<=T[0];i++)
+		{
+			T[i] = *(chars+i-1);
+		}
+		return OK;
+	}
+}
+
+Status visit(TElemType e)
+{
+	printf("%c",e);
+	return OK;
+}
+
+Status InitBitree(Bitree *T)
+{
+	*T = NULL;
+	return OK;
+}
+
 //销毁一棵树，使用递归的思想
 Status DestortyTree(Bitree *T)
 {
@@ -60,9 +93,65 @@ Status DestortyTree(Bitree *T)
 		free(*T);
 		*T = NULL;
 	}
-	return OK:
+	return OK;
+}
+//创建一颗树
+void CreateBitree(Bitree *T)
+{
+	TElemType ch;
+	ch = str[index++];
+
+	if(ch == '#')
+	{
+		*T = NULL;
+	}
+	else 
+	{
+		*T = (Bitree)malloc(sizeof(BitreeNode));
+		if(!*T)
+		{
+			return ERROR;
+		}
+		(*T)->data = ch;
+		CreateBitree(&(*T)->lchild);
+		CreateBitree(&(*T)->rchild);
+	}
 }
 
+int BiTreeDepth(Bitree T)
+{
+	int i,j;
+	if(!T)
+	{
+		return 0;
+	}
+
+	if(T->lchild)
+	{
+		i = BiTreeDepth(T->lchild);
+	}
+	else
+	{
+		i = 0;
+	}
+
+	if(T->rchild)
+	{
+		j = BiTreeDepth(T->rchild);
+	}
+	else
+	{
+		j = 0;
+	}
+
+	return i>j?i+1:j+1;
+}
+
+
+void main()
+{
+
+}
 
 
 
