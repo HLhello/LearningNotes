@@ -37,53 +37,53 @@ typedef char TElemType;
  * endADT
  */
 
-typedef struct BiTreeNode
+typedef struct BiTNode
 {
 	TElemType data;
-	struct BiTreeNode *lchild;
-	struct BiTreeNode *rchild;
-}BitreeNode,*Bitree;
+	struct BiTNode *lchild;
+	struct BiTNode *rchild;
+}BiTNode,*Bitree;
 
-typedef char String[24];
-int index_;
-String str;
+int ind = 1;
+typedef char String[MAXSIZE];//设置全局变量的模板
+String str;//定义一个字符串的全局变量
 
+/*******************************************************************/
 // 初始条件: 字符串存T存在，字符串数组char存在
 // 操作结果: 将字符串数组赋值给字符串T，为字符串赋值，字符串的第一个元素为长度
 // 存在问题：
 Status StrAssign(String T, char *chars)
 {
 	int i;
-	if(strlen(chars)>MAXSIZE)
-	{
+	if(strlen(chars)>MAXSIZE)//将字符串的长度赋值给T[0]，但是T[0]为char型数据
+	{						 //char只有一个字节的长度，所以字符串最大不能超过256
 		return ERROR;
 	}
 	else
 	{
 		T[0] = strlen(chars);
-		for(i=1;i<=T[0];i++)
+		for(i=1;i<=T[0];i++) 
 		{
 			T[i] = *(chars+i-1);
 		}
 		return OK;
 	}
 }
-//测试给字符串的赋值函数
+/*******************************************************************/
 /*
+//测试给字符串的赋值函数
 void main()
 {
-	Status stra_x;
+	Status strA_x;
 	String T;
 	char chars[] = {"I love China"};
-	stra_x = StrAssign(T,chars);
-	//printf("%d\n",stra_x);
-	//printf("%d\n",strlen(chars));
-
+	strA_x = StrAssign(T,chars);
+	printf("%d\n",strA_x);
 	for(int i=0;i<=strlen(chars);i++)
 	{
 		if(i==0)
 		{
-			printf("%d",T[i]);
+			printf("%d ",T[i]);
 		}						
 		else 					
 		{
@@ -92,221 +92,89 @@ void main()
 	}
 }
 */
-
-// 初始条件: 存在一颗初始化的树，需要女使用一个全局变量index_以及一个全局变量的字符串
-// 操作结果: 将以全局变量的字符串str创建一个存储字符的树结构(按照前序构建一颗二叉树)
-// 存在问题：
-
-// void CreateBitree(Bitree *T)
-// {
-// 	TElemType ch;
-
-// 	ch = str[index_++];
-
-// 	if(ch=='#')
-// 	{
-// 		*T = NULL;
-// 	}
-// 	else
-// 	{
-// 		*T=(Bitree)malloc(sizeof(BitreeNode));
-// 		if(!*T)
-// 		{
-// 			exit(0);
-// 		}
-// 		(*T)->data = ch;
-// 		CreateBitree(&(*T)->lchild);
-// 		CreateBitree(&(*T)->rchild);
-// 	}
-// }
-void CreateBitree(Bitree *T)
-{ 
-	TElemType ch;
-	
-	/* scanf("%c",&ch); */
-	ch=str[index_++];
-
-	if(ch=='#') 
-		*T=NULL;
-	else
-	{
-		*T=(Bitree)malloc(sizeof(BitreeNode));
-		if(!*T)
-			exit(OVERFLOW);
-		(*T)->data=ch; /* 生成根结点 */
-		CreateBitree(&(*T)->lchild); /* 构造左子树 */
-		CreateBitree(&(*T)->rchild); /* 构造右子树 */
-	}
- }
-Status InitBiree(Bitree *T)
+//输出传入的元素
+Status visit(TElemType e)
+{
+	printf("%c ",e);
+	return OK;
+}
+//创建空的二叉树T
+Status InitBiTree(Bitree *T)
 {
 	*T = NULL;
 	return OK;
 }
+/*
+//测试创建空的二叉树
 void main()
 {
-	int ini_x,strA_x;
 	Bitree T;
-	ini_x = InitBiree(&T);
-	strA_x = StrAssign(str, "ABDH#K###E##CFI###G#J##");
-	CreateBitree(&T);
-	printf("%d\n",strA_x);
+	int init_x = InitBiTree(&T);
+	printf("%d\n", init_x);
+	printf("%d\n",sizeof(T));
+	printf("%d\n",sizeof(*T));
+	
+}
+*/
+
+// 初始条件: 存在一颗初始化的树，需要女使用一个全局变量index_以及一个全局变量的字符串
+// 操作结果: 将以全局变量的字符串str创建一个存储字符的树结构(按照前序构建一颗二叉树)
+// 存在问题：
+/*
+在内存中建立一颗二叉树，为了能让每个节点确定是否有左右孩子需要对二叉树进行扩展
+也就是将二叉树中的每个节点的空指针指向一个虚节点，其值为一个特定值，比如‘#’
+处理后的二叉树为原二叉树的扩展二叉树
+扩展二叉树就可以做到一个遍历序列确定一颗二叉树
+注意：扩展二叉树并不是完全二叉树
+他妈的在这走了好几天的弯路，气死老子了
+*/
+//按照前序遍历的结构建立二叉树
+void CreateBiTree(Bitree *T)//这是个二级指针
+{ 
+	TElemType ch;
+	ch=str[ind++];//使用全局变量，这是先使用在自加
+
+	if(ch=='#')//如果出现#，将指针直线空
+	{
+		*T=NULL;
+	}
+	else
+	{
+		*T=(Bitree)malloc(sizeof(BiTNode));
+		
+		if(!*T) exit(_OVERFLOW);
+		
+		(*T)->data=ch;
+		CreateBiTree(&(*T)->lchild);
+		CreateBiTree(&(*T)->rchild);
+	}
+ }
+
+Status BitreeEmpty(Bitree T)
+{
+	if(T==NULL) return TRUE;
+	else return FALSE;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// void CreateBitree(Bitree *T)
-// {
-// 	TElemType ch;
-// 	ch = str[index_++];
-
-// 	if(ch == '#')//如果字符为#则表示当前没有分支
-// 	{
-// 		*T = NULL;
-// 	}
-// 	else 
-// 	{
-// 		*T = (Bitree)malloc(sizeof(BitreeNode));
-// 		if(!*T)
-// 		{
-// 			exit(0);//如果内存分配不成功
-// 		}
-// 		(*T)->data = ch;
-// 		CreateBitree(&(*T)->lchild);
-// 		CreateBitree(&(*T)->rchild);
-// 	}
-// }
-
-// void main()
-// {
-// 	Status strA_x;
-// 	char chars[] = "ABCDEF";
-// 	strA_x = StrAssign(str,chars);
-// 	printf("%d\n",strA_x);
-// 	BitreeNode T;// = (Bitree)malloc(sizeof(BitreeNode));
-// 	CreateBitree(&T);
-// 	//printf("%d\n",1);
-// 	// printf("%d\n",emp_x);
-// }
-// Status BitreeEmpty(Bitree T)
-// {
-// 	if(T)
-// 	{
-// 		return FALSE;
-// 	}
-// 	else
-// 	{
-// 		 return TRUE;
-// 	}
-	
-// }
-// TElemType Root(Bitree T)
-// {
-// 	if(T)
-// 	{
-// 		return ' ';
-// 	}
-// 	else 
-// 	{
-// 		return T->data;
-// 	}
-// }
-
-
-
-
-// //输出指定的元素
-// Status visit(TElemType e)
-// {
-// 	printf("%c",e);
-// 	return OK;
-// }
-// //初始化一颗树，让树指向NULL
-// Status InitBitree(Bitree *T)
-// {
-// 	*T = NULL;
-// 	return OK;
-// }
-
-// //销毁一棵树，使用递归的思想
-// Status DestortyTree(Bitree *T)
-// {
-// 	if(*T)
-// 	{
-// 		if((*T)->lchild)
-// 		{
-// 			DestortyTree(&((*T)->lchild));
-// 		}
-// 		if((*T)->rchild)
-// 		{
-// 			DestortyTree(&((*T)->rchild));
-// 		}
-// 		free(*T);
-// 		*T = NULL;
-// 	}
-// 	return OK;
-// }
-// int BiTreeDepth(Bitree T)
-// {
-// 	int i,j;
-// 	if(!T)
-// 	{
-// 		return 0;
-// 	}
-
-// 	if(T->lchild)
-// 	{
-// 		i = BiTreeDepth(T->lchild);
-// 	}
-// 	else
-// 	{
-// 		i = 0;
-// 	}
-
-// 	if(T->rchild)
-// 	{
-// 		j = BiTreeDepth(T->rchild);
-// 	}
-// 	else
-// 	{
-// 		j = 0;
-// 	}
-
-// 	return i>j?i+1:j+1;
-// }
-
+/*
+//测试createBITree
+void main()
+{
+	int strA_x, init_x, emp_x;
+	//char chars[] = {"ABCDEF"};
+	//printf("%s\n","ABDH#K###E##CFI###G#J##");
+	strA_x = StrAssign(str, "AB#D##C##");
+	printf("strA_x = %d\n",strA_x);
+	Bitree T;
+	init_x = InitBiTree(&T);
+	printf("init_x = %d\n",init_x);
+	emp_x = BitreeEmpty(T);
+	printf("emp_x = %d\n",emp_x);
+	CreateBiTree(&T);
+	emp_x = BitreeEmpty(T);
+	printf("emp_x = %d\n",emp_x);
+}
+*/
 
 
 

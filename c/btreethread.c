@@ -16,6 +16,7 @@ typedef int Status;
 typedef char TElemType;
 //link 表示指向左右孩子的指针，thread表示指向前驱或后继的线索
 typedef enum {Link,Thread} PointerTag;
+
 typedef struct BithrNode
 {
     TElemType data;
@@ -24,6 +25,7 @@ typedef struct BithrNode
     PointerTag Ltag;
     PointerTag Rtag;
 }BithrNode, *BithrTree;
+
 /*
  * ADT 树（tree）
  * Data
