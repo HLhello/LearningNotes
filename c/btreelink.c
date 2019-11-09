@@ -176,7 +176,100 @@ void main()
 }
 */
 
+int BiTreeDepth(Bitree T)
+{
+	int i,j;
+	if(!T) return 0;
+	
+	if(T->lchild) i = BiTreeDepth(T->lchild);
+	else i = 0;
+	
+	if(T->rchild) j = BiTreeDepth(T->rchild);
+	else j = 0;
 
+	return i>j ? i+1 : j+1;
+}
+
+//输出二叉树T的根节点
+TElemType BitreeRoot(Bitree T)
+{
+	if(!T) return '#';
+	else return T->data;
+}
+
+//为二叉树节点p赋值value
+void Assign(Bitree p, TElemType value)
+{
+	p->data = value;
+}
+
+//二叉树T存在，p指向T中的某个节点，输出节点的数据
+TElemType value(Bitree p)
+{
+	return p->data;
+}
+//前序遍历二叉树
+void PreOrderTra(Bitree T)
+{
+	if(T==NULL) return;
+	printf("%c",T->data);
+	PreOrderTra(T->lchild);
+	PreOrderTra(T->rchild);
+}
+//中序遍历二叉树
+void InOrderTra(Bitree T)
+{
+	if(T==NULL) return;
+	PreOrderTra(T->lchild);
+	printf("%c",T->data);
+	PreOrderTra(T->rchild);
+}
+
+//后序遍历二叉树
+void PostOrderTra(Bitree T)
+{
+	if(T==NULL) return;
+	PreOrderTra(T->lchild);
+	PreOrderTra(T->rchild);
+	printf("%c",T->data);
+}
+
+void DestoryBiTree(Bitree *T)
+{
+	if(*T)
+	{
+		if((*T)->lchild) DestoryBiTree(&(*T)->lchild);
+		if((*T)->rchild) DestoryBiTree(&(*T)->rchild);
+		free(*T);
+		*T = NULL;
+	}
+}
+/**/
+void main()
+{
+	Bitree T;
+	StrAssign(str, "AB#C##D##");
+	InitBiTree(&T);
+	CreateBiTree(&T);
+	int depth = BiTreeDepth(T);
+	printf("depth = %d\n", depth); 
+	TElemType Btroot = BitreeRoot(T);
+	printf("root = %c\n", Btroot);
+	PreOrderTra(T);
+	printf("\n");
+	InOrderTra(T);
+	printf("\n");
+	PostOrderTra(T);
+	DestoryBiTree(&T);
+	printf("\n");
+	if(!T) 
+	{
+		TElemType Btroot = BitreeRoot(T);
+		printf("root = %c\n", Btroot);//#-->表示空
+		printf("Destory BiTree Done");
+	}
+	
+}
 
 
 
