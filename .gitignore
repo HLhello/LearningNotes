@@ -9,3 +9,4 @@
 # 以感叹号（！）开始的模式表示取反
 c/*.exe
 FPGA_ip_core/*/imp/*
+FPGA_ip_core/*/sim/*
