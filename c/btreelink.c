@@ -220,17 +220,17 @@ void PreOrderTra(Bitree T)
 void InOrderTra(Bitree T)
 {
 	if(T==NULL) return;
-	PreOrderTra(T->lchild);
+	InOrderTra(T->lchild);
 	printf("%c",T->data);
-	PreOrderTra(T->rchild);
+	InOrderTra(T->rchild);
 }
 
 //后序遍历二叉树
 void PostOrderTra(Bitree T)
 {
 	if(T==NULL) return;
-	PreOrderTra(T->lchild);
-	PreOrderTra(T->rchild);
+	PostOrderTra(T->lchild);
+	PostOrderTra(T->rchild);
 	printf("%c",T->data);
 }
 
