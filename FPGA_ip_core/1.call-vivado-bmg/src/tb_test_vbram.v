@@ -24,7 +24,7 @@
 `define SEEK_SET 0
 `define SEEK_CUR 1
 `define SEEK_END 2
-
+`define FILE_SIZE 16
 module tb_test_vbram();
 reg clk;
 reg rst;
@@ -61,24 +61,15 @@ initial begin
     #`SD rst = 1'b1;
     @(posedge clk);
 	//*****************************************
-    repeat(5) begin
-        repeat(100)
-            @(posedge clk);
-			
-        repeat(16)begin
-            @(posedge clk);
-            #`SD wea  = 1'b1;
-            cnt_rd = $fscanf(fp_r, "%d", din);
-        end
-		
-		@(posedge clk);
-        #`SD wea = 1'b0;
-        cnt_rd = $fseek(fp_r, 0, `SEEK_SET);
-        repeat(16)
-            @(posedge clk);
+    repeat(`FILE_SIZE)begin
+        @(posedge clk);
+        #`SD wea  = 1'b1;        
+        cnt_rd = $fscanf(fp_r, "%d", din);
     end
+    @(posedge clk);
+    #`SD wea  = 1'b0;
+    cnt_rd = $fseek(fp_r, 0, `SEEK_SET);
 	//*****************************************
-	
 	repeat (100)
 		@(posedge clk);	
     
@@ -89,8 +80,14 @@ end
 
 always #`PERIOD clk = ~clk;
 
+reg wea_r,wea_r1;
 always@(posedge clk)
-    if(wea == 1'b0)
+    wea_r <= wea;
+always@(posedge clk)
+    wea_r1 <= wea_r;
+
+always@(posedge clk)
+    if(wea_r1 == 1'b1)
         $fwrite(fp_w, "%d\n", dout);
 
 test_vbram test4vbram(
