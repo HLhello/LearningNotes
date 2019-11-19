@@ -276,10 +276,815 @@ module top_module(
 endmodule
 ```
 
-4 输入逻辑门，转换为 Verilog 的思想是将 4 个输入变量进行逻辑操作，得到 1 比特结果
+- 4 输入逻辑门，转换为 Verilog 的思想是将 4 个输入变量进行逻辑操作，得到 1 比特结果
 
 ```verilog
 assign out_and = in[3] & in[2] & in[1] & in[0];
 ```
 
-另一种写法使用缩减运算符的语法，和将位展开的写法相同，但更加简便，我们将在后续的课程中加以展开。
+- 另一种写法使用缩减运算符的语法，和将位展开的写法相同，但更加简便，我们将在后续的课程中加以展开。
+
+### **Problem 15 : Vector concatenation operator**
+
+- 片选操作符用于选择向量的一部分比特。而连接操作符 { a,b,c }，将较小的向量连接在一起，用于创建更大的向量。连接操作符是一个很常用的运算符。下面举些例子：
+
+- ```verilog
+  {3'b111, 3'b000} => 6'b111000
+  {1'b1, 1'b0, 3'b101} => 5'b10101
+  {4'ha, 4'd10} => 8'b10101010     // 4'ha and 4'd10 are both 4'b1010 in binary
+  ```
+
+- 连接操作符的基本语法使用 **{ }** 将较小的向量括起来，每个 { } 内的向量使用**逗号**作为间隔。
+
+- 连接运算符中的向量**务必需要标注位宽**，不然综合器怎么能知道你的结果需要多宽的位宽。因此 { 1,2,3 } 这样的操作是非法的，并会产生一个 Error：unsized constants are not allowed in concatenations.
+
+- 习惯上，我们会把位连接符用在赋值语句的右侧，表示将较小的向量连接成较大的向量，赋予左值。但实际上位连接符同样可以用在赋值语句左侧，比如：
+
+- ```verilog
+  assign {cout,sum} = a + b + cin;
+  ```
+
+- 在表示全加器时，可以使用一句 assign 语句实现结果和进位的赋值。再看一些 HDLBits 上的栗子：
+
+  ```verilog
+  input [15:0] in;
+  output [23:0] out;
+  // 连接符用于赋值语句左侧，交换了字节的顺序
+  assign {out[7:0], out[15:8]} = in;
+  // 连接符用于赋值语句右侧，交换了字节的顺序
+  assign out[15:0] = {in[7:0], in[15:8]}; 
+  // 此语句作用上与上两句相同交换了字节顺序，但不同的是赋值语句右侧为16位
+  assign out = {in[7:0], in[15:8]};
+  //赋予左值后，右值扩展为24位，高8位赋零，前两句中，高8位为未赋值状态 
+  ```
+
+### **Problem 16 : Replication operator**
+
+- 连接操作符允许我们将短小的向量连接在一起构成更宽的向量。很方便，但有的时候需要将多个重复的向量连接在一起，诸如 assign a = {b,b,b,b,b,b}; 这样的语句写多了是非常让人忧愁的。而重复操作符语法就可以在这种情况下帮到你，允许你将一个向量重复多次，并将它们连接在一起，语法是这样：{ 重复次数 { 向量 } }。
+
+- 重复次数必须是一个常量，而且请特别注意重复操作符**有两对 { }**.外层的 {} 不能少。
+
+- ```verilog
+  {5{1'b1}}           // 5'b11111 (or 5'd31 or 5'h1f)
+  {2{a,b,c}}          // The same as {a,b,c,a,b,c}
+  {3'd5, {2{3'd6}}}   // 9'b101_110_110. It's a concatenation of 101 with
+                      // the second vector, which is two copies of 3'b110.
+  ```
+
+- 如果写成 {3'd5, 2{3'd6}} ,少了一对 {} 是错误的。
+
+### **Problem 17 : More Replication**
+
+- 例题，将5bit数组成25位数，将 5 个 1bit 信号分别组成两个 25 bit 信号，输出向量为这两个 25bit 向量的逐位操作的结果。如果两个待比较信号某比特相同，则结果向量对应的该比特位 1 。即：
+
+- out[24] = ~a ^ a; // a == a, so out[24] is always 1.
+  out[23] = ~a ^ b;
+  out[22] = ~a ^ c;
+  ...
+  out[ 1] = ~e ^ d;
+  out[ 0] = ~e ^ e;
+
+- ```verilog
+  module top_module (
+      input a, b, c, d, e,
+      output [24:0] out );//
+  
+      // The output is XNOR of two vectors created by 
+      // concatenating and replicating the five inputs.
+      // assign out = ~{ ... } ^ { ... };
+      assign out = ~{{5{a}},{5{b}},{5{c}},{5{d}},{5{e}}} ^ {{5{a,b,c,d,e}}};
+  endmodule
+  ```
+
+### **Problem 18  : Vector reversal 1**
+
+- 应为problem16
+- 没看懂， TODO
+
+### **Problem 19 : Modules**
+
+- 本题开始，我们将讨论一早我们就见识但还没有深入了解的概念：模块。
+
+- 截止目前，我们已经对 Verilog 中模块这一概念建立了初步的印象：模块是一个电路，通过输入输出端口和外部的电路联系。无论多大，多复杂的数字电路都是由一个个模块以及其他组成部分（比如 assign 赋值语句以及 always 过程块）互相连接所构成的。在一个模块中可以例化下一级的模块，这就形成了层级的概念（hierarchy）。
+
+- 当你从顶层模块的角度看去，下层模块对你来说就是一个黑盒子，盒子里的内容并不重要。重要的是模块的输入输出端口。
+
+- 模块中可以例化其他模块，但在模块中不允许再定义其他模块。这项语法规则类似于在 C 语言函数中可以调用其他函数，但不能定义其他函数。
+
+- **模块信号连接的两种方式**
+
+  - 在实例化模块时，有两种常用的方式来进行模块端口的信号连接：按端口顺序以及按端口名称连接端口。
+
+  - **按端口顺序**，`mod_a instance1 ( wa, wb, wc ); `wa, wb, wc 分别连接到模块的 第一个端口（in1），第二个端口（in2）以及第三个端口（out）。这里所谓的端口顺序指的是模块端口的定义顺序。这种方式的弊端在于，一旦端口列表发生改变，所有模块实例化中的端口连接都需要改变。
+
+  - **按端口名称**，`mod_a instance2 ( .out(wc), .in1(wa), .in2(wb) ); `在这种方式中根据端口名称指定外部信号的连接。这样一来就和端口声明的顺序完全没有关系。一旦模块出现改动，只要修改相应的部分即可。实际上，一般都使用这种方式来进行模块实例化。
+
+- ```verilog
+  module top_module ( input a, input b, output out );
+          mod_a U_mod_a(
+            .in1(a)
+          , .in2(b)
+          , .out(out));
+      //mod_a U_mod_a(a, .b, out); //使用按照端口顺序的方式 声明信号连接
+  endmodule
+  ```
+
+- 本题中同时使用了两种方式定义了端口的信号连接，实际上按照端口名称连接的方式用得更多，因为更加容易处理模块端口列表的变动。
+
+- 值得注意的是，在实例化模块时，一般一个端口用一行表示，这样更直观一些。至于逗号放在前面还是放在后面，那倒无所谓。但我看过 NVIDIA 的开源代码将逗号放在前面之后，觉得这样挺好的，故也就这么写了。
+
+### **Problem 20: Connecting ports by position(Module pos)**
+
+- ```verilog
+  module mod_a ( output, output, input, input, input, input );
+  ```
+
+- ```verilog
+  module top_module ( 
+      input a, 
+      input b, 
+      input c,
+      input d,
+      output out1,
+      output out2
+  );
+  
+      mod_a name(out1,out2,a,b,c,d);
+      
+  endmodule
+  ```
+
+### **Problem 21: Connecting ports by name(Module name)**
+
+- ```verilog
+  module mod_a ( output out1, output out2, input in1, input in2, input in3, input in4);
+  ```
+
+- ```verilog
+  module top_module ( 
+      input a, 
+      input b, 
+      input c,
+      input d,
+      output out1,
+      output out2
+  );
+  
+      mod_a name(
+          .out1(out1),
+          .out2(out2),
+          .in1(a),
+          .in2(b),
+          .in3(c),
+          .in4(d));
+      
+  endmodule
+  ```
+
+### **Problem 22: Three modules(Module shift)**
+
+- 给出了一个名为my_dff的模块，包含两个输入和一个输出(实现D触发器的功能)。实例化三个my_dff，然后将它们连接在一起，构成长度为3的移位寄存器。注意：clk端口需要连接到所有的寄存器实例上。
+
+- ```verilog
+  module my_dff ( input clk, input d, output q );
+  ```
+
+- ```verilog
+  module top_module (
+  	input clk,
+  	input d,
+  	output q
+  );
+  
+  	wire a, b;	// 声明两个wire变量，命名为a, b
+  
+  	// 对my_dff进行了三次实例化，用了三个不用的名字 (d1, d2, and d3).
+  	// 端口使用了位置连接的方式( input clk, input d, output q)
+  	my_dff d1 ( clk, d, a );
+  	my_dff d2 ( clk, a, b );
+  	my_dff d3 ( clk, b, q );
+  
+  endmodule
+  ```
+
+### **Problem 23: Modules and vectors(Module shift8)**
+
+- ```verilog
+  module my_dff8 ( input clk, input [7:0] d, output [7:0] q );
+  //该模块为一个8bit数据寄存器，将输入的数据在下一时钟输出
+  ```
+
+- ```verilog
+  module top_module (
+  	input clk,
+  	input [7:0] d,
+  	input [1:0] sel,
+  	output reg [7:0] q
+  );
+  
+  	wire [7:0] o1, o2, o3;		// 声明每一个触发器的输出
+  	
+  	// Instantiate three my_dff8s
+  	my_dff8 d1 ( clk, d, o1 );
+  	my_dff8 d2 ( clk, o1, o2 );
+  	my_dff8 d3 ( clk, o2, o3 );
+  
+  	// 这是实现4选1选择器的一种方法
+  	always @(*)		// 组合逻辑always块
+  		case(sel)
+  			2'h0: q = d;
+  			2'h1: q = o1;
+  			2'h2: q = o2;
+  			2'h3: q = o3;
+  		endcase
+  
+  endmodule//该模块的功能是？
+  ```
+
+### **Problem 24，25 ，26 : Adder 1(Module add)**，**Adder 2(Module fadd)**，**Carry-select adder (Module cseladd)**
+
+- 设计三中类型的加法器TODO
+
+### **Problem 27: Adder–subtractor (Module addsub)**
+
+- 根据加法器设计减法器TODO
+
+### **Problem 28: Always blocks(combinational) (Alwaysblock1)**
+
+- 我们知道数字电路是由导线连接的逻辑门组成，因此任何电路都可以表示为module和assign语句的某种组合。但是，有时候这不是描述电路最简便的方法。过程块(比如always块)提供了一种用于替代assign语句描述电路的方法。
+
+- 有两种always块是可以综合出电路硬件的：
+
+  - ```verilog
+    组合逻辑：always @(*)
+    时序逻辑：always @(posedge clk)
+    ```
+
+  - 组合always块相当于assign语句，因此组合电路存在两种表达方法。具体使用哪个主要取决于使用哪个更方便。**过程块内的代码与外部的assign代码不同**。过程块中可以使用更丰富的语句(比如if-then,case)，但不能包含连续赋值。但也引入了一些非直观的错误。(*过程连续赋值确实可以存在，但与连续赋值有些不同，并且不可综合)
+
+  - 例如，assign和组合always块描述相同的电路。两者均创造出了相同的组合逻辑电路。只要任何输入(右侧)改变值，两者都将重新计算输出。
+
+    - ```verilog
+      assign out1 = a & b | c ^ d;
+      always @(*) out2 = a & b | c ^ d;
+      ```
+
+  - 对于组合always块，敏感变量列表总是使用(*)。如果把所有的输入都列出来也是可以的，但容易出错的(可能少列出了一个)，并且在硬件综合时会忽略您少列了一个，仍按原电路综合。 但仿真器将会按少列一个来仿真，这导致了仿真与硬件不匹配。(在SystemVerilog中，使用always_comb)
+
+  - 使用assign语句和组合always块来构建与门。
+
+  - ```verilog
+    // synthesis verilog_input_version verilog_2001
+    module top_module(
+        input a, 
+        input b,
+        output wire out_assign,
+        output reg out_alwaysblock
+    );
+    
+        assign out_assign = a & b;
+        
+        always@(*)
+            out_alwaysblock = a & b;
+        
+    endmodule
+    ```
+
+### **Problem 29: Always blocks(clocked) (Alwaysblock2)**
+
+- 时序always块也会像组合always块一样生成一系列的组合电路，但同时在组合逻辑的输出生成了一组触发器(或寄存器)。该输出在下一个时钟上升沿(posedge clk)后可见，而不是之前的立即可见。
+
+- **阻塞赋值和非阻塞赋值**
+
+  - ```verilog
+    连续赋值(assign x=y;)：不能在过程块内使用；过程阻塞赋值(x=y;)：只能在过程块中使用；
+    过程非阻塞赋值(x<=y)：只能在过程块内使用。
+    ```
+
+  - 在组合always块中，使用阻塞赋值。
+
+  - 在时序always块中，使用非阻塞性赋值。
+
+  - 记住组合用阻塞性，时序用非阻塞性就可以了
+
+  - 具体为什么对设计硬件用处不大，还需要理解Verilog模拟器如何跟踪事件，但不遵循此规则会导致极难发现非确定性错误，并且在仿真和综合出来的硬件之间存在差异。
+
+- 使用assign语句，组合always块和时序always块这三种方式来构建异或门。 请注意，时钟always块生成了与另外两个不同的电路，多了一个触发器，因此输出会有一定的延迟。
+
+  - ```verilog
+    module top_module(
+        input clk,
+        input a,
+        input b,
+        output wire out_assign,
+        output reg out_always_comb,
+        output reg out_always_ff   
+    );
+        assign out_assign = a ^ b;
+        always@(*) 
+            out_always_comb = a ^ b;
+        always@(posedge clk) 
+            out_always_ff <= a ^ b;
+    endmodule
+    ```
+
+### **Problem 30: If statement(Always if)**
+
+- if语句通常对应一个二选一多路复用器，如果条件为真，则选择其中一个输入作为输出；反之如果条件为假，则选择另一个输入所谓输出。if语句必须在过程块内使用。
+
+- 下面给出了一个基本的if语句和其综合出来的电路。
+
+  - ```verilog
+    always @(*) begin
+        if (condition) begin
+            out = x;
+        end
+        else begin
+            out = y;
+        end
+    end
+    //等价于下面这句话
+    assign out = (condition) ? x : y;
+    ```
+
+### **Problem 31: If statement latches(Always if2)**
+
+- **常见的错误来源：如何避免引入锁存器**
+
+  在设计电路时，必须首先具体考虑电路：
+
+  1、我想实现一个逻辑门；
+
+  2、我想实现一个具有输入并产生输出的组合逻辑块；
+
+  3、我想实现一组组合逻辑，紧接着一组触发器。
+
+- 除了你指定的情况以外，会发生些什么，答案是什么也不会发生。输出保持不变，输出保持不变，这就意味着电路需要记住当前状态，从而产生锁存器。组合逻辑(比如逻辑门)不能记住任何状态。而这往往就导致了电路的错误，所以说语法正确的代码不一定能产生合理的电路(组合逻辑+触发器)。
+
+- 上述这类情况下的错误，除非锁存器是故意生成的。组合电路输出必须在所有输入的情况下都有值。这意味着必须需要else子句或着输出默认值。
+
+- ```verilog
+  //******latches******************************************
+  always @(*) begin
+      if (cpu_overheated)
+         shut_off_computer = 1;
+  end
+  //*******比较上下两种情况*********************************
+  always @(*) begin
+      if (cpu_overheated)
+          shut_off_computer = 1;
+      else
+          shut_off_computer = 0;
+  end
+  
+  //******latches******************************************
+  always @(*) begin
+      if (~arrived)
+         keep_driving = ~gas_tank_empty;
+  end
+  //*******比较上下两种情况*********************************
+      always @(*) begin
+          if (~arrived)
+              keep_driving = ~gas_tank_empty;
+          else
+              keep_driving = ~arrived;
+      end
+  ```
+
+### **Problem 32: Casestatement(Always case)**
+
+- Verilog中的case语句**几乎**等同于if-else if-else序列，它将一个表达式与其他表达式列表进行比较。它的语法和功能与C语言中的switch语句稍有不同：
+
+  - ```verilog
+    always @(*) begin     // This is a combinational circuit
+        case (in)
+          1'b1: begin 
+                   out = 1'b1;  // begin-end if >1 statement
+                end
+          1'b0:    out = 1'b0;
+          default: out = 1'bx;
+        endcase
+    end
+    ```
+
+  - 1、case语句以case开头，每个case项以冒号结束。而switch语句没有。
+
+  - 2、每个case项只执行一个语句。 这样就不需要C语言中break来跳出switch。但这也意味着如果您需要多个语句，则必须使用begin ... end。
+
+  - 3、case项允许重复和部分重叠，执行程序匹配到的第一个，而C语言不允许重复的case项目。
+
+- 如果存在大量的case项，则case语句比if语句更方便。 因此，在本练习中，创建一个6选1的多路复用器。当sel介于0和5之间时，选择相应的数据输入。 其他情况输出0。数据输入和输出均为4位宽。
+
+- **注意：不要生成锁存器(详见：Problem 31: If statement latches(Always if2))。**
+
+- ```verilog
+  // synthesis verilog_input_version verilog_2001
+  module top_module ( 
+      input [2:0] sel, 
+      input [3:0] data0,
+      input [3:0] data1,
+      input [3:0] data2,
+      input [3:0] data3,
+      input [3:0] data4,
+      input [3:0] data5,
+      output reg [3:0] out   
+  );
+      always@(*) begin  // This is a combinational circuit
+          case(sel)
+          3'b000: out = data0;
+          3'b001: out = data1;
+          3'b010: out = data2;
+          3'b011: out = data3;
+          3'b100: out = data4;
+          3'b101: out = data5;
+          default: out = 4'b0000;
+          //注意这里一定要用default声明一下不在case项里的输出，否则会生成不必要的寄存器，影响电路的功能
+          endcase
+      end
+  
+  endmodule
+  ```
+
+### **Problem 33: Priority encoder(Always case2)**
+
+- ```verilog
+  // synthesis verilog_input_version verilog_2001
+  module top_module (
+      input [3:0] in,
+      output reg [1:0] pos);
+  
+  always@(*)
+      case(in)
+      4'b0000: pos = 2'b00;
+      4'b0001: pos = 2'b00;
+      4'b0010: pos = 2'b01;
+      4'b0011: pos = 2'b00;
+      4'b0100: pos = 2'b10;
+      4'b0101: pos = 2'b00;
+      4'b0110: pos = 2'b01;
+      4'b0111: pos = 2'b00;
+      4'b1000: pos = 2'b11;
+      4'b1001: pos = 2'b00;
+      4'b1010: pos = 2'b01;
+      4'b1011: pos = 2'b00;
+      4'b1100: pos = 2'b10;
+      4'b1101: pos = 2'b00;
+      4'b1110: pos = 2'b01;
+      4'b1111: pos = 2'b00;
+      default: pos = 2'b00;
+      endcase
+  
+  endmodule
+  ```
+
+### **Problem 34: Priority encoder with casez(Always casez)**
+
+- 如果case语句中的case项与某些输入无关，就可以减少列出的case项(在本题中减少到9个)。这就是casez的用途：它在比较中将具有值z的位视为无关项(即输入01都会匹配到)。
+- case项是按顺序检查的(实际上，它更像是生成一个巨大的真值表然后生成超大的门)。注意有输入(例如，4'b1111)匹配多个case项。选择第一个匹配(因此4'b1111匹配第一个case项，out = 0)。
+- 还有一个类似的casex，将输入的x和z都视为无关。不认为casex比casez有什么特别的好处。(作者个人感觉没必要用casex，z和x状态的问题涉及电路的基本知识)
+- 符号"?" 是z的同义词，所以2'bz0与2'b?0相同。
+
+- ```verilog
+  always @(*) begin
+      casez (in[3:0])
+          4'bzzz1: out = 0;   // in[3:1]输入什么都可以
+          4'bzz1z: out = 1;
+          4'bz1zz: out = 2;
+          4'b1zzz: out = 3;
+          default: out = 0;
+      endcase
+  end
+  ```
+
+### **Problem 35: Always nolatches(Always nolatches)**
+
+- ```verilog
+  module top_module (
+      input [15:0] scancode,
+      output reg left,
+      output reg down,
+      output reg right,
+      output reg up  ); 
+  
+  always@(*)
+      casez(scancode)
+          16'he06b: begin up = 1'b0; down = 1'b0; left = 1'b1; right = 1'b0; end
+          16'he072: begin up = 1'b0; down = 1'b1; left = 1'b0; right = 1'b0; end
+          16'he074: begin up = 1'b0; down = 1'b0; left = 1'b0; right = 1'b1; end
+          16'he075: begin up = 1'b1; down = 1'b0; left = 1'b0; right = 1'b0; end
+          default:  begin up = 1'b0; down = 1'b0; left = 1'b0; right = 1'b0; end
+      endcase
+  
+  endmodule
+  ```
+
+- ```verilog
+  module top_module (
+      input [15:0] scancode,
+      output reg left,
+      output reg down,
+      output reg right,
+      output reg up  ); 
+  
+  always@(*)
+  begin
+      up = 1'b0; down = 1'b0; left = 1'b0; right = 1'b0;
+      casez(scancode)
+          16'he06b: left = 1'b1;
+          16'he072: down = 1'b1;
+          16'he074: right = 1'b1; 
+          16'he075: up = 1'b1;
+      endcase 
+  end
+  //会报一个没有default的警告，但是两者电路都一样，因为都设置了所有情况的默认值
+  endmodule
+  ```
+
+### **Problem 36: Conditional ternary operator(Conditional)**
+
+- Verilog跟C语言一样有一个三元运算符( ? : )。
+
+  - ```verilog
+    condition ? if_true : if_false
+    ```
+
+- 举个栗子：
+
+  - ```verilog
+    (0 ? 3 : 5)     // 输出是5，因为条件"0"始终是false的
+    (sel ? b : a)   // 一个二选一MUX，通过sel的值选择a或者b
+    
+    always @(posedge clk)         // 一个T触发器
+      q <= toggle ? ~q : q;
+    
+    always @(*)                   // 一输入的状态转换逻辑
+        A: next = w ? B : A;
+        B: next = w ? A : B;
+      endcase
+    
+    assign out = ena ? q : 1'bz;  // 三态缓冲器
+    // 一个三选一MUX
+    ((sel[1:0] == 2'h0) ? a : (sel[1:0] == 2'h1) ? b : c )
+    ```
+
+### **Problem 37: Reduction operators(Reduction)**
+
+- 归约运算符，对一个向量的所有位进行操作，如(a[0]&a[1]&a[2]&a[3]...)，对于长的标量来说，这很麻烦。
+
+- 归约运算符(Reduction Operators)可以对向量的每一位位进行AND，OR和XOR，产生一位输出：
+
+  ```text
+  &a [3：0] // AND:a[3]&a[2]&a[1]&a [0]相当于(a[3：0]== 4'hf)
+  |b [3：0] // OR: b[3]|b[2]|b[1]|b [0]相当于(b[3：0]!= 4'h0)
+  ^c [2：0] // XOR:c[2]^c[1]^c[0]
+  ```
+
+- ```verilog
+  module top_module (
+      input [7:0] in,
+      output parity); 
+  
+      assign parity = ^in;
+      
+  endmodule
+  ```
+
+- 奇偶校验是检验传输数据中1的个数，当然有奇数有偶数，，这时候就需要用我们的校验位了，通过检验位将传输1的个数变成奇数就是奇校验，变成偶数就是偶校验。比如：
+
+  ```text
+  8'b01100100   //原数据
+  9'b01100100_0 //奇校验
+  9'b01100100_1 //偶校验
+  ```
+
+### **Problem 38: Reduction: Even wider gates(Gates100)**
+
+- ```verilog
+  module top_module( 
+      input [99:0] in,
+      output out_and,
+      output out_or,
+      output out_xor 
+  );
+      
+      assign out_and = & in;
+      assign out_or  = | in;
+      assign out_xor = ^ in;
+  
+  endmodule
+  ```
+
+### **Problem 39: Combinational for-loop: Vector reversal2(Vector100r)**
+
+- Problem 18，我感觉这两个问题的语句都不能综合
+
+### **Problem 40 Combinational for-loop: 255-bit population count**
+
+- 能不能被综合？？？**TODO**
+
+### **Problem 41 Generate for-loop: 100-bit binary adder 2**
+
+- **TODO**
+
+### **Problem 42 Generate for-loop: 100-digit BCD adder**
+
+- 生成语句可以动态的生成verilog代码，当对矢量中的多个位进行重复操作时，或者当进行多个模块的实例引用的重复操作时，或者根据参数的定义来确定程序中是否应该包含某段Verilog代码的时候，使用生成语句能大大简化程序的编写过程。
+
+- 使用关键字generate 与 endgenerate来指定范围。generate语句有generate-for、generate-if、generate-case三种语句，本题中我们使用generate-for语句。
+
+- generate-for语句：
+
+  - **（1） 必须有genvar关键字定义for语句的变量。**
+  - **（2）for语句的内容必须加begin和end（即使就一句）。**
+  - **（3）for语句必须有个名字。**
+
+- 举个栗子
+
+  - ```verilog
+    //创建一个2进制转换器
+    Module gray2bin
+    #(parameter SIZE = 8)
+    (
+      input [SIZE-1:0] gray,
+      output [SIZE-1:0] bin
+    )；
+    genvar gi;  //在generate语句中采用genvar声明
+        generate
+        for (gi=0; gi<SIZE; gi=gi+1) 
+            begin : genbit    //for语句必须有名字
+                assign bin[i] = ^gray[SIZE-1:gi];
+            end
+        endgenerate 
+    endmodule
+    ```
+
+- ```verilog
+  module top_module( 
+      input [399:0] a, b,
+      input cin,
+      output cout,
+      output [399:0] sum 
+  	);
+  wire [399:0] cout_temp;
+  //与上题同理，还是先计算cout[0],我声明一个wire型的cout_temp来存放每次计算后cout的值。
+  bcd_fadd inst1_bcd_fadd (
+      .a(a[3:0]),
+      .b(b[3:0]),
+      .cin(cin),
+      .cout(cout_temp[0]),
+      .sum(sum[3:0])
+      );
+  genvar i;
+  generate
+  	for(i=4; i<400; i=i+4)
+  		begin: bcd
+  			bcd_fadd inst_bcd_fadd(
+                  .a(a[i+3:i]), 
+                  .b(b[i+3:i]), 
+                  .cin(cout_temp[i-4]), //上次计算输出的cout
+                  .cout(cout_temp[i]), //本次计算输出的cout，在下次计算中变为cin
+                  .sum(sum[i+3:i])
+  		);
+  	end
+  endgenerate 
+      
+  assign cout = cout_temp[396];   
+  
+  endmodule
+  ```
+
+### **Problem 43 Wire**
+
+- ```verilog
+  module top_module (
+      input in,
+      output out);
+   assign out = in;//wire型输出
+  endmodule
+  ```
+
+### **Problem 44 GND**
+
+- ```verilog
+  module top_module (
+      output out);
+      assign out = 1'b0;//接地
+  endmodule
+  ```
+
+### **Problem 45 NOR**
+
+- ```verilog
+  module top_module (
+      input in1,
+      input in2,
+      output out);
+  // 一个或非门
+  assign out = ~(in1 | in2);
+  
+  endmodule
+  ```
+
+### **Problem 46 Another gate**
+
+- ```verilog
+  module top_module (
+      input in1,
+      input in2,
+      output out);
+  //一个与门，但输入in2需要取反。
+  assign out = in1 & (~in2);
+  
+  endmodule
+  ```
+
+### **Problem 47 Two gates**
+
+- ```verilog
+  module top_module (
+      input in1,
+      input in2,
+      input in3,
+      output out);
+  
+      wire temp;
+  	// 一个异或门，一个同或门，声明一个wire型的temp来存放同或门的输出。
+      assign temp = in1 ^~ in2;
+      assign out = temp ^ in3;
+  
+  endmodule
+  ```
+
+### **Problem 48 More logic gates**
+
+- ```verilog
+  //Module Declaration
+  module top_module( 
+      input a, b,
+      output out_and,
+      output out_or,
+      output out_xor,
+      output out_nand,
+      output out_nor,
+      output out_xnor,
+      output out_anotb
+  );
+      assign out_and = a & b;
+      assign out_or  = a | b;
+      assign out_xor = a ^ b;
+      assign out_nand = ~(a & b);
+      assign out_nor = ~(a | b);
+      assign out_xnor = ~(a ^ b);
+      assign out_anotb = a & (~b);
+  
+  endmodule
+  ```
+
+### **Problem 49 : 7420 chip**
+
+-  7420 chip是拥有两组4输入的与非门芯片
+
+- ```verilog
+  module top_module
+      (
+          input  p1a, p1b, p1c, p1d,
+          output p1y,
+          input  p2a, p2b, p2c, p2d,
+          output p2y
+      );
+  
+      assign p1y = ~(p1a & p1b & p1c & p1d);
+      assign p2y = ~(p2a & p2b & p2c & p2d);
+  
+  endmodule
+  ```
+
+### **Problem 50 Truth tables **
+
+- 真值表
+-  在前面的练习中，我们使用简单的逻辑门和多个逻辑门的组合。这些电路是组合电路的例子。组合意味着电路的输出只是其输入的函数（在数学意义上）。这意味着对于任何给定的输入值，只有一个可能的输出值。因此，描述组合函数行为的一种方法是显式地列出输入的每个可能值的输出应该是什么。这是一张真值表。
+-  对于n个输入的布尔函数，有2n个可能的输入组合。真值表的每一行列出一个输入组合，因此总是有2n行。输出列显示每个输入值的输出应该是什么。
+
+### **Problem 54 Combine circuits A and B**
+
+- ```verilog
+  //Module Declaration
+  module top_module
+  (
+      input x, 
+      input y, 
+      output z
+  );
+  
+  wire z1, z2, z3, z4;
+  
+  assign z1 = (x^y) & x;
+  assign z2 = x ^~ y;
+  assign z3 = (x^y) & x;
+  assign z4 = x ^~ y;
+  
+  assign z = (z1 | z2) ^ (z2 & z3);
+  
+  endmodule
+  ```
+
