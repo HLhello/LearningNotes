@@ -11,3 +11,5 @@
 - 《Python语言程序设计》梁勇（Y.Daniel Liang）
 - 《C程序设计》谭浩强
 - 《大话数据结构》程杰
+- 《vivado从此开始》高亚军
+- 《Xilinx vivado数字设计权威指南》何宾

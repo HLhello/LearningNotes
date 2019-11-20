@@ -1077,9 +1077,9 @@ assign out_and = in[3] & in[2] & in[1] & in[0];
   );
   
   wire z1, z2, z3, z4;
-  
-  assign z1 = (x^y) & x;
-  assign z2 = x ^~ y;
+  //就是一个简单的电路，看懂是什么意思就行
+  assign z1 = (x^y) & x;//^按位异或,&按位与
+  assign z2 = x ^~ y;//按位同或
   assign z3 = (x^y) & x;
   assign z4 = x ^~ y;
   
@@ -1087,4 +1087,604 @@ assign out_and = in[3] & in[2] & in[1] & in[0];
   
   endmodule
   ```
+
+### **Problem 55 Ring or vibrate**
+
+- 软硬件编程思路
+  - 一般进行软件编程时，我们是先关注输入( if (input are _))，再关注输出( then (output are ))。
+  - **而在硬件编程时，我们需要转变思维方式，在确保输出是正确的情况下，再思考输入。( The (output should be _) when (inputs are __))。**
+  - **能够思考和转换两种风格是硬件设计所需的最重要技能之一。**
+
+- 设计一个电路
+
+  -  假设你正在设计一个电路来控制手机的振铃器和振动电机。当手机来电时(input ring)，电路必须把震动( output motor = 1 )或响铃( output ringer = 1 )打开，但不能同时打开。当手机处于震动模式时( input vibrate = 1 )，则打开震动( output motor = 1 )。否则打开响铃。
+
+  - 要求：仅使用assign语句来实现该组合电路。
+
+  - ```verilog
+    //Module Declaration
+    module top_module (
+        input ring,
+        input vibrate_mode,
+        output ringer,       // Make sound
+        output motor         // Vibrate
+    );
+        assign motor = ring & vibrate_mode;
+        assign ringer  = ring & (!vibrate_mode);
+    endmodule
+    ```
+
+### **Problem 56 Thermostat**
+
+- Thermostat，恒温器。
+
+- 设计一个电路，根据需要打开和关闭加热器、空调和鼓风机风扇。
+
+  - 要求：恒温器可以处于两种模式之一：制热（mode = 1）和制冷（mode = 0）。在制热模式下，当温度过低时（too_cold = 1），打开加热器，但不要使用空调。在制冷模式下，当温度过高（too_hot = 1）打开空调，但不要打开加热器。当加热器或空调打开时，也打开风扇使空气循环。此外，即使加热器和空调关闭，用户也可以请求将风扇打开（fan_on = 1）。
+
+  - ```verilog
+    module top_module
+    (
+        input too_cold,
+        input too_hot,
+        input mode,
+        input fan_on,
+        output heater,
+        output aircon,
+        output fan
+    );
+    
+    assign heater = mode  & too_cold;
+    assign aircon = !mode & too_hot;
+    assign fan    = (mode & too_cold) | (!mode & too_hot) | fan_on;
+    
+    endmodule
+    ```
+
+### **Problem 57 3-bit population count**
+
+-  设计一个电路来计算输入中 ‘ 1 ’ 个数。需要使用for循环，TODO
+
+### **Problem 58 Gates and vectors**
+
+-  有一个4bit输入的电路，我们需要了解4bit输入数据之间的关系。
+
+  - **out_both**: 输入的每一个bit均需要检测该bit位与其左侧（即高比特位）是否全为 ‘ 1 ’ 。 示例： `out_both[2]`应检测`in[2]` 与 `in[3]` 是否均为 ‘ 1 ’ 。因为`in[3]` 为输入的最高位，故我们无需检测`out_both[3]`
+
+  - **out_any**: 输入的每一个bit均需要检测该bit位与其右侧（即低比特位）两者其中一个为 ‘ 1 ’ 。 示例： `out_any[2]`应检测`in[2]` 与 `in[1]` 两者其中一个为 ‘ 1 ’ 。因为`in[0]` 为输入的最低位，故我们无需检测`out_any[0]`
+
+  - **out_different**: 输入的每一个bit均需要检测该bit位与其左侧（即高比特位）两者是否不同。 示例： `out_different[2]`应检测`in[2]` 与 `in[3]` 两者是否不同 。在本节中，我们将输入变成一个环，所以`in[3]`的左侧为`in[0]`。
+
+  - ```verilog
+    module top_module( 
+        input [3:0] in,
+        output [2:0] out_both,
+        output [3:1] out_any,
+        output [3:0] out_different);
+    
+        assign out_both      = {{in[3] & in[2]}, {in[2] & in[1]}, {in[1] & in[0]}};
+        assign out_any       = {{in[3] | in[2]} , {in[2] | in[1]} , {in[1] | in[0]}};
+        assign out_different = {{in[0] ^ in[3]}, {in[3] ^ in[2]}, {in[2] ^ in[1]}, {in[1] ^ in[0]}};
+    
+    endmodule
+    ```
+
+### **Problem 59 Even longer vectors**
+
+- 将problem58输入从4bit改成100bit
+
+- ```verilog
+  module top_module( 
+      input [99:0] in,
+      output [98:0] out_both,
+      output [99:1] out_any,
+      output [99:0] out_different );
+  
+      assign out_both = in[98:0] & in[99:1];
+      assign out_any  = in[99:1] | in[98:0];
+      assign out_different = in ^ {in[0],in[99:1]};
+  
+  endmodule
+  ```
+
+### **Problem 60 : 2-to-1 multiplexer (Mux2to1)**
+
+- 选择器是一个使用频次很高的模块，选择器从多个输入数据流中选取一个输出到公共的输出端。在综合的过程中一些 Verilog 语法会显式地被"翻译"为选择器，可以在综合结果中看到对应的选择器模块。
+
+- ```verilog
+  module top_module( 
+      input a, b, sel,
+      output out 
+  );    
+  assign out = (sel) ? b : a;
+  //实现二选一多路器    
+  endmodule
+  ```
+
+- 三元运算符（Ternary operator）的使用方式是这样的：
+
+  - ```cond ? iftrue : iffalse``` cond 条件为真，则表达式的值为 iftrue，反之表达式的值为 iffalse。具体看 (sel)?b:a 式，当 sel 为真时，结果为 b，反之结果为 a。
+
+  - Verilog 三元运算符原理和 C 语言中的三元运算符相同。但使用更加频繁，尤其是和 assign 的组合：               ```assign out = (sel)?b:a;```
+
+  - 嵌套的用法也十分常用,比如求 a,b,c 中的最大值，可以在一个三元运算符中嵌套两个三元运算符。
+
+  - ```verilog
+    assign max = (a > b) ? 
+        		(a > c) ? a : c 
+        		: 
+        		(b > c) ? b : c ;
+    ```
+
+### **Problem 61 : 2-to-1 bus multiplexer (Mux2to1v)**
+
+- 本题与上一题的区别在于信号从单比特宽度变成总线信号，但选择器的原理以及对应的代码与前一题相同，这里不再赘述。
+
+### **Problem 62 : 9-to-1 multiplexer (Mux9to1v)**
+
+- 本题中需要实现一个 9 选 1 选择器，sel 信号作为选择信号，当 sel = 0 时选择 a，sel = 1 时选择 b,以此类推。sel 信号位宽为 4bit，当 sel 大于 8 时，输出 16'hffff。
+
+- ```verilog
+  module top_module( 
+      input [15:0] a, b, c, d, e, f, g, h, i,
+      input [3:0] sel,
+      output reg [15:0] out );
+      //本题如果使用 assign 语句实现会非常繁复，这里使用逻辑上更加直观的 case 语句。
+      //case 语句只能在 always 块中使用。本题为组合逻辑，使用 @(*) 作为敏感列表。
+      always @(*)begin
+          case(sel)
+              4'd0:out = a;
+              4'd1:out = b;
+              4'd2:out = c;
+              4'd3:out = d;
+              4'd4:out = e;
+              4'd5:out = f;
+              4'd6:out = g;
+              4'd7:out = h;
+              4'd8:out = i;
+              default:out=16'hffff;
+          endcase
+      end
+  endmodule
+  ```
+
+### **Problem 63 : 256-to-1 multiplexer (Mux256to1)**
+
+- 本题中需要实现一个 256 选 1 选择器，sel 信号作为选择信号，当 sel = 0 时选择 in[0]，sel = 1 时选择 in[1],以此类推。
+
+- ```verilog
+  module top_module (
+  	input [255:0] in,
+  	input [7:0] sel,
+  	output  out
+  );
+  // Select one bit from vector in[]. The bit being selected can be variable.
+  assign out = in[sel];//直接将 sel ，这个变量，作为片选向量 in 的 index。
+  //assign out = in >> sel;//也可以将输入向量 in 右移 sel 位，高位被截去，输出最低位上的 in[sel]。
+  endmodule
+  ```
+
+### **Problem 64 : 256-to-1 4-bit multiplexer (Mux256to1v)**
+
+- 本题中需要实现一个 256 选 1 选择器，sel 信号作为选择信号，当 sel = 0 时选择 in[3:0]，sel = 1 时选择 in[7:4],以此类推。同上一题的区别在于，位宽从 1 位变到了 4 位。
+
+- ```verilog
+  module top_module (
+  	input [1023:0] in,
+  	input [7:0] sel,
+  	output [3:0] out
+  );
+  // We can't part-select multiple bits without an error, but we can select one bit at a time,
+  // four times, then concatenate them together.
+  assign out = {in[sel*4+3], in[sel*4+2], in[sel*4+1], in[sel*4+0]};
+  // Alternatively, "indexed vector part select" works better, but has an unfamiliar syntax:
+  // assign out = in[sel*4 +: 4];		// Select starting at index "sel*4", then select a total width of 4 bits with increasing (+:) index number.
+  // assign out = in[sel*4+3 -: 4];	// Select starting at index "sel*4+3", then select a total width of 4 bits with decreasing (-:) index number.
+  // Note: The width (4 in this case) must be constant.
+  endmodule
+  ```
+
+- 本题如果延续上一题的思考方式: ```assign out = in[ sel * 4+3 : sel * 4 ];ERROR```  但这个表达式不符合 Verilog 片选操作符的语法。片选多个比特的正确语法有两种：
+
+- ```verilog
+  assign out = in[sel*4 +: 4];
+  // 从 sel*4 开始，选择比特序号大于sel*4 的 4 位比特，相当于[sel*4+3:sel*4]
+  assign out = in[sel*4+3 -: 4];	
+  // 从 sel*4+3 开始，选择比特序号小于 sel*4+3 的 4 位比特，相当于[sel*4+3:sel*4]
+  ```
+
+- 至此，多路选择器的题目就结束了。在位宽较小的多路选择器中，我们可以使用 assign 语句，三元表达式，case 语句等。在位宽较宽的多路选择器中，需要根据需求灵活地使用位选择符或者位连接符
+
+### **Problem 65 : Half adder (Hadd)**   _______________________________________________________________________________________________________________________
+
+- 本题中需要实现一个 2 进制 1bit 加法器，加法器将输入的两个 1bit 数相加，产生两数相加之和以及进位。
+
+- ```verilog
+  module top_module( 
+      input a, b,
+      output cout, sum );
+      assign {cout,sum} = a + b;
+  endmodule
+  ```
+
+### **Problem 66 : Full adder (Fadd)**
+
+- 本题中需要实现一个 2 进制 1bit 全加器，全加器与上一题中的加法器的区别在于，除了将输入的两个 1bit 数相加之外，还累加来自前级的进位，产生相加之和以及进位。
+
+- ```verilog
+  module top_module( 
+      input a, b, cin,
+      output cout, sum );
+      assign{cout,sum} = a + b + cin;
+  endmodule
+  ```
+
+### **Problem 67 : 3-bit binary adder(Adder3 )**
+
+- 在上一题中，我们实现了一个全加器，本题中需要通过实例化 3 个全加器，并将它们级联起来实现一个位宽为 3 bit 的二进制加法器，加法器将输入的两个 3bit 数相加，产生相加之和以及进位。
+
+- **分析：**一个 3bit 全加器由 3 个 1bit 全加器组成，每一比特位对应一个全加器。涉及到进位时，假设最低位产生进位，那个一个 1'b1 就会加到更高 1bit 的全加器中。信号连接时，最低位的 cout 就是次低位的 cin 信号，以此类推。
+
+- ```verilog
+  module top_module( 
+      input [2:0] a, b,
+      input cin,
+      output [2:0] cout,
+      output [2:0] sum );
+  	
+      adder U1(
+          .a(a[0])
+          ,.b(b[0])
+          ,.cin(cin)
+          ,.cout(cout[0])
+          ,.sum(sum[0])
+      );
+      adder U2(
+          .a(a[1])
+          ,.b(b[1])
+          ,.cin(cout[0])
+          ,.cout(cout[1])
+          ,.sum(sum[1])
+      );
+      adder U3(
+          .a(a[2])
+          ,.b(b[2])
+          ,.cin(cout[1])
+          ,.cout(cout[2])
+          ,.sum(sum[2])
+      );
+  endmodule
+  //**************another file*******************************
+  module adder( 
+      input a, b, cin,
+      output cout, sum );
+      assign{cout,sum} = a + b + cin;
+  endmodule
+  ```
+
+### **Problem 68 : Adder (**Exams/m2014 q4j**)**
+
+- 实现一个 4-bit 全加器
+
+- ```verilog
+  module top_module (
+  	input [3:0] x,
+  	input [3:0] y,
+  	output [4:0] sum
+  );
+  // This circuit is a 4-bit ripple-carry adder with carry-out.
+  assign sum = x+y;	// Verilog addition automatically produces the carry-out bit.
+  // Verilog quirk: 
+  // Even though the value of (x+y) includes the carry-out, 
+  // {x+y} is still considered to be a 4-bit number (The max width of the two operands).
+  // This is correct:
+  // assign sum = (x+y);
+  // But this is incorrect:
+  // assign sum = {x+y};	// Concatenation operator: This discards the carry-out
+  endmodule
+  ```
+
+### **Problem 69 : Signed addition overflow**
+
+- 本题讨论的是有符号数相加的溢出问题中，需要实现一个 2 进制 8bit 有符号数加法器，加法器将输入的两个 8bit数补码相加，产生相加之和以及进位。
+
+- ```verilog
+  module top_module (
+      input [7:0] a,
+      input [7:0] b,
+      output [7:0] s,
+      output overflow
+  );
+  //只考虑了两个符号相同的数，那么符号不同的数呢？符号不同的数可能造成溢出吗？不可能，就不可能改变符号位
+  //符号不同的数相加不会溢出，结果或正或负没有意义
+  //减法是将负数转换为补码进行的
+  assign s = a + b;
+  assign overflow = ( a[7] && b[7] && ~s[7] ) || (~a[7] && ~b[7] && s[7]);
+      // ( a[7] && b[7] && ~s[7] )考虑两个负数向加产生一个负数：溢出（1&&1&&~1=1），未溢出（1&&1&&~0=0）
+      // (~a[7] && ~b[7] && s[7] )同上
+  endmodule
+  ```
+
+### **Problem 70 100-bit binary adder**
+
+- 题目要求我们创建一个100bit的二进制的加法器，该电路共包含两个100bit的输入和一个cin， 输出产生sum和cout。
+
+- ```verilog
+  module top_module( 
+      input [99:0] a, b,
+      input cin,
+      output cout,
+      output [99:0] sum 
+  );
+  
+  wire [99:0] cout_temp;
+  //这还是将本次计算的cout当作下次计算的cin来使用
+  fadd inst1_fadd(
+      .a(a[0]),
+      .b(b[0]),
+      .cin(cin),
+      .cout(cout_temp[0]),
+      .sum(sum[0])
+  );
+  genvar i;
+  generate 
+      for(i=1; i<100; i=i+1)
+          begin: add //例化100次全加器
+              fadd inst2_fadd(
+                  .a(a[i]),
+                  .b(b[i]),
+                  .cin(cout_temp[i-1]),
+                  .cout(cout_temp[i]),
+                  .sum(sum[i])
+              );
+          end
+  endgenerate
+  assign cout = cout_temp[99];
+  endmodule
+  //**************another file************************
+  module fadd (
+      input a, b, cin,
+      output sum, cout
+  );
+  
+  assign {cout, sum} = a + b + cin;
+  /*or: assign sum = a ^ b ^ cin;
+        assign cout = a&b | a&cin | b&cin;*/
+  endmodule
+  ```
+
+### **Problem 71 4-digit BCD adder**
+
+- bcd加法器，跟前面差不多，略
+
+### **Problem 72,73 ,74,75: 3-variable, 4-variable, 4-variable, 4-variable**
+
+- 根据卡诺图写出电路逻辑
+- 数电知识TODO
+- 在编写verilog之前，我们可先化简卡诺图。
+  - sop(最小项之和)
+  - pos(最大项之积)。
+- **最小项：**一个真值表定义一个布尔函数，一个布尔函数可以用乘积项的逻辑和来表示，对应这些乘积项函数的值为逻辑1。如果所有的变量都以原变量或反变量的形式出现，且仅出现一次，这样的乘积项叫做最小项（minterm）
+- 一个布尔函数可以由真值表中所有使函数值为1的最小项的逻辑和来表示，这样的表达式叫做最小项之和（sum of minterm）
+
+### **Problem 76 Minimum SOP and POS**
+
+### **Problem 77 Karnaugh map**
+
+### **Problem 78 Karnaugh map**
+
+### **Problem 79 K-map implemented with a multiplexer**
+
+### **Problem 80 : D flip-flop (Dff)**
+
+- 接下来的题目是属于触发器，锁存器的专题。我们会从用 Verilog 实现基础 D 触发器开始，学习触发器这一数字电路中最重要的电路之一。
+
+- D 触发器是一个电路，存储 1bit 数据，并定期地根据触发器的输入(d)更新这 1 bit 数据，更新通常发生在时钟上升沿(clk)。存储的数据会通过输出管脚(q)输出。
+
+- 绝大多数时候，我们不会在 Verilog 代码中显示例化一个触发器（作者没这么做过，但应该是可以做的），我们在时钟敏感的 always 块中的语句一般都会被综合工具转换为相应的触发器。
+
+- D 触发器可以认为是一个触发器和一段最简单的组合逻辑块（blob :想表达逻辑块的时候用我，别用 block）的组合。其中组合逻辑块仅仅是一段 wire。（q 直接输出了触发器的存储值）
+
+- ```verilog
+  module top_module (
+      input clk,    // Clocks are used in sequential circuits
+      input d,
+      output reg q 
+  );
+  // Use a clocked always block
+  //   copy d to q at every positive edge of clk
+  //   Clocked always blocks should use non-blocking assignments
+  always@(posedge clk) begin
+      q <= d;
+  end
+  endmodule
+  ```
+
+### **Problem 81 : D flip-flops (Dff8)**
+
+- 实现 8 个 D 触发器，听上去好像很累的样子，实则 Verilog 语言的抽象帮助我们省去不少麻烦。输入 a，b 的位宽变为 8 位，但 always 块中的语句与上一题完全相同。
+
+- 综合工具根据位宽，综合出了 8 个 D 触发器。一般没有八位触发器的说法。这里反映了综合工具能分析代码，生成相应的触发器电路，其实综合器还能将复杂得多的语句转为相应的电路。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input [7:0] d,
+      output [7:0] q
+  );
+      always@(posedge clk) begin
+      	q <= d;
+      end
+  endmodule
+  ```
+
+### **Problem 82 : DFF with reset (Dff8r)**
+
+- 在上题的 8 个 D 触发器基础上，这题我们要给触发器配上同步复位端口。
+
+- 什么同步复位？当时钟上升沿到来时，如果同步复位端有效（本题中复位高电平有效，即 reset），那么任凭你触发器此前输出或者输入的是 0，是 1，输出一律变为 0。
+
+- 复位电路对于那些经常需要恢复到初始状态的电路是必要的，复位相较于断电重新加载程序恢复到初始状态的速度要快得多。但也有一些电路则不需要复位设计。（作者也是有所耳闻那些不需要复位的电路，平常自己还是会加上复位电路）
+
+- ```verilog
+  module top_module (
+      input clk,
+      input [7:0] d,
+      output [7:0] q
+  );
+      always@(posedge clk) begin
+          if(reset)
+              q <= 8'b0;
+          else
+      	    q <= d;
+      end
+  endmodule
+  ```
+
+### **Problem 83 : DFF with reset value (Dff8p)**
+
+- 同步复位，下降沿触发
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,
+      input [7:0] d,
+      output [7:0] q
+  );
+      always@(negedge clk) begin//下降沿触发
+          if(reset)
+              q <= 8'h255;//同步复位为1
+          else
+      	    q <= d;
+      end
+  endmodule
+  ```
+
+### **Problem 84 : DFF with asynchronous reset (Dff8ar)**
+
+- 异步复位，注意电路与上面两个的不同
+
+- ```verilog
+  module top_module (
+      input clk,
+      input areset,   // active high asynchronous reset
+      input [7:0] d,
+      output [7:0] q
+  );//将异步复位加入 always 块的敏感列表当中
+      always@(posedge clk or posedge areset) begin
+          if(areset)    
+              q <= 8'b0;
+          else
+      	    q <= d;
+      end
+  endmodule
+  ```
+
+### **Problem 85 : DFF with byte enable(Dff16e)**
+
+- 本题中需要创建一个 16 路 D触发器。部分情况下，只需要多路触发器中的一部分触发器工作，此时可以通过 ena 使能端进行控制。使能端 ena 信号有效时，触发器在时钟上升沿工作。
+
+- byteena 使能信号以 byte 为单位管理 8 路触发器在时钟边沿触发与否。byteena [1] 作为 d[15:8] 高位字节的使能端，byteena [0] 则控制 d 的低位字节。
+
+- resetn 为同步，低电平有效复位信号，所有的触发器在时钟上升沿被触发。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input resetn,
+      input [1:0] byteena,
+      input [15:0] d,
+      output reg [15:0] q
+  );
+  
+  always @(posedge clk) begin
+      if(~resetn)
+          q <= 16'd0;
+      else if(byteena[0] || byteena[1]) begin
+          if(byteena[1])  //注意不要在判断 byteena 时将 if...if 结构写成 if..else if ..结构
+              q[15:8] <= d[15:8];
+          if(byteena[0])  //这样会在byteena=2'b11时产生只判断 byteena[1]，忽略byteena[0]的逻辑错误。
+              q[7:0] <= d[7:0];
+      end
+  end
+  endmodule
+  ```
+
+### **Problem 86 : D latch**
+
+- 锁存器的特征在于，相较于 D触发器的触发事件发生于 **clk** 时钟的**边沿**，锁存器锁存的触发事件发生于使能端 **ena** 的**电平**。
+
+- 回想锁存器，触发器的符号，注意二者的区别
+
+- ```verilog
+  module top_module (
+      input d, 
+      input ena,
+      output reg q
+  );    
+  always@(*)begin
+      if(ena)begin
+          q<=d;
+      end
+  end
+  endmodule
+  ```
+
+### **Problem 87 : DFF**
+
+- ar 代表 asynchronous reset，所以这是一个带有异步复位的 D 触发器，我们在先前的题目中讨论过异步复位的问题。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input d, 
+      input ar,   // asynchronous reset
+      output reg q
+  );
+  always@(posedge clk or posedge ar)begin
+      if(ar)
+          q <= 1'b0;
+      else
+          q <= d;
+  end
+  endmodule
+  ```
+
+### **Problem 88 : DFF**
+
+- R 代表 synchronous reset，（就不用 SR 或者 SSR 表示了）所以这是一个带有同步复位的 D 触发器，我们在先前的题目中讨论过同步复位的问题。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input d, 
+      input r,   // synchronous reset
+      output reg q
+  );
+  	
+  always @(posedge clk) begin
+      if(r)
+          q <= 1'b0;
+      else
+          q <= d;
+  end
+  endmodule
+  ```
+
+### **Problem 89 : DFF+gate**
+
+- 一个 D 触发器与一个异或门，触发器的输出 q 和输入信号 in 一起作为异或门的输入。异或门的输入作为触发器的输入 d
+
+- ```verilog
+  module top_module (
+      input clk,
+      input in, 
+      output reg out);
+      always @(posedge clk) begin
+          out <= in ^ out;
+      end
+  endmodule
+  ```
+
 
