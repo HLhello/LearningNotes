@@ -1687,4 +1687,458 @@ assign out_and = in[3] & in[2] & in[1] & in[0];
   endmodule
   ```
 
+### **Problem 90 Mux and DFF**
+
+### **Problem 91 Mux and DFF**
+
+### **Problem 92 DFFS and gates**
+
+### **Problem 93 Create circuit from truth table**
+
+### **Problem 94 Detect an Edge**
+
+- ```verilog
+  module top_module (
+      input clk,
+      input [7:0] in,
+      output [7:0] pedge
+  );
+  
+      reg [7:0] temp;
+  
+      always @ (posedge clk)
+          begin
+              temp <= in; //temp始终比in晚一个周期
+              pedge <= ~temp & in; //当输出为1时检测到上升沿
+              //本题刚好与所示时序图相反，其中Q就相当于temp， D就相当于in，检测下降沿是对in取反就好。
+          end
+  
+  endmodule
+  ```
+
+### **Problem 95 Detect both edges**
+
+- ```verilog
+  module top_module (
+      input clk,
+      input [7:0] in,
+      output reg [7:0] anyedge
+  );
+  
+      reg [7:0] in_temp;
+  
+      always @ (posedge clk)
+          begin
+              in_temp <= in;
+              anyedge <= in ^ in_temp;//只不过换了一种方式
+          end
+  
+  endmodule
+  ```
+
+### **Problem 96 Edge capture register**
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,
+      input [31:0] in,
+      output [31:0] out
+  );
+      reg [31:0] temp;
+      wire [31:0] capture;
+  
+      //同理，我们先检测输入信号的上升沿。
+      always @ (posedge clk)
+          begin
+             temp <= in; 
+          end
+      //这里如果采用reg的话会出现时序错误。
+      assign capture = ~in & temp;
+  
+      //检测到上升沿之后，来确定我们的输出
+      always @ (posedge clk)
+          begin
+              if(reset)
+                  out <= 32'b0;
+              else
+                  begin
+                      for (int i=0; i<32; i=i+1)
+                          begin
+                              if(capture[i] == 1'b1)
+                                  out[i] <= 1'b1;
+                          end
+                  end
+          end
+  
+  endmodule
+  ```
+
+### **Probelm 97 Dual-edge triggered flip-flop**
+
+- 我们现在对时钟上升沿与下降沿都已经很熟悉了。但是FPGA没有一个同时检测双边沿的触发器，而且always中的敏感列表也不支持(posedge clk or negedge clk)。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input d,
+      output q
+  );
+      reg q1, q2;
+      //这里来实现clk的上升沿与下降沿
+      assign q = clk?q1:q2;
+      always @ (posedge clk)
+          begin
+              q1 <= d;
+          end
+      always @ (negedge clk)
+          begin
+              q2 <= d; 
+          end
+  endmodule
+  ```
+
+- ```verilog
+  module top_module(
+      input clk,
+      input d,
+      output q);
+  
+      reg p, n;
+  
+      // clk的上升沿
+      always @(posedge clk)
+          p <= d ^ n;
+  
+      // clk的下降沿
+      always @(negedge clk)
+          n <= d ^ p;
+  
+      //在上升沿时候，p=d^n, 则q=d^n^n=d;
+      //在下降沿时候，n=d^p, 则q=p^d^p=d;
+      //加载一个新值时会取消旧值。
+      assign q = p ^ n;
+      
+      // 这样写是无法综合的
+      /*always @(posedge clk, negedge clk) begin
+          q <= d;
+      end*/
+  endmodule
+  ```
+
+### **Problem 98 Four-bit binary counter**
+
+- 设计一个4bit的计数器，从0～15，共16个周期。reset是同步复位且复位为0。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,      // Synchronous active-high reset
+      output reg [3:0] q
+  );
+      always @ (posedge clk)
+          begin
+              if(reset)
+                  q <= 4'b0000;
+              else
+                  q <= q + 1'b1;
+          end
+  
+  endmodule
+  ```
+
+### **Problem 99 Decade counter**
+
+- 同样是4bit计数器，上一题是0～15， 本题我们只计算到0～9。还是同步复位且复位为0。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,        // Synchronous active-high reset
+      output [3:0] q
+  );
+  always @ (posedge clk)begin
+      if(reset)
+          q <= 4'b0000;
+      else if(q <= 4'b1000)
+          q <= q + 1'b1;
+      else
+          q <= 4'b0000;
+  end 
+  endmodule
+  ```
+
+### **Problem 100 Decade counter again**
+
+- 本题和Problem 99 类似，还是1～10的计数器，唯一不同是同步复位为1.
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,
+      output [3:0] q);
+  
+      always @ (posedge clk)
+          begin
+              if(reset)
+                  q <= 4'b0001;
+              else if(q <= 4'b1001)
+                  q <= q + 1'b1;
+              else 
+                  q <= 4'b0001;
+  
+          end
+  
+  endmodule
+  ```
+
+### **Problem 101 Slow decade counter**
+
+- 设计一个0～9的计数器，共10个周期。该计数器采用同步复位且复位为0。但是本题是希望该计数器并不是随着clk的变化而递增，而是随着一个slowena使能信号来控制增加。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input slowena,
+      input reset,
+      output [3:0] q
+  );
+  reg [3:0] cnt;
+  //period is 10 
+  //What is supposed to happen when the counter is 9 and not enabled?
+  always @ (posedge clk) begin
+      if(reset)
+          cnt <= 4'b0;
+      else if(slowena == 1'b1) begin //slowena 为高，计数器才能正常运行            
+          if(cnt == 4'd9)//因为题目要求周期为10，所以0～9之后下一个为0；
+          	cnt <= 4'b0;
+          else 
+          	cnt <= cnt + 4'd1;
+          end
+  end
+  assign q = cnt;
+  endmodule
+  ```
+
+### **Problem 102 Counter 1-12**
+
+### **Problem 103 Counter 1000**
+
+- 从1000Hz中分离出1Hz的信号，叫做OneHertz。这个主要用作与数字时钟中。利用一个模10的BCD计数器和尽量少的逻辑门来建立一个时钟分频器。
+
+- 假设三个定时器a，b，c都是模10的计数器，a的输入时钟是1000Hz，每当a计到10的时候，给b一个使能，相当于a计10次，b才计1次，b是a的十分之一，故b的时钟是100Hz。同理c是a的百分之1为10Hz。所以到999是输出就为1Hz了。
+
+- ```verilog
+  module top_module (
+      input clk,
+      input reset,
+      output OneHertz,
+      output [2:0] c_enable
+  ); //
+  
+      wire [3:0] q0, q1, q2;
+  
+      assign c_enable = {q1 == 4'd9 && q0 == 4'd9, q0 == 4'd9, 1'b1};
+      assign OneHertz = {q2 == 4'd9 && q1 == 4'd9 && q0 == 4'd9};
+  
+      bcdcount counter0 (clk, reset, c_enable[0], q0);
+      bcdcount counter1 (clk, reset, c_enable[1], q1);
+      bcdcount counter2 (clk, reset, c_enable[2], q2);
+  
+  endmodule
+  ```
+
+### **Problem 104 4-digit decimal counter**
+
+### **Problem 105 12-hour clock**
+
+- 用计数器设计一个带am/pm的12小时时钟。该计数器通过一个CLK进行计时，用ena使能信号来驱动时钟的递增。
+
+- reset信号将时钟复位为12：00 AM。 信号pm为0代表AM，为1代表PM。hh、mm和ss由**两个BCD计数器**构成hours(01~12)， minutes(00~59) , second(00~59)。Reset信号比enable信号有更高的优先级，即使没有enable信号也可以进行复位操作。
+
+- ```verilog
+  module top_module 
+      (
+          input clk,
+          input reset,
+          input ena,
+          output pm,
+          output [7:0] hh,
+          output [7:0] mm,
+          output [7:0] ss
+      );
+  
+  reg p;  //0 is am, 1 is pm
+  reg [7:0] h;
+  reg [7:0] m;
+  reg [7:0] s;
+  
+  always @ (posedge clk) begin
+      if(reset) begin  //reset to 12:00:00 AM
+          p <= 0;
+          h <= 8'h12;
+          m <= 8'h00;
+          s <= 8'h00;
+      end
+      else begin
+          if(ena) begin
+              if(s < 8'h59) begin
+                  if(s[3:0] < 4'h9) begin  //s[3:0] is ones digit
+                      s[3:0] <= s[3:0] + 1'h1; 
+                  end
+                  else begin
+                      s[3:0] <= 0;    //59->00
+                      s[7:4] <= s[7:4] + 1'h1; //tens digit 
+                  end 
+  			end
+                  else
+                      begin
+                          s <= 0; //s清零
+                          if(m < 8'h59)   //m同理s
+                              begin
+                                  if(m[3:0] < 4'h9)
+                                      begin
+                                          m[3:0] <= m[3:0] + 1'h1; 
+                                      end 
+                                  else
+                                      begin
+                                          m[3:0] <= 0;
+                                          m[7:4] <= m[7:4] + 1'h1;
+                                      end
+                              end
+                          else
+                              begin
+                                  m <= 1'h0;
+                                  if(h == 8'h11)  //AM / PM 转换
+                                      p = !p;
+                                  if(h < 8'h12)
+                                      begin
+                                          if(h[3:0] < 4'h9)
+                                              h[3:0] <= h[3:0] + 1'h1;
+                                          else
+                                              begin
+                                                  h[3:0] <= 4'h0;
+                                                  h[7:4] <= h[7:4] + 1'h1;
+                                              end
+                                      end
+                                  else
+                                      begin //hour 12 -> 1
+                                          h <= 1'h1; 
+                                      end
+                              end
+                      end
+              end
+      end
+  end
+  
+  assign pm = p;
+  assign hh = h;
+  assign mm = m;
+  assign ss = s;
+  
+  endmodule
+  ```
+
+### **Problem 106 4-bit shift register**
+
+- 设计一个4bit异步复位，拥有同步置位和使能的右移移位寄存器。
+  - areset : 寄存器复位为0
+
+  - load : 将data[3:0]输入至移位寄存器中
+
+  - ena : 使能信号控制向右移动（q[3]q[2]q[1]q[0] ---> 0q[3]q[2]q[1]，q[0]在移动后消失了，原先q[3]的位置变为0）
+
+  - q : 移位寄存器中的数据
+
+  - 如果ena和load同时为高，load有更高的优先级。
+
+  - ```verilog
+    module top_module(
+        input clk,
+        input areset,  // async active-high reset to zero
+        input load,
+        input ena,
+        input [3:0] data,
+        output reg [3:0] q
+    ); 
+    always @ (posedge clk or posedge areset) begin
+        if(areset)
+            q <= 4'b0;
+        else if (load)
+            q <= data;
+        else if (ena)
+            q[3:0] <= {1'b0, q[3:1]};
+    end
+    endmodule
+    ```
+
+### **Problem 107 Left/right rotator**
+
+- 设计一个100bit的可左移或右移的移位寄存器，附带同步置位和左移或右移的使能信号。本题中，移位寄存器在左移或右移时，不同于Problem106的补0和直接舍弃某一bit位，本题是要求在100bit内循环移动，不舍弃某一bit位同时也不补0。
+
+  - load：load信号将data[99:0] 输入至寄存器内。
+  - ena[1:0] 信号选择是否移位和移位的具体方向
+  - 2'b01 右移一位
+  - 2'b10 左移一位
+  - 2'b00 和 2'b11不移动
+  - q：移位后寄存器内的数据
+
+- ```verilog
+  module top_module(
+      input clk,
+      input load,
+      input [1:0] ena,
+      input [99:0] data,
+      output reg [99:0] q
+  ); 
+      always @ (posedge clk)//可以直接使用case语句
+          begin
+              if(load)
+                  q <= data;
+              else if (ena == 2'b01)
+                  q <= {q[0], q[99:1]};
+              else if (ena == 2'b10)
+                  q <= {q[98:0], q[99]};
+              else if (ena == 2'b00 || ena == 2'b11)
+                  q <= q;       
+          end
+  
+  endmodule
+  ```
+
+### **Problem 108 Left/right arithmetic shift by 1 or 8**
+
+### **Problem 109 5-bit LFSR**
+
+### **Problem 110 3-bit LFSR**
+
+### **Problem 111 32-bit LFSR**
+
+### **Problem 112,113,114 Shift Register**
+
+- 
+
+  ```verilog
+  module top_module (
+      input clk,
+      input resetn,   // synchronous reset
+      input in,
+      output reg out);
+  	reg q0,q1,q2;
+      
+      always@(posedge clk)begin
+          if(~resetn)begin
+              q0	<=	1'b0;
+              q1	<=	1'b0;
+              q2	<=	1'b0;
+              out	<=	1'b0;
+          end else begin
+              q0	<=	in;
+              q1	<=	q0;
+              q2	<=	q1;
+              out	<=	q2;
+          end
+      end
+  endmodule
+  ```
 
