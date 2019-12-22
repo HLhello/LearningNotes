@@ -22,7 +22,7 @@ always@(posedge clk or negedge rst)
 always@(posedge clk or negedge rst)
 	if(!rst)
 		beep = 1'b0;
-	else if(cnt <= 20'd500_00)
+	else if(cnt <= 20'd75842)
 		beep = 1'b0;
 	else
 		beep = 1'b1;

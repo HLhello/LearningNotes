@@ -11,3 +11,4 @@ c/*.exe
 FPGA_ip_core/*/imp/*
 FPGA_ip_core/*/sim/*
 .vscode/
+*.bak
