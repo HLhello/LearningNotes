@@ -1,5 +1,8 @@
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
 -------------------------------------------------------------------------------------------------------------
+ext_clk_25m                  : 23        : input  : 2.5 V             :         : 1         : Y              
+ext_rst_n                    : 24        : input  : 2.5 V             :         : 2         : Y 
+
 led[7]                       : 1         : output : 2.5 V             :         : 1         : Y              
 led[6]                       : 2         : output : 2.5 V             :         : 1         : Y              
 led[5]                       : 3         : output : 2.5 V             :         : 1         : Y     
@@ -12,10 +15,21 @@ key_v[0]                     : 58        : input  : 2.5 V             :         
 key_v[1]                     : 59        : input  : 2.5 V             :         : 4         : Y   
 key_v[2]                     : 54        : input  : 2.5 V             :         : 4         : Y              
 key_v[3]                     : 55        : input  : 2.5 V             :         : 4         : Y    
-ext_clk_25m                  : 23        : input  : 2.5 V             :         : 1         : Y              
-ext_rst_n                    : 24        : input  : 2.5 V             :         : 2         : Y 
-~ALTERA_DCLK~                : 12        : output : 2.5 V             :         : 1         : N  
-         
+~ALTERA_DCLK~                : 12        : output : 2.5 V             :         : 1         : N
+
+dtube_data[7]                : 3         : output : 2.5 V             :         : 1         : Y   
+dtube_data[6]                : 10        : output : 2.5 V             :         : 1         : Y        
+dtube_data[5]                : 28        : output : 2.5 V             :         : 2         : Y        
+dtube_data[4]                : 1         : output : 2.5 V             :         : 1         : Y              
+dtube_data[3]                : 2         : output : 2.5 V             :         : 1         : Y              
+dtube_data[2]                : 7         : output : 2.5 V             :         : 1         : Y                           
+dtube_data[1]                : 11        : output : 2.5 V             :         : 1         : Y                                                         
+dtube_data[0]                : 30        : output : 2.5 V             :         : 2         : Y              
+dtube_cs_n[3]                : 31        : output : 2.5 V             :         : 2         : Y              
+dtube_cs_n[2]                : 32        : output : 2.5 V             :         : 2         : Y              
+dtube_cs_n[1]                : 33        : output : 2.5 V             :         : 2         : Y              
+dtube_cs_n[0]                : 34        : output : 2.5 V             :         : 2         : Y
+~ALTERA_DCLK~                : 12        : output : 2.5 V             :         : 1         : N          
 GND                          : 4         : gnd    :                   :         :           :                
 VCCINT                       : 5         : power  :                   : 1.2V    :           :                
 RESERVED_INPUT               : 6         :        :                   :         : 1         :                
