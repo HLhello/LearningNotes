@@ -6,7 +6,9 @@ FPGA_prj_module/imp  --->  存储工程文件
 
 FPGA_prj_module/sim  --->  存储modelsim仿真文件
 
-FPGA_prj_module/src   --->  存储源码文件，包括：源文件，testbench，仿真文件调用的ip.v，
+FPGA_prj_module/src   --->  存储源码文件，包括：源文件，testbench，仿真文件调用的ip.v
+
+FPGA_prj_module    ---> 实验报告，记录本次实验的内容
 
 # 文件命名规则
 

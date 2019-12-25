@@ -13,9 +13,9 @@ input clk;
 input rst;
 
 output led;
-output sram_cs_n;
-output sram_we_n;
-output sram_oe_n;
+output sram_cs_n;//片选信号 低电平有效
+output sram_we_n;//写选通信号 低电平有效
+output sram_oe_n;//输出选通信号 低电平有效
 
 output [14:0]sram_addr;
 inout [7:0]sram_data;
