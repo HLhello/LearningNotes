@@ -1,4 +1,4 @@
-## 一
+## 设计流程
 
 1. 设计定义
 2. 模块划分，接口定义
@@ -8,7 +8,9 @@
 6. IO分配，布局布线
 7. 时序仿真
 8. 配置文件的生成，配置（烧写）fpga
-9. 在线调试（嵌入式逻辑分析仪）
+9. 在线调试（嵌入式逻辑分析仪）、
+
+## wire与reg的区别
 
 wire
 
@@ -27,13 +29,13 @@ reg
 - 锁存器靠控制信号的电平实现数据的保存
 - 触发器靠控制信号的边沿变化实现数据的保存
 
-cpld与fpga的异同
+## cpld与fpga的异同
 
 - fpga是在cpld之后发展出的一种更复杂的pld
 - fpga集成了更多且更复杂的资源，包括可配置的逻辑块，时钟资源，时钟管理模块，块存储资源，互联资源，专用dsp模块，输入/输出块，XADC模块等，在一些高性能的fpga内还提供了吉比特收发器和PCI-E模块等硬核资源
 - cpld使用与或阵列，fpga使用查找表结构，这是fpga最基本的原理
 
-查找表LUT（look-up table）原理
+## 查找表LUT（look-up table）原理
 
 - 由布尔逻辑代数理论可知，对于一个n输入的逻辑运算，最多产生2的n次方个不同的组合，如果预先将每个逻辑输入对应的结果保存在一个存储单元中，就相当于实现了逻辑门电路的功能
 - fpga内的组合逻辑电路均由查找表实现
@@ -44,7 +46,7 @@ cpld与fpga的异同
   - 逻辑门电路的输入变量从输入经过逻辑门运算后送到逻辑输出变量，存在一定的延时，延迟大小与逻辑电路的复杂度相关，并且是不确定的，延迟时间的不确定，工作频率就不确定，工作频率与时序逻辑电路的工作速度密切相关，由于工作速度的不确定，从而影响到了整个电路的性能
   - 逻辑电路的复杂度与输入逻辑变量的个数和逻辑电路所使用的逻辑门的数量有关，很明显，逻辑电路输入变量越多，电路越复杂
 
-约束文件
+## 约束文件
 
 - xlinix vivado集成开发环境使用xlinix 设计约束（xlinix design constraints，XDC）
 - XDC是基于标准的synopsys设计约束（synopsys design constraints，SDC）的
@@ -60,7 +62,7 @@ cpld与fpga的异同
   - 运行source命令
   - 将TCL叫脚本添加到其中一个设计工程约束集中
 
-某块端口定义
+## 模块端口定义
 
 - 三种模块端口定义，input， output， inout
 
@@ -68,18 +70,18 @@ cpld与fpga的异同
   - 声明端口时同时声明端口的数据类型，没有声明端口类型的情况下默认为线网类型，端口类型有线网（net）型和寄存器（reg）型
   - 有符号（signed）型数据，无符号型数据，没有声明端口有无符号时，默认为无符号型的端口
 
-verilog的描述方式
+## verilog的描述方式
 
 - 行为级描述是verilog hdl最高抽象级别的描述方式，可以按照要求来实现一个设计算法，而不用关心具体的实现方式，但是行为级描述是不可以被综合的，行为级描述语句可以描述逻辑行为，包括initial语句和always语句，用于对设计进行仿真，不能转化为实际的电路结构。
 
 - 寄存器传输级（rtl）级描述，数据流描述，可以理解为在一个复杂的数字系统中，应该包含有数据流和控制流，控制流用于控制数据的流向，寄存器传输，任何数据从输入到输出，都需要经过寄存器来对数据重定序，这样，保证数据从输入到输出满足书序收敛的条件，不会出现竞争冒险与亚稳定状态。完成后将转化为实际的电路
 
-系统任务和函数，编译器指令
+## 系统任务和函数，编译器指令
 
 - 以" $ "开始的标识符表示系统任务或者系统函数
 - 以" ` "开始的的某些表示符看做编译器指令
 
-verilog 中数字的使用
+## verilog 中数字的使用
 
 - 不太理解：" 在任何时候，负数应该使用二进制补码形式表示 "，这是啥意思？
 
@@ -97,149 +99,79 @@ verilog 中数字的使用
   - x不确定态，z高阻态，？作用同z
   - x,z,?，根据base_format的定义，所代表的位宽可以为1,2,4，当然十进制的话我也不知啦，不要那么用，没有意义
 
-属性attribute
+## 属性attribute（参见数字设计权威指南何宾）
 
 - 知道但不会用，感觉是指定一些特定的东西，在综合是加进去，比如之前用过的探针属性，属性有自己的名字，以及自己对应的值
 
-## 二
+## testbench文件中的时间定义
 
-1. 流水灯*.v代码输入
+```1 s = 1,000 ms = 1,000,000 μs = 1,000,000,000 ns = 1,000,000,000,000 ps```
 
-2. testbench文件
+皮秒，符号ps（英语：picosecond ），1皮秒等于一万亿分之一秒（```10^(-12)s```）
 
-   1. ```verilog
-      `testbench 1ns/1ps -->单位/精度
-      #100-->延时100ns
-      `testbench 10ns/1ps
-      #100-->延时100*10ns
-       0.1ns = 1ps，仿真精确到小数点后一位
-      #100.1
-      
-      module tb_xxxxx;
-          
-          待测试模块
-          
-      endmodule  
-      ```
+``` 1,000 ps= 1ns```
 
-## 三 block & nonblock
+```1,000,000 ps = 1μs ```
 
-```verilog
-module block_noblock(
-    clk, 
-    rst, 
-    a,
-    b,
-    c,
-    out
-);
-    input clk;
-    input rst;
-    input a,b,c;
-    output [1:0] out;
-    
-    reg [1:0] d;
-    
-    always@(posedge clk)
-        if(!rst)
-            out = 2'd0;
-    	
-    
-endmodule
-```
+```1,000,000,000 ps = 1ms```
 
-## 四 state machine
+```1,000,000,000,000 ps = 1s```
 
-1. 检测hello字符串
-   - 1： 等待H的到来
-     - 如果检测到H，进入状态2
-     - 否则一直等待H的带来
-   - 2：检测e
-     - 如果检测到e，进入状态3
-     - 否则回到状态1
-   - 3：检测l
-     - 如果检测到l，进入状态4
-     - 否则回到状态1
-   - 4：检测l
-     - 如果检测到l，进入状态5
-     - 否则回到状态1
-   - 5：检测o
-     - 如果检测到o，LED翻转，同时回到状态1
-     - 否则直接回到状态1
-2. 
+纳秒，符号ns（英语：nanosecond ），1纳秒等于十亿分之一秒（```10^(-9)s```）
+
+```1 ns= 1000ps```
+
+```1,000 ns= 1μs ```
+
+```1,000,000ns = 1ms```
+
+```1,000,000,000 ns= 1s```
+
+微秒，符号μs（英语：microsecond ），1微秒等于一百万分之一秒（```10^(-6)s```）
+
+```0.000 001 μs= 1ps```
+
+```0.001 μs= 1ns```
+
+```1,000 μs= 1ms```
+
+```1,000,000 μs= 1s```
+毫秒，符号ms（英语：millisecond ），1毫秒等于一千分之一秒（10-3秒）
+
+```0.000 000 001 ms= 1ps``` 
+
+```0.000 001 ms= 1ns ```
+
+```0.001 ms = 1μs ```
+
+```1000 ms = 1s```
 
 ```verilog
-module checkhello(
-	clk,
-    rst,
-    data_in,
-    led
-);
-    input clk;
-    input rst;
-    input data_in;
-    output led;
-    //独热码
-    parameter check_H = 5'b00001;
-    parameter check_e = 5'b00010;
-    parameter check_l1 = 5'b00100;
-    parameter check_l2 = 5'b01000;
-    parameter check_o = 5'b10000;
-    reg [2:0]state;
-    always@(posedge clk)
-        if(!rst)
-            state <= check_H;
-    	else begin
-            case(state)
-                check_H:
-                    if(data_in=="H") 
-                    	state<=check_e;
-                	else 
-                        state<=check_H;
-                check_e:
-                    if(data_in=="e") 
-                    	state<=check_l1;
-                	else 
-                        state<=check_H;
-                check_l1:
-                    if(data_in=="l") 
-                    	state<=check_l2;
-                	else 
-                        state<=check_H;
-                check_l2:
-                    if(data_in=="l") 
-                    	state<=check_o;
-                	else 
-                        state<=check_H;
-                check_o:begin
-                    state<=check_H;
-                    if(data_in=="o")
-                        led <= ~led;
-                	else 
-                        led <= led;
-                end
-                default:  state <= check_H;
-            endcase 
-        end
-endmodule  
-    
+`timescale 1ns/1ps //单位/精度
+#100 //延时100ns
+//-------------------------
+`timescale 10ns/1ps
+#100//延时100*10ns
+#0.1//0.1ns = 1ps，仿真精确到小数点后一位
 ```
 
-3. 一段式状态机，两段式状态机，三段式状态机
+## 状态机
 
+一段式状态机，两段式状态机，三段式状态机
 
-4. 同步状态机的原理结构和设计
+同步状态机的原理结构和设计
 
-   1. 下一状态 = F（当前状态，输入信号）
-   2. 输出信号 = G（当前状态，输入信号）mealy状态机
+1. 下一状态 = F（当前状态，输入信号）
+2. 输出信号 = G（当前状态，输入信号）mealy状态机
 
-   - mealy状态机：时序逻辑的输出不但取决于状态还取决于输入，大部分都是mealy状态机
-   - moore状态机：时序逻辑电路的输出只取决于当前状态
+- mealy状态机：时序逻辑的输出不但取决于状态还取决于输入，大部分都是mealy状态机
+- moore状态机：时序逻辑电路的输出只取决于当前状态
 
-## 五 pll
+## pll
 
-1. phase-locked loop
-   1. 相位锁定的环路，也就是常说的锁相环，锁相环在模拟电路和数字电路系统中均有广泛的应用，很多mcu芯片如stm32，msp430，等都集成了片上的pll，用来通过片外较低频率的晶振产生的时钟倍频得到较高频率的时钟信号以供mcu内核和片上的外设使用，在很多的洗衣芯片中也用到得了pll来通过较低的晶振时钟得到符合协议要求的时钟信号，例如典型的usb协议芯片
+phase-locked loop
+
+相位锁定的环路，也就是常说的锁相环，锁相环在模拟电路和数字电路系统中均有广泛的应用，很多mcu芯片如stm32，msp430，等都集成了片上的pll，用来通过片外较低频率的晶振产生的时钟倍频得到较高频率的时钟信号以供mcu内核和片上的外设使用，在很多的洗衣芯片中也用到得了pll来通过较低的晶振时钟得到符合协议要求的时钟信号，例如典型的usb协议芯片
 
 ## AXI
 
@@ -247,9 +179,35 @@ endmodule
 - AXI 是一种面向高性能、高带宽、低延迟的片内总线。它的地址/控制和数据相位是分离的，支持不对齐的数据传输，同时在突发传输中，只需要首地址，同时分离的读写数据通道、并支持Outstanding传输访问和乱序访问，并更加容易进行时序收敛。
 - AXI 是AMBA 中一个新的高性能协议。AXI 技术丰富了现有的AMBA 标准内容，满足超高性能和复杂的片上（SoC）设计的需求。
 
-
-
-## 笔记
+## 参数传递
 
 `` `define 与localparam和parameter最大的区别就是`define 可以跨文件传递参数；parameter只能在模块间传递参数；而localparam只能在其所在的module中起作用，不能参与参数传递。
+
+  1. 新建参数模块文件（我命名为para.v）；
+
+  2. 在para.v文件中使用'define宏定义参数（部分）
+
+     ```verilog 
+     //`define+name+参数 　
+     `define 　　STATE_INIT	3'd0
+     `define 　　STATE_IDLE	3'd1
+     `define 　　STATE_WRIT	3'd2
+     `define 　　STATE_READ	3'd3
+     `define 　　STATE_WORK	3'd4
+     `define 　　STATE_RETU	3'd5
+     ```
+
+  3. 在需要调用参数的文件init.v中使用`include "para.v"：
+
+     ````include "para.v"```
+
+4. 在init.v文件需要参数的地方使用`name 调用（部分）：`
+
+    ````state_init <= `STATE_INIT;```
+
+
+
+
+
+
 
