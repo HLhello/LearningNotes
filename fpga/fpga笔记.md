@@ -241,3 +241,15 @@ endmodule
 1. phase-locked loop
    1. 相位锁定的环路，也就是常说的锁相环，锁相环在模拟电路和数字电路系统中均有广泛的应用，很多mcu芯片如stm32，msp430，等都集成了片上的pll，用来通过片外较低频率的晶振产生的时钟倍频得到较高频率的时钟信号以供mcu内核和片上的外设使用，在很多的洗衣芯片中也用到得了pll来通过较低的晶振时钟得到符合协议要求的时钟信号，例如典型的usb协议芯片
 
+## AXI
+
+- AXI（Advanced eXtensible Interface）是一种总线协议，该协议是ARM公司提出的AMBA（Advanced Microcontroller Bus Architecture）3.0协议中最重要的部分，
+- AXI 是一种面向高性能、高带宽、低延迟的片内总线。它的地址/控制和数据相位是分离的，支持不对齐的数据传输，同时在突发传输中，只需要首地址，同时分离的读写数据通道、并支持Outstanding传输访问和乱序访问，并更加容易进行时序收敛。
+- AXI 是AMBA 中一个新的高性能协议。AXI 技术丰富了现有的AMBA 标准内容，满足超高性能和复杂的片上（SoC）设计的需求。
+
+
+
+## 笔记
+
+`` `define 与localparam和parameter最大的区别就是`define 可以跨文件传递参数；parameter只能在模块间传递参数；而localparam只能在其所在的module中起作用，不能参与参数传递。
+
