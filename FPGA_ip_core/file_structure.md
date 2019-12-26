@@ -12,11 +12,12 @@ FPGA_prj_module    ---> 实验报告，记录本次实验的内容
 
 # 文件命名规则
 
-工程所在文件夹命名： [0-9].call-vivado/quartus-ipcore
+工程所在文件夹命名：xxxx_xxxx
 
 工程名：顶层文件名
 
 文件命名：
 
- - 顶层文件：*_top.v
- - 测试文件：tb_filename.v
+ - 顶层文件：xxxx_xxxx.v
+ - 测试文件：tb_xxxx_xxxx.v
+
