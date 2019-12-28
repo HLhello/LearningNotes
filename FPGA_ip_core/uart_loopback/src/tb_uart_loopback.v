@@ -20,7 +20,7 @@ initial begin
 end
 
 
-module uart_loopback(
+uart_loopback uart_loopback(
 	.clk(clk),
 	.rst(rst),
 	.uart_rx(uart_rx),

@@ -13,15 +13,20 @@ input rst;
 
 output bps_start;
 input bps_hf;
-output rx_intr;
+output reg rx_intr;
+
 //1bit 转换成8bits
 input uart_rx;
 output [7:0] rx_data;
 
-
-//使用下面方法检测下降沿可以过滤掉<40ns的毛刺-->为什么？
+reg bps_start_r;
+reg [3:0]num;
+reg [7:0] rx_data_r;
+reg [7:0] rx_temp_data;
+//使用下面方法检测下降沿可以过滤掉<40ns的毛刺
 //利用资源换取稳定（对时间要求不是很苛刻，因为输入信号打了好几拍）
 //条件是有效低脉冲是远远大于80ns的
+//传输1bit信息要2500个时钟周期，也就是接近 10,000ns
 /*A*/
 reg uart_rx0,uart_rx1,uart_rx2,uart_rx3;
 wire neg_uart_rx;
@@ -42,21 +47,17 @@ always@(posedge clk or negedge rst)
 		end
 assign neg_uart_rx = uart_rx3 & uart_rx2 & (~uart_rx1) & (~uart_rx0);
 
-/*B
+/*B*/
 reg [3:0] uart_rx_r;
-wire wire neg_uart_rx;
+wire neg_uart_rxb;
 always@(posedge clk or negedge rst)
 	if(!rst)
 		uart_rx_r <= 4'b0;
 	else 
 		uart_rx_r <= {uart_rx_r[2:0],uart_rx};
 //可不可以用其他逻辑表达式代替上式，比如异或什么的
-assign neg_uart_rx = uart_rx_r[3] & uart_rx_r[3] & (~uart_rx_r[1]) & (~uart_rx_r[0]);
-*/
+assign neg_uart_rxb = uart_rx_r[3] & uart_rx_r[3] & (~uart_rx_r[1]) & (~uart_rx_r[0]);
 
-reg bps_start_r;
-reg [3:0]num;
-reg rx_intr;
 
 always@(posedge clk or negedge rst)
 	if(!rst)
@@ -76,8 +77,7 @@ always@(posedge clk or negedge rst)
 		end
 assign bps_start = bps_start_r;//这样做有什么好处么？TODO
 
-reg [7:0] rx_data_r;
-reg [7:0] rx_temp_data;
+
 /*A我觉的这段代码写的不好，ifelse嵌套太多*/
 always@(posedge clk or negedge rst)
 	if(!rst)

@@ -73,4 +73,27 @@ altera_reserved_tms          : 18        : input  : 2.5 V             :         
 altera_reserved_tdo          : 20        : output : 2.5 V             :         : 1         : N  
 ~ALTERA_DCLK~                : 12        : output : 2.5 V             :         : 1         : N 
 
+lcd_light_en                 : 137       : output : 2.5 V             :         : 8         : Y   
+lcd_clk                      : 67        : output : 2.5 V             :         : 4         : Y              
+lcd_vsy                      : 68        : output : 2.5 V             :         : 4         : Y              
+lcd_hsy                      : 69        : output : 2.5 V             :         : 4         : Y              
+lcd_r[4]                     : 70        : output : 2.5 V             :         : 4         : Y              
+lcd_r[3]                     : 71        : output : 2.5 V             :         : 4         : Y              
+lcd_r[2]                     : 72        : output : 2.5 V             :         : 4         : Y              
+lcd_r[1]                     : 101       : output : 2.5 V             :         : 6         : Y              
+lcd_r[0]                     : 103       : output : 2.5 V             :         : 6         : Y              
+lcd_g[5]                     : 104       : output : 2.5 V             :         : 6         : Y              
+lcd_g[4]                     : 105       : output : 2.5 V             :         : 6         : Y
+lcd_g[3]                     : 127       : output : 2.5 V             :         : 7         : Y                          
+lcd_g[2]                     : 106       : output : 2.5 V             :         : 6         : Y              
+lcd_g[1]                     : 129       : output : 2.5 V             :         : 8         : Y       
+lcd_g[0]                     : 128       : output : 2.5 V             :         : 8         : Y              
+lcd_b[4]                     : 133       : output : 2.5 V             :         : 8         : Y
+lcd_b[3]                     : 132       : output : 2.5 V             :         : 8         : Y                            
+lcd_b[2]                     : 136       : output : 2.5 V             :         : 8         : Y
+lcd_b[1]                     : 135       : output : 2.5 V             :         : 8         : Y                                   
+lcd_b[0]                     : 138       : output : 2.5 V             :         : 8         : Y                      
+ext_clk_25m                  : 23        : input  : 2.5 V             :         : 1         : Y              
+ext_rst_n                    : 24        : input  : 2.5 V             :         : 2         : Y   
+~ALTERA_DCLK~                : 12        : output : 2.5 V             :         : 1         : N   
              

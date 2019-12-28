@@ -20,6 +20,12 @@ output uart_tx;
 
 reg rx_intr0,rx_intr1,rx_intr2;
 wire neg_rx_intr;
+reg [7:0] tx_data;
+reg bps_start_r;
+reg tx_en;
+reg [3:0] num;
+reg uart_tx_r;
+
 always@(posedge clk or negedge rst)
 	if(!rst)
 		begin
@@ -35,10 +41,6 @@ always@(posedge clk or negedge rst)
 		end
 assign neg_rx_intr = ~rx_intr1 & rx_intr2;
 
-reg [7:0] tx_data;
-reg bps_start_r;
-reg tx_en;
-reg [3:0] num;
 
 always@(posedge clk or negedge rst)
 	if(!rst)
@@ -60,7 +62,7 @@ always@(posedge clk or negedge rst)
 		end
 assign bps_start = bps_start_r;
 
-reg uart_tx_r;
+
 always@(posedge clk or negedge rst)
 	if(!rst)
 		begin 
