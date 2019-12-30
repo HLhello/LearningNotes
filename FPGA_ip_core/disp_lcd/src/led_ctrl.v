@@ -1,3 +1,5 @@
+`define cnt_msb 24
+
 module led_ctrl(
 	clk,
 	rst,
@@ -7,19 +9,16 @@ module led_ctrl(
 input clk;
 input rst;
 
-output reg led;
+output led;
 
-reg [23:0]cnt;
+reg [`cnt_msb-1:0]cnt;
+
 always@(posedge clk or negedge rst)
 	if(!rst)
-		cnt <= 24'd0;
+		cnt <= `cnt_msb'd0;
 	else 
 		cnt <= cnt + 1'b1;
-
-
-always@(posedge clk or negedge rst)
-	if(!rst)
-		led <= 1'b0;
-	else if(cnt[23] == 1'b1)
-		led <= ~led;
+		
+assign led = cnt[`cnt_msb-1];	
+	
 endmodule
