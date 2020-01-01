@@ -240,6 +240,4 @@ set_location_assignment PIN_136 -to lcd_b[2]
 set_location_assignment PIN_132 -to lcd_b[3]		
 set_location_assignment PIN_133 -to lcd_b[4]		
 
-
-
-             
+##########################################################
