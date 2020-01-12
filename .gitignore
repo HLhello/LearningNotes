@@ -7,7 +7,7 @@
 # # 问号（？）只匹配一个任意字符；
 # 以斜杠/开头的可用于进制递归匹配
 # 以感叹号（！）开始的模式表示取反
-c/*.exe
+data_structure/*.exe
 FPGA_ip_core/*/imp/*
 FPGA_ip_core/*/sim/*
 .vscode/
