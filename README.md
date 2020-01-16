@@ -13,4 +13,3 @@
 - 《大话数据结构》程杰
 - 《vivado从此开始》高亚军
 - 《Xilinx vivado数字设计权威指南》何宾
-- from thinkpad
