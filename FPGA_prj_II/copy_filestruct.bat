@@ -1,1 +1,1 @@
-xcopy E:\working_files\LearningNotes\FPGA_prj\FPGA_prj_module E:\working_files\LearningNotes\FPGA_prj\project_name /e
+xcopy E:\LearningNotes\FPGA_prj_II\FPGA_prj_module E:\LearningNotes\FPGA_prj_II\project_name /e
