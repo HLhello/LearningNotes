@@ -117,3 +117,57 @@
 变音蜂鸣器——层次化设计模块
 
 
+
+
+
+sopc
+
+片上嵌入双核arm A9，处理器和FPGA融合，异构计算
+
+2013之前altera sopc 基于nios II 软核处理器，
+
+软核处理器-->没有硬核处理器的电路，使用FPGA通用逻辑阵列搭建起来的
+
+硬核处理器-->电脑处理器，之类的
+
+软核CPU的应用场景：网络传输，lcd显示界面，频谱分析仪，必须以FPGA为主，又需要一些显示
+
+如果使用stm32以及FPGA比较难做，功耗难以降下来
+
+qsys？
+
+是一个工具，这个工具是用来帮助搭建系统的
+
+nios II？
+
+是一款cpu，是一个处理器
+
+sopc？
+
+是一种技术，可编程偏上系统，是一种解决方案
+
+soc
+
+片上系统
+
+赛灵思叫zynq
+
+
+
+使用qsys搭建一个nios II系统
+
+stm32有两条数据总线，APB-->外设总线，AHB-->数据总线，
+
+qsys遵循avalon总线规范
+
+avalon总线有两种
+
+第一种是avalon mm（memory map）
+
+第二种是avalon st（数据 ） 总线
+
+
+
+stm32 偏上程序一般存储在flash种
+
+FPGA种没有flash，FPGA基于sram架构，掉电程序丢失，FPGA程序存储在外部的flash中，叫做epcs 实际上是就是spf flash芯片
