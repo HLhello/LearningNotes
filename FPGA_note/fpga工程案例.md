@@ -171,3 +171,53 @@ avalon总线有两种
 stm32 偏上程序一般存储在flash种
 
 FPGA种没有flash，FPGA基于sram架构，掉电程序丢失，FPGA程序存储在外部的flash中，叫做epcs 实际上是就是spf flash芯片
+
+
+
+
+
+接口逻辑：uart can spi lvds
+
+状态机，线性序列机（计数器，按时间分片）
+
+IP的使用，第三方厂家，
+
+包括计数器，io接口，fft，各种软核CPU
+
+接口设计
+
+avalon st，avalon mm
+
+时序分析
+
+时序约束
+
+片上系统
+
+软核片上系统，
+
+sopc：使用FPGA通用逻辑搭建CPU和外围设备电路
+inter：nios II软核CPU，能跑到接近100兆32个通用寄存器，类似于arm7，性能也较为接近
+
+arm cortex-A9 cortex-A53能够跑到900多兆
+
+xlinix：microblaze 软核cpu，powerPC硬核，cortex-A9 cortex-A53
+
+mc8051提供相应软核
+
+
+
+对FPGA进行配置
+
+​	使用jtag直接配置 .sof，FPGA 掉电，就会变成白片
+
+​	使用外部器件进行片配置，flash不会丢失，FPGA上电时主动加载程序
+
+​	使用外部的控制器进行配置
+
+
+
+状态机设计
+
+
+
