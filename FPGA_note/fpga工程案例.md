@@ -54,4 +54,17 @@ ADC芯片
 
 确定每个时隙各个信号的状态
 
- 
+ 将ADC采样的结果显示在数码管上
+
+  ISSP工具使用
+
+in-systen source and probes editor
+
+sources：在PC端通过软件设置某个信号的值，该数值会精油与USB Blaster 电缆传递到正在运行的FPGA芯片中相应的位置。FPGA在使用该信号作为激励
+
+probes：在FPGA内部使用probes将待检测的某些信号的值读取并经由usb blaster 传递到PC端，在pc端软件上显示这个值
+
+嵌入式逻辑分析仪 signaltap II
+
+使用FPGA片上剩余的逻辑以及存储资源设计了片上的逻辑分析仪工具，该工具能够抓取设计中的节点信号以及IO引脚上的信号，并成段的存储在片上的存储器中，然后将存储器中存储的数据通过USB blaster下载电缆传递到pc端，由quartus软件中集成的调试工具读取这些数据并以数字波形的形式显示出来
+
