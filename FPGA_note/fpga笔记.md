@@ -312,7 +312,9 @@ stm32有两种数据总线，APB-->外设总线，AHB-->数据总线
 
 ## avalon总线
 
-有两种，qsys遵循avalon总线规范
+有两种
+
+qsys遵循avalon总线规范
 
 - 第一种是avalon mm（memory map）
 
