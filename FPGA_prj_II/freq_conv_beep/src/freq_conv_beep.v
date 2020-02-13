@@ -13,6 +13,7 @@ input rst;
 input [31:0]cnt_acc;
 input mode;//计数模式，0单次计数，1循环计数
 input cnt_going;//高点平计数，低电平停止计数
+
 output [31:0]cnt_now;//当前计数值
 output reg full_flag;
 

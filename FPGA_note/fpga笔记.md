@@ -363,5 +363,18 @@ qsys遵循avalon总线规范
 
 ## 时序分析系列问题
 
+## localparam与parameter的区别与用法
 
+parameter可用作在顶层模块中例化底层模块时传递参数的接口；
+
+localparam的作用域仅仅限于当前module，不能作为参数传递的接口。
+
+```verilog
+//用法
+parameter       DATA_WIDTH = 16;
+parameter       ADDR_WIDTH =  5;
+localparam      DW = DATA_WIDTH - 1;
+localparam      AW = ADDR_WIDTH - 1;
+
+```
 
