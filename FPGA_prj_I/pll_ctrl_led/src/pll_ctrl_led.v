@@ -25,19 +25,19 @@ pll pll_gen (
 	.locked ( rst_pll )
 	);
 
-led_lighting #(23)led0(
+led_lighting #(10)led0(
 	.clk(clk_12m5),
 	.rst(rst_pll),
 	.led(led[0])
 );
 
-led_lighting #(24) led1(
+led_lighting #(11) led1(
 	.clk(clk_25m),
 	.rst(rst_pll),
 	.led(led[1])
 );
 
-led_lighting #(25)led2(
+led_lighting #(12)led2(
 	.clk(clk_50m),
 	.rst(rst_pll),
 	.led(led[2])
