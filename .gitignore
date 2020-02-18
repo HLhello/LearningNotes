@@ -15,3 +15,5 @@ FPGA_prj_II/*/sim/*
 FPGA_prj_II/class_file/*
 .vscode/
 *.bak
+*.qip
+*.txt
