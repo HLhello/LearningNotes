@@ -21,10 +21,10 @@ initial clk = 1;
 always #(`clk_period/2) clk = ~clk;
 
 initial begin
-	rst = 0;
+	rst = 1'b0;
 	key_in = 1'b1;
 	#(`clk_period*20);
-	rst = 1;
+	rst = 1'b1;
 	#(`clk_period*2000)
 	press_key;
 	#10000;

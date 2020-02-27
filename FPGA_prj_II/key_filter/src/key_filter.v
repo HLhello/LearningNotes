@@ -37,7 +37,7 @@ assign pedge = key_in_r1 && !key_in_r2;
 always@(posedge clk or negedge rst)
 	if(!rst)
 		cnt <= 24'd0;
-	else if((pedge || nedge) && (cnt < cnt_max-1'd1))
+	else if((state==FILTER0 || state==FILTER1) && (cnt < cnt_max-1'd1))
 		cnt <= cnt + 1'd1;
 	else 
 		cnt <= 24'd0;
