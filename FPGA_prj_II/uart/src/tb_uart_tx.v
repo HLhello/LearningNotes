@@ -1,34 +1,25 @@
 `timescale 1ns/1ns
 `define clk_period 20
 
-module tb_uart_rx();
+module tb_uart_tx();
 
 reg clk;
 reg rst;
-wire rs232_Tx;
-reg [7:0]data_byte_tx;
+reg [2:0]baud_set;
+reg [7:0]data_byte;
 reg send_en;
+wire rs232_Tx;
 wire tx_done;
 wire uart_state;
 wire bps_clk;
-
 wire [7:0]data_byte_rx;
 wire rx_done;
 
-uart_rx uart_rx(
+uart_tx_II uart_tx_II(
 	.clk(clk),
 	.rst(rst),
-	.baud_set(3'd0),
-	.rs232_rx(rs232_Tx),
-	.data_byte(data_byte_rx),
-	.rx_done(rx_done)
-);
-
-uart_byte_tx uart_byte_tx(
-	.clk(clk),
-	.rst(rst),
-	.baud_set(3'd0),
-	.data_byte(data_byte_tx),
+	.baud_set(baud_set),
+	.data_byte(data_byte),
 	.send_en(send_en),
 	.rs232_Tx(rs232_Tx),
 	.tx_done(tx_done),
@@ -36,21 +27,26 @@ uart_byte_tx uart_byte_tx(
 	.bps_clk(bps_clk)
 );
 
-initial clk = 1'b1;
+uart_rx uart_rx(
+	.clk(clk),
+	.rst(rst),
+	.baud_set(baud_set),
+	.rs232_rx(rs232_Tx),
+	.data_byte(data_byte_rx),
+	.rx_done(rx_done)
+);
+initial clk = 1'd1;
 always#(`clk_period/2) clk = ~clk;
 
 initial begin
 	rst = 1'd0;
-	#(`clk_period*20);
-	rst = 1'd1;
-	#(`clk_period*20 +1);
-	rst = 1'd0;
 	send_en = 1'd0;
-	data_byte_tx = 8'd0;
+	baud_set = 3'd0;
+	data_byte = 8'd0;
 	#(`clk_period*20)
 	rst = 1'd1;
 	#(`clk_period*20+1);
-	data_byte_tx = 8'haa;
+	data_byte = 8'haa;
 	send_en = 1'd1;
 	#(`clk_period);
 	send_en = 1'd0;
@@ -58,7 +54,7 @@ initial begin
 	@(posedge tx_done)
 	
 	#(`clk_period*5000)
-	data_byte_tx = 8'he0;
+	data_byte = 8'he0;
 	send_en = 1'd1;
 	#(`clk_period);
 	send_en = 1'd0;
@@ -66,7 +62,7 @@ initial begin
 	@(posedge tx_done)
 	
 	#(`clk_period*5000);
-	data_byte_tx = 8'h55;
+	data_byte = 8'h55;
 	send_en = 1'd1;
 	#(`clk_period);
 	send_en = 1'd0;
@@ -77,7 +73,6 @@ initial begin
 	$stop;
 
 
-
-
 end
-endmodule
+
+endmodule 

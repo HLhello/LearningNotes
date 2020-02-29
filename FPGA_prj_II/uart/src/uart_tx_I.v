@@ -1,4 +1,4 @@
-module uart_byte_tx(
+module uart_tx_I(
 	clk,
 	rst,
 	baud_set,
@@ -11,7 +11,7 @@ module uart_byte_tx(
 );
 
 parameter	start_bit = 1'd0,
-			stop_bit = 1'd1;
+				stop_bit = 1'd1;
 input clk;
 input rst;
 input [2:0]baud_set;
@@ -24,6 +24,7 @@ output reg bps_clk;
 
 reg [15:0]bps_DR;
 reg [7:0]r_data_byte;
+reg [15:0]div_cnt;
 reg [3:0]bps_cnt;
 reg uart_state;
 
@@ -46,8 +47,9 @@ always@(posedge clk or negedge rst)
 		r_data_byte <= 8'd0;
 	else if(send_en)
 		r_data_byte <= data_byte;
+	else 
+		r_data_byte <= r_data_byte;
 
-reg [15:0]div_cnt;
 always@(posedge clk or negedge rst)
 	if(!rst)
 		div_cnt <= 16'd0;
@@ -71,10 +73,10 @@ always@(posedge clk or negedge rst)
 always@(posedge clk or negedge rst)
 	if(!rst)
 		bps_cnt <= 4'd0;
-	else if(bps_cnt<4'd10 && div_cnt==bps_DR)
-		bps_cnt <= bps_cnt + 1'd1;
-	else if(bps_cnt==4'd10 && div_cnt==bps_DR)
+	else if(bps_cnt==4'd11)
 		bps_cnt <= 4'd0;
+	else if(bps_clk)
+		bps_cnt <= bps_cnt + 1'b1;
 	else 
 		bps_cnt <= bps_cnt;
 		
@@ -101,7 +103,7 @@ always@(posedge clk or negedge rst)
 always@(posedge clk or negedge rst)
 	if(!rst)
 		tx_done <= 1'd0;
-	else if(bps_cnt==4'd10 && div_cnt==bps_DR)
+	else if(bps_cnt==4'd11)
 		tx_done <= 1'd1;
 	else 
 		tx_done <= 1'd0;
@@ -111,7 +113,7 @@ always@(posedge clk or negedge rst)
 		uart_state <= 1'd0;
 	else if(send_en)
 		uart_state <= 1'b1;
-	else if(bps_cnt==4'd10 && div_cnt==bps_DR)
+	else if(bps_cnt==4'd11)
 		uart_state <= 1'b0;
 	else 
 		uart_state <= uart_state;

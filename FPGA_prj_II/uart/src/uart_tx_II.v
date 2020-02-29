@@ -1,4 +1,4 @@
-module uart_byte_tx(
+module uart_tx_II(
 	clk,
 	rst,
 	baud_set,
@@ -11,7 +11,7 @@ module uart_byte_tx(
 );
 
 parameter	start_bit = 1'd0,
-			stop_bit = 1'd1;
+				stop_bit = 1'd1;
 input clk;
 input rst;
 input [2:0]baud_set;
