@@ -393,3 +393,7 @@ qsys遵循avalon总线规范
 
 以太网协议（Ethernet）
 
+## normal synchronous FIFO mode 与 show-ahead synchronous FIFO mode区别
+
+- 选则第一种普通方式则 rdreq 信号作为实际意义上的读请求信号，当该信号有效时 FIFO 中的控制逻辑从存储器中读取一个数据输出到 q 端。 
+- 如果选中 Show-ahead 方式，则 rdreq 实际作为了读应答信号，即 rdreq 还没有有效时， q 端口上已经输出了一个有效的数据， rdreq 信号有效的时候则相当于通知 FIFO 内部的控制逻辑 q 端口上的数据已经被读取，则 FIFO 内部的逻辑会从 RAM 中再取出一个新的数据，在下一个时钟周期输出到 q 端口上。该模式在实际中应用也非常的普遍，因为 q 端口上的数据 与 rdreq 同时有效，没有读潜伏期。 
