@@ -397,3 +397,34 @@ qsys遵循avalon总线规范
 
 - 选则第一种普通方式则 rdreq 信号作为实际意义上的读请求信号，当该信号有效时 FIFO 中的控制逻辑从存储器中读取一个数据输出到 q 端。 
 - 如果选中 Show-ahead 方式，则 rdreq 实际作为了读应答信号，即 rdreq 还没有有效时， q 端口上已经输出了一个有效的数据， rdreq 信号有效的时候则相当于通知 FIFO 内部的控制逻辑 q 端口上的数据已经被读取，则 FIFO 内部的逻辑会从 RAM 中再取出一个新的数据，在下一个时钟周期输出到 q 端口上。该模式在实际中应用也非常的普遍，因为 q 端口上的数据 与 rdreq 同时有效，没有读潜伏期。 
+
+## verilog中readmemb与readmemh的使用
+
+1. 在verilog中有$readmemh(“filename”, mem_name)命令，在使用这个命令时，”filename”中的路径要用反斜杠’/’，而不是斜杠’\’。如
+
+   - $readmemh("F:/mydesigen/re_input.txt",re_input);
+
+   - 上面的语句是正确的，而如果用斜杠就有问题，如
+
+   - $readmemh("F:\mydesigen\re_input.txt",re_input);
+
+2. readmemb（“D：/file1/file2/ramh.dat”，a）；即可以调用到放置在任意处的存储文件。当采用$readmemb（“ramh.dat”，a）；这种方式时，ramh.dat文件必须放置在工程下的simulation文件夹下，亲测其他放置都无效。
+
+3. 关于存储文件后缀，.dat .txt 甚至不加后缀都可以，只要保证程序里调用的与文件夹中实际的一致，可以索引到即可
+
+4. 对于需要的txt文件，其格式为每行一个数据，存储顺序。文档中由上至下，对应数组由低到高。
+
+   - 例如用matlab产生文件则可以这样写
+
+     ```fid0 = fopen('F:\path\re_input.txt','w+');```
+
+     ```fprintf(fid0,'%x \n',real(info));```
+
+     其中的换行符是必须的。同时，在matlab中，路径语句的斜杠’\’或是反斜杠’/’都没有问题。
+
+5. 不可综合。readmemb、readmemh、initial 都是不可综合语句（怎么可以这样呢！那大数组怎么赋值？）也就是说只能在仿真时调试用。
+
+6. 对于$readmemh对应的16进制文件，不用写成4'hA，最简单的A即可。
+
+
+
