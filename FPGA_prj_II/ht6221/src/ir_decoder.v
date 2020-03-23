@@ -205,7 +205,7 @@ module ir_decoder(
 		data_tmp <= 32'd0;
 	end
 	else if(state == DATE_GET)begin
-		if(ir_pedge && (data_cnt == 6'd31))begin
+		if(ir_pedge && (data_cnt == 6'd32))begin
 			data_cnt <= 6'd0;
 			Get_Data_Done <= 1'b1;
 		end
