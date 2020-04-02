@@ -13,8 +13,8 @@ FPGA_prj_I/*/sim/*
 FPGA_prj_II/*/imp/*
 FPGA_prj_II/*/sim/*
 FPGA_prj_II/class_file/*
-FPGA_prj_III/*/imp/*
-FPGA_prj_III/*/sim/*
+FPGA_prj/*/imp/*
+FPGA_prj/*/sim/*
 .vscode/
 *.bak
 *.qip
