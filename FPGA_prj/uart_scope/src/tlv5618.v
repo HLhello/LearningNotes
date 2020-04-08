@@ -18,9 +18,9 @@ input start;
 output set_done;
 input [7:0]div_parm;
 
-output reg cs_n,
-output reg din,
-output reg sclk,
-output dac_state
+output reg cs_n;
+output reg din;
+output reg sclk;
+output dac_state;
 	
 endmodule 

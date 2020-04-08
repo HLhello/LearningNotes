@@ -14,7 +14,7 @@ input [7:0]rx_byte;
 input rx_int;
 output m_wr;
 output [7:0]m_addr;
-output [15;0]m_wrdata;
+output [15:0]m_wrdata;
 
 
 endmodule 

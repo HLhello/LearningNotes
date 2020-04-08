@@ -11,7 +11,7 @@ module dds(
 input clk;
 input rst;
 input m_wr;
-input [7;0]m_addr;
+input [7:0]m_addr;
 input [15:0]m_wrdata;
 output [11:0]dds_data;
 output reg dds_flag;

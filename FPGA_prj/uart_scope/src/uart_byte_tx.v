@@ -1,4 +1,4 @@
-mopdule uart_byte_tx(
+module uart_byte_tx(
 	clk,
 	rst,
 	baud_set,
@@ -8,11 +8,11 @@ mopdule uart_byte_tx(
 	rs232_tx
 );
 
-input clk,
-input rst,
+input clk;
+input rst;
 input [2:0]baud_set;
 input byte_en;
-input [7;0]data_byte;
+input [7:0]data_byte;
 
 output reg tx_done;
 output rs232_tx;
