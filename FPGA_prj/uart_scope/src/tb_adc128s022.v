@@ -6,7 +6,7 @@ module tb_adc128s022;
 
 reg clk;
 reg rst;
-reg channel;
+reg [2:0]channel;
 wire [11:0]data;
 
 reg en_conv;
@@ -50,13 +50,13 @@ initial begin
 	rst = 1'd0;
 	channel <= 3'd0;
 	en_conv = 1'd0;
-	dout = 12'd0;
+	dout = 1'd0;
 	#(`clk_period*20)
 	rst = 1'd1;
 	#(`clk_period*2000)
 	channel = 3'd5;
 	for(i=0; i<3; i=i+1)	begin
-		for(address=0; address<4095; address=address+1) begin
+		for(address=0; address<=4095; address=address+1) begin
 			en_conv = 1'd1;
 			#(`clk_period);
 			en_conv = 1'd0;
@@ -77,12 +77,13 @@ task gen_dout;
 		wait(!adc_state);
 		while(cnt<16)
 			begin
-				@(negedge sclk)
+				@(posedge sclk)
 				dout = vdata[15-cnt];
 				cnt = cnt + 1'd1;
 			end
 	end
 endtask
+
 
 
 endmodule

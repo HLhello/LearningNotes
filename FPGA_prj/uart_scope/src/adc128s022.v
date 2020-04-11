@@ -143,15 +143,6 @@ always@(posedge clk or negedge rst)
 		end
 		
 assign adc_state = cs_n;
-	
-		
-		
-		
-		
-		
-	
-	
-	
-	
+
 	
 endmodule 
