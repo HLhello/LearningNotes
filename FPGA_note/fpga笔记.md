@@ -396,6 +396,3 @@ qsys遵循avalon总线规范
 
 - 第一种是avalon mm（memory map）
 - 第二种是avalon st（数据 ） 总线
-
-
-
