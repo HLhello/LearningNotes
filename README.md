@@ -4,15 +4,11 @@
 
 目前在看的书
 
-- 《机器学习》周志华
-
 - 《精通Git》ScottChacon， Ben Straub
 
 - 《Verilog数字系统设计教程》夏宇闻
 
 - 《信道编码与MATLAB仿真》刘东华
-
-- 《Python语言程序设计》梁勇（Y.Daniel Liang）
 
 - 《C程序设计》谭浩强
 
