@@ -21,17 +21,3 @@ RS232是物理层的电气接口要求。是一种接口标准。uart可以使�
 
 
 在通信和计算机科学中，Serial communication是一个通用概念，泛指所有的串行的通信协议，如RS232、USB、I2C、SPI、1-Wire、Ethernet等。这里的串行（serial），是相对并行通信（parallel communication）来说的，如下图：
-
-![img](https://pic1.zhimg.com/v2-5157663cc830482be4526ac4a5560a84_b.jpg)
-
-
-
-理解串行通信的概念之后，大家可能会有疑问：接收方接收到一长串的、表示0/1电平跳变的信号之后，怎么还原出有效的信息呢？有两种方法：
-
-作者：老狼
-
-链接：https://zhuanlan.zhihu.com/p/25893717
-
-来源：知乎
-
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
