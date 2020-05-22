@@ -19,4 +19,4 @@ FPGA_prj/*/sim/*
 *.bak
 *.qip
 *.txt
-
+*.exe

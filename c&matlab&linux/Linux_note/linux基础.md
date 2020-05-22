@@ -1,19 +1,4 @@
-cccc# Linux基础
 
-## 1.历史
-
-自行百度！！
-
-## 2.基本操作
-
-### 1. 1常识
-
-- touch
-
-- cd
-
-- pwd
-- 
 
 | 按键            | 作用                                         |
 | --------------- | -------------------------------------------- |
@@ -28,52 +13,19 @@ cccc# Linux基础
 | `Shift+PgUp`    | 将终端显示向上滚动                           |
 | `Shift+PgDn`    | 将终端显示向下滚动                           |
 
-- 通配符
 
-- **NAME（名称）**
 
-  **SYNOPSIS（概要）**
+常见英文单词
 
-  **DESCRIPTION（说明）**
-
-  **EXAMPLES（示例）**
-
-  **SEE ALSO（参见）**
-
-  OPTIONS（选项），EXIT STATUS（退出状态），ENVIRONMENT（环境），BUGS（程序漏洞），FILES（文件），AUTHOR（作者），REPORTING BUGS（已知漏洞），HISTORY（历史）和 COPYRIGHT（版权）。
-
-软连接相当于快捷方式
-
-\u603b\u7528\u91cf 8
-lrwxrwxrwx 1 shiyanlou shiyanlou   10 6\u6708   9  2018 anaconda3 -> /anaconda3
-drwxrwxr-x 2 shiyanlou shiyanlou 4096 6\u6708   9  2018 Code
-drwxr-xr-x 2 shiyanlou shiyanlou 4096 6\u6708   9  2018 Desktop
+NAME（名称）, SYNOPSIS（概要），DESCRIPTION（说明），EXAMPLES（示例），SEE ALSO（参见），OPTIONS（选项），EXIT STATUS（退出状态），ENVIRONMENT（环境），BUGS（程序漏洞），FILES（文件），AUTHOR（作者），REPORTING BUGS（已知漏洞），HISTORY（历史）和 COPYRIGHT（版权）。
 
 Linux中一切皆文件
 
-gou +/- rwx
+- 查看目录，根目录，绝对目录，相对目录，工作目录切换
+- 创建文件，编辑文件，复制文件，移动文件，文件重命名
+- 创建文件夹，复制文件夹，指定文件夹的父目录
 
-vimtutor 
-
-cd 
-
-绝对目录
-
-相对目录
-
-根目录
-
-复制文件
-
-移动文件
-
-文件重命名
-
-建文件夹
-
-复制文件夹
-
-指定文件夹的父目录
+查看进程，调整进程
 
 vim编辑器中i和A 在插入文本中有什么用？
 
@@ -86,16 +38,6 @@ vim编辑器中i和A 在插入文本中有什么用？
 | `${变量名/旧的字串/新的字串}`  | 将符合旧字串的第一个字串替换为新的字串       |
 | `${变量名//旧的字串/新的字串}` | 将符合旧字串的全部字串替换为新的字串         |
 
-
-看的见摸得着的就是硬件
-硬件  电路，写驱动程序，写应用程序
-硬件之上，  操作系统，微软/linux、unix/苹果
-系统之上，软件
-硬件有差异，使用虚拟机来模拟linux
-安装虚拟机
-虚拟一台机器，挂载linux系统iso文件
-
-
 linux目录结构
 usr --》windows  programfile
 etc --》存放系统的各种配置
@@ -105,17 +47,17 @@ bin --》二进制可执行文件，类似于exe
 sbin--》二进制可执行文件，但是只有root可以访问
 boot--》启动项，系统启动时使用
 
-查看目录，创建文件夹，创建文件，编辑文件，查看进程，调整进程
+
 
 pwd显示当前路径
 d代表一个目录
 -代表一个文件
 
 
-利用crt链接linux
-系统备份
-系统快照，当系统制作完成之后进行进行文件快照
-基本命令的学习
+
+
+
+
 
 ll  列出当前目录下的文件信息
 ls-al列出当前目录下的文件信息，包括隐藏文件，特殊目录
