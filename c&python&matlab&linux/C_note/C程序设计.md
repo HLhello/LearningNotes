@@ -1,4 +1,4 @@
-## Cha1 程序设计和C语言
+Cha1 程序设计和C语言
 
 1. 机器语言，汇编语言，低级语言，高级语言
 
@@ -50,30 +50,21 @@
        else z = y;
        return z;
    }
-   //行注释方法
-   /*
-   	段落注释方法
-   */
    ```
-
+   
 6. 程序分析
 
-- main是表示主函数，并且是主函数的名字，在3中的max也是函数名，一个程序中只能有一个主函数，并且在主程序中必须有一个主函数
+   1. main是表示主函数，并且是主函数的名字，在3中的max也是函数名，一个程序中只能有一个主函数，并且在主程序中必须有一个主函数
+   2. C语言程序的语句必须使用“;”结尾，某些语句比较特殊，如循环语句ifelse语句，switch语句
+   3. main前面的int是函数返回值的类型，
+   4. “\n”是换行符
+   5. “%d”指定输出格式，d表示十进制，x表示十六进制，o表示八进制p表示地址格式
+   6. stdio.h----> standard input & output 的缩写，.h的意思是头文件(header file)
+   7. 函数首部
 
-- C语言程序的语句必须使用“;”结尾，某些语句比较特殊，如循环语句ifelse语句，switch语句
-
-- main前面的int是函数返回值的类型，
-
-- “\n”是换行符
-- “%d”指定输出格式，d表示十进制，x表示十六进制，o表示八进制p表示地址格式
-
-- stdio.h----> standard input & output 的缩写，.h的意思是头文件(header file)
-
-- 函数首部
-
-  | int      | max    | (    | int      | x      | ,      | int      | y      | ）   |
-  | -------- | ------ | ---- | -------- | ------ | ------ | -------- | ------ | ---- |
-  | 函数类型 | 函数名 |      | 形参类型 | 形参名 | 分隔符 | 形参类型 | 形参名 |      |
+| int      | max    | (    | int      | x      | ,      | int      | y      | ）   |
+| -------- | ------ | ---- | -------- | ------ | ------ | -------- | ------ | ---- |
+| 函数类型 | 函数名 |      | 形参类型 | 形参名 | 分隔符 | 形参类型 | 形参名 |      |
 
 - 函数体：用“{}”花括号包起来的就是函数体，包括声明部分和执行部分
 - 预处理指令，前面带“#”的都是预处理指令，常见的有include加载头文件，define宏定义
@@ -181,7 +172,7 @@ int main()
 
 3. #### 数据的表现形式及其运算
 
-- ![常量](https://github.com/HLhello/LearningNotes/blob/master/picture/常量.jpeg)
+- ![常量](C程序设计.assets/常量.jpeg)
 
 - **常量**，在程序的运行过程中，其值不能被改变的量称为常量。
   - 常量包括整型常量，实型常量，字符常量，字符串常量，符号常量
@@ -219,7 +210,7 @@ int main()
 
 4. #### 数据类型
 
-- ![数据类型](https://github.com/HLhello/LearningNotes/blob/master/picture/数据类型.jpeg)
+- ![数据类型](C程序设计.assets/数据类型.jpeg)
 
 - 不同类型的存储内存及方式
 
@@ -356,7 +347,7 @@ int main()
 
 5. #### C语句
 
-- ![c语句](https://github.com/HLhello/LearningNotes/blob/master/picture/C语句.jpeg)
+- ![c语句](C程序设计.assets/C语句.jpeg)
 - 赋值语句
   - 赋值运算符，=
   - 复合赋值运算符，+=，-=，*=，/=，%=
@@ -665,7 +656,7 @@ int main()
 
 - TODO：插图
 
-- ![函数调用](http://github.com/HLhello/LearningNotes/blob/master/picture/函数调用.jpeg)
+- ![函数调用](C程序设计.assets/函数调用.jpeg)
 
 - **递归调用**——在调用一个函数的过程中，有出现直接或间接的调用该函数本身，称为函数的递归调用
 
@@ -897,7 +888,7 @@ int main()
 
   - ###### TODO插图
 
-  - ![存储类别](https://github.com/HLello/Learningnotes/blob/master/picture/存储类别.jpeg)
+  - ![存储类别](C程序设计.assets/存储类别.jpeg)
 
   - 在定义和声明变量和函数时 ，一般应同时制定数据类型和存储类别，也可以采用默认方式指定（系统隐含的指定为某一种存储类别）
 
@@ -1307,7 +1298,7 @@ int main()
 
     - TODO插入二维数组图
 
-    - ！[二维数组](<https://github.com/HLhello/LearningNotes/blob/master/picture/%E4%BA%8C%E7%BB%B4%E6%95%B0%E7%BB%84.png>)
+    - ![二维数组](C程序设计.assets/二维数组.png)
 
     - ```c
       #include<stdio.h>
@@ -2587,7 +2578,7 @@ int main()
   - 使用一个typedef定义一个新类型名的一般方法是
 
      	1. 先按照定义变量的方法写出定义体（如：int a[100]）
-     	2. 将变量名转化为新类型名（如： int NUM[100]）
+        	2. 将变量名转化为新类型名（如： int NUM[100]）
 
         ​      	3. 在最前面加上关键字typedef（如：typedef int NUM[100]）
            	4. 然后可以用新类型名去定义变量（如：NUM a，即等效于 int a[100]）

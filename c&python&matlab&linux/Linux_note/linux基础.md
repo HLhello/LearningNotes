@@ -331,3 +331,10 @@ ifconfig
     - q退出
 - 转义和逃逸
 
+![UID和GID和密码的关系](linux基础.assets/UID和GID和密码的关系.png)
+
+![管线命令示意图](linux基础.assets/管线命令示意图.png)
+
+![img](linux基础.assets/微信图片_20190909231806.png)
+
+![文件目录fhs](linux基础.assets/文件目录fhs.png)
