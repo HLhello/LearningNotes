@@ -19,4 +19,4 @@ FPGA_prj/*/sim/*
 *.bak
 *.qip
 *.txt
-c&matlab&linux/*.exe
+c&matlab&linux/data_structure/*.exe
