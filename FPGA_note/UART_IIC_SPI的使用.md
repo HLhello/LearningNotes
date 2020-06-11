@@ -102,8 +102,6 @@ IIC串行总线我认为还是比较简单的，在今天的一个面试中，�
 
 起始位：SCL为高电平期间    SDA出现下降沿
 
-![起始信号](E:\LearningNotes\FPGA_note\IIC起始信号.jpg)
-
 起始信号
 
 终止位：SCL为高电平期间 SDA出现上升沿
