@@ -216,11 +216,164 @@ block ram 的写入和读出必须是与时钟保持同步，使用逻辑资源�
 
 这样约束完之后，还有其他的跨异步时钟路径，还有其他信号跨时钟域了，但不是格雷码的寄存器了。但是这时不能使用setclocksgroups，因为setclocksgroups优先级比较高，会覆盖掉maxdelay，所以一般还是使用maxdelay约束，但是对这个数据路径延迟是没有要求的，可以设置大一点，这个效果就像设置成伪路径一样的，这样就保证了不会覆盖掉maxdelay， 
 
-越详细的约束优先级越高，所以第一条时序约束的优先级是比第二条时序约束的优先级越高，
+越详细的约束优先级越高，所以第一条时序约束的优先级是比第二条时序约束的优先级越高
 
-  
 
-  	
+
+```tcl
+################# current design ####################
+set_property CFGBVS VCCO [current_design]
+set_property CONFIG_VOLTAGE 3.3 [current_design]
+set_property BITSTREAM.CONFIG.UNUSEDPIN PULLNONE [current_design]
+#####################################################
+#
+
+############## system reset define ##################
+set_property PACKAGE_PIN T16     [get_ports rst_n]
+set_property IOSTANDARD LVCMOS33 [get_ports rst_n]
+
+############## Master clock define ##################
+set_property PACKAGE_PIN R4         [get_ports sys_clk0_p]
+set_property IOSTANDARD DIFF_SSTL15 [get_ports sys_clk0_p]
+
+set_property PACKAGE_PIN F10        [get_ports sys_clk1_p]
+set_property LOC IBUFDS_GTE2_X0Y3   [get_cells IBUFDS_GTE2_sys_clk1]
+
+
+
+############## pins define ##################
+set_property PACKAGE_PIN Y16 [get_ports wr_en]
+set_property IOSTANDARD LVCMOS33 [get_ports wr_en]
+
+set_property PACKAGE_PIN AA15 [get_ports {wr_data[0]}]
+set_property PACKAGE_PIN AB15 [get_ports {wr_data[1]}]
+set_property PACKAGE_PIN AA14 [get_ports {wr_data[2]}]
+set_property PACKAGE_PIN AA16 [get_ports {wr_data[3]}]
+set_property PACKAGE_PIN AB11 [get_ports {wr_data[4]}]
+set_property PACKAGE_PIN AB16 [get_ports {wr_data[5]}]
+set_property PACKAGE_PIN AB12 [get_ports {wr_data[6]}]
+set_property PACKAGE_PIN AB17 [get_ports {wr_data[7]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {wr_data[*]}]
+
+set_property PACKAGE_PIN Y13 [get_ports fifo_full_wr]
+set_property IOSTANDARD LVCMOS33 [get_ports fifo_full_wr]
+
+set_property PACKAGE_PIN W14 [get_ports rd_en]
+set_property IOSTANDARD LVCMOS33 [get_ports rd_en]
+
+set_property PACKAGE_PIN AA13 [get_ports {rd_data[0]}]
+set_property PACKAGE_PIN AB13 [get_ports {rd_data[1]}]
+set_property PACKAGE_PIN AB7 [get_ports {rd_data[2]}]
+set_property PACKAGE_PIN AB6 [get_ports {rd_data[3]}]
+set_property PACKAGE_PIN AA6 [get_ports {rd_data[4]}]
+set_property PACKAGE_PIN AA8 [get_ports {rd_data[5]}]
+set_property PACKAGE_PIN AB8 [get_ports {rd_data[6]}]
+set_property PACKAGE_PIN W7 [get_ports {rd_data[7]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {rd_data[*]}]
+
+
+set_property PACKAGE_PIN Y14 [get_ports fifo_empty_rd]
+set_property IOSTANDARD LVCMOS33 [get_ports fifo_empty_rd]
+
+
+
+```
+
+
+
+```tcl
+############## system reset define ##################
+set_false_path -from [get_ports rst_n] -to [all_registers]
+#约束复位信号，这个伪路径是纯异步复位信号到异步复位同步释放模块的两个寄存器给忽略了
+#其他部分是没有必要屏蔽的
+#####################################################
+
+
+############## Master clock define ##################
+create_clock -period 5.000  [get_ports sys_clk0_p]
+#create_clock -name sys_clk0_p -period 5.000  [get_ports sys_clk0_p]
+#在时序分析是会以指定的名字进行分析，时序路径在分析是会有一个名字
+#时钟占空比不是50%的时候使用 -waveform
+create_clock -period 10.000 [get_ports sys_clk1_p]
+
+#set_clock_groups -name async_clk -asynchronous -group [get_clocks -include_generated_clocks sys_clk0_p] -group [get_clocks -include_generated_clocks sys_clk1_p]
+#后面要使用maxdelay来约束异步时钟路径，由于set_clock_groups的优先级较高，所以不用这条命令来约束
+#####################################################
+
+############## Generate clock define ##################
+create_generated_clock -name clk_wr -source [get_pins U_clk_wiz_0/clk_in1] -divide_by 2 [get_pins U_clk_wiz_0/clk_out1]
+create_generated_clock -name clk_rd -source [get_pins U_clk_wiz_1/clk_in1] -divide_by 2 [get_pins U_clk_wiz_1/clk_out1]
+#生成时钟的约束，因为这个设计中只有pll生成的生成时钟，这个生成时钟可以约束也可不约束
+#但是不约束的话，pll内部的时序约束会自动的对生成时钟进行约束，但是约束后的生成时钟的名字是不知道，想知道的话可以通过TCL的一个命令查询
+#但是我们为什么要知道这个生成时钟的名字呢，因为后面约束需要用到这个生成时钟名字，如果不知道就无法约束
+#生成时钟的约束只要知道master clock，因为通过pll产生的生成时钟是经过主时钟倍频分频相移产生的
+#所以在约束的时候只需要指定源就行，源就是masterclock，首先要知道源是谁，可以知道源时钟是sys_clk0_p，但是我们只要约束网表上的一个节点，时序分析时就会自动的向上查询，一直查到源时钟
+#方便起见，设置masterclock的时候就直接约束pll的输入时钟就行了
+#divided_by,multiply_by,edge_shift
+#####################################################
+
+#set_false_path -from [get_clocks clk_wr] -to [get_clocks clk_rd]
+#set_false_path -from [get_clocks clk_rd] -to [get_clocks clk_wr]
+
+############## Inputdelay define ##################
+set_input_delay -clock clk_wr 6.000 [get_ports wr_en]
+set_input_delay -clock clk_wr 6.000 [get_ports {wr_data[*]}]
+set_input_delay -clock clk_rd 12.000 [get_ports rd_en]
+#input_delay要指定输入的管脚，inputdelay都要有一个参考时钟，这个参考时钟是采样输入信号的时钟
+#clk_wr是10ns，约束了6ns，也就是外部延时是6ns（ppt.56分析过）留给芯片内的是4ns
+#设置为60%之后如果出现违例将外部预留延时减少，给外部留的少一点
+############## Outputdelay define ##################
+set_output_delay -clock clk_wr 3.000 [get_ports fifo_full_wr]
+#约束外部延时为3，留给芯片内部的延时是7，
+#本来是6ns，出现了违例，所以向下调整
+#或者查看时序违例的原因是什么，如果是组合逻辑过长，就调整组合逻辑
+#但是这个信号输出经过了obuf，这个延时比较大， 没有办法降下来
+#因为obuf在fpga的四周，寄存器在fpga内部，走线延迟比较大
+#无法调整obuf的延时，所以只能调整外部延时
+set_output_delay -clock clk_rd 12.000 [get_ports {rd_data[*]}]
+set_output_delay -clock clk_rd 12.000 [get_ports fifo_empty_rd]
+#outputdelay约束的参考时钟也是不一样的，信号的产生分属于不同的时钟域
+############## Maxdelay define ##################
+#格雷码的异步时序比较特殊，需要约束数据延迟
+#datapth_only必须要加，如果不加相当于是多周期约束，如果加了就只考虑数据的延迟
+#时序路径的起点，一般是源寄存器的时钟端口，或者是fpga的数据输入端口
+#时序路径的终点，一个是目的寄存器的数据输入端口，或者fpga的输出端口
+#使用get_cells只用指定到寄存器就行，通过层级指定寄存器
+set_max_delay -datapath_only -from [get_cells {U_ASYNC_FIFO/U_wptr_full/_wr_gray_reg[*]}] -to [get_cells {U_ASYNC_FIFO/U_sync_ptr_wr/__ptr_out_reg[*]}] 8.000
+#在写时钟下产生格雷码，写时钟是100m，在读时钟下采样数据信号，读时钟是50m
+#一般约束的量是不能超过写时钟或读时钟中最快的时钟的时钟周期，一般约束为时钟周期的80%，如果不够还可以降，也就是格雷码下写时钟下变化后，在一个时钟周期下稳定下来
+#“数据歪斜”的本质是多个比特同一时刻发生变化到达目的寄存器采样的时间点是不一样的
+#但是格雷码是每次只会变化一个bit，格雷码变化后会在一个周期内稳定下来
+set_max_delay -datapath_only -from [get_clocks clk_wr] -to [get_clocks clk_rd] 80.000
+#有一些其他的路径也会跨时钟域，但是不是格雷码的寄存器，
+#第一种是使用set_false_path，第二种是使用maxdelay
+#但是一定不能使用set_clock_groups，因为他优先级比较高，会覆盖掉maxdelay
+#使用maxdelay约束为80ns，相当于没有要求了，效果与设置为伪路径比较类似
+#时序约束是有一个优先级的区别的，而且是基于tcl的也就是后执行的命令会覆盖掉前面的相同的命令
+#换种说法是越详细的约束优先级越高
+ 
+
+set_max_delay -datapath_only -from [get_cells {U_ASYNC_FIFO/U_rptr_empty/_rd_gray_reg[*]}] -to [get_cells {U_ASYNC_FIFO/U_sync_ptr_rd/__ptr_out_reg[*]}] 8.000
+set_max_delay -datapath_only -from [get_clocks clk_rd] -to [get_clocks clk_wr] 80.000
+
+###############################################################################
+# End
+###############################################################################
+
+
+```
+
+
+
+
+
+vivodo中的时序报告
+
+一般来说critical warning需要关注一下
+
+report timing summary
+
+指定时钟组，也就是设计中可能有多个时钟组，
 
 
 
