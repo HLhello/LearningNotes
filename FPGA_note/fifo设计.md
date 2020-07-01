@@ -381,6 +381,16 @@ report timing summary
 
 
 
+时序约束要抓紧呀
+
+再不看忘了
+
+
+
+
+
+
+
 
 
 
