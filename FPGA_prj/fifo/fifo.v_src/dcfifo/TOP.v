@@ -35,7 +35,13 @@ BUFG BUFG_sys_clk0 (
     .O     (sys_clk0_o)
 );
 
-IBUFDS_GTE2 IBUFDS_GTE2_sys_clk1 (.O(sys_clk1), .ODIV2(), .I(sys_clk1_p), .CEB(1'b0), .IB(sys_clk1_n));
+IBUFDS_GTE2 IBUFDS_GTE2_sys_clk1 (
+    .O(sys_clk1), 
+    .ODIV2(), 
+    .I(sys_clk1_p), 
+    .CEB(1'b0), 
+    .IB(sys_clk1_n)
+);
 
 BUFG BUFG_sys_clk1 (
     .I     (sys_clk1),
