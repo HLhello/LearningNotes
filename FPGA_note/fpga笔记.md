@@ -438,7 +438,7 @@ Yield在IC中表示芯片的良率，即达到标称性能规格的器件或电�
 
 实际上，Zynq就是两大功能块：双核Arm的SoC和FPGA。PS： 处理系统 （Processing System），也就是ARM的SOC的部分。 PL： 可编程逻辑 （Progarmmable Logic），也就是FPGA部分。这有点像xilinx以前推出的powerPC+FPGA平台。不能说是一个嵌入arm核的FPGA，称为以高性能FPGA为外设的双核arm或许更为合适
 
-ZYNQ作为首款将高性能ARMCortex-A系列处理器与高性能FPGA在单芯片内紧密结合的产品，为了实现ARM处理器和FPGA之间的高速通信和数据交互，发挥ARM处理器和FPGA的性能优势，需要设计高效的片内高性能处理器与 FPGA 之间的互联通路。因此，如何设计高效的 PL 和 PS 数据交互通路是 ZYNQ 芯片设计的重中之重，也是产品设计的成败关键之一。ZYNQ具有集成的存储器和外设的高速通信接口。 AXI总线：AXI （Advanced eXtensible Interface）本是由ARM公司提出的一种总线协议。用于PL和PS之间的通信。在ZYNQ中有支持三种AXI总线
+ZYNQ作为首款将高性能ARMCortex-A系列处理器与高性能FPGA在单芯片内紧密结合的产品，为了实现ARM处理器和FPGA之间的高速通信和数据交互，发挥ARM处理器和FPGA的性能优势，需要设计高效的片内高性能处理器与 FPGA 之间的互联通路。因此，如何设计高效的 PL 和 PS 数据交互通路是 ZYNQ 芯片设计的重中之重，也是产品设计的成败关键之一。ZYNQ具有集成的存储器和外设的高速通信接口， AXI总线：AXI本是由ARM公司提出的一种总线协议。用于PL和PS之间的通信。在ZYNQ中有支持三种AXI总线
 
 AXI 是 Xilinx 从 6 系列的 FPGA 开始引入的一个接口协议，主要描述了主设备和从设备之间的数据传输方式。在 ZYNQ 中继续使用，版本是AXI4，所以我们经常会看到 AXI4.0，ZYNQ 内部设备都有AXI接口。其实AXI 就是ARM 公司提出的 AMBA（Advanced Microcontroller Bus Architecture）的一个部分，是一种高性能、高带宽、低延迟的片内总线，也用来替代以前的 AHB 和 APB 总线。第一个版本的 AXI （AXI3）包含在 2003 年发布的 AMBA3.0 中，AXI 的第二个版本 AXI（AXI4）包含在 2010 年发布的AMBA4.0 之中。
 
