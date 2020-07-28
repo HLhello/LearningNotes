@@ -196,7 +196,7 @@ SDRAM操作命令{ CS_N, RAS_N, CAS_N, WE }
   - 列选通潜伏期
 - 激活命令（0011）
 - 读命令（0101）
-- 写明令（0100）
+- 写命令（0100）
 - 预充电命令（0010）
 - 自动预充电命令（xxxx）
 - 突发终止命令（0110）
@@ -205,7 +205,31 @@ SDRAM操作命令{ CS_N, RAS_N, CAS_N, WE }
 SDRAM操作时序
 
 - SDRAM上电初始化时序
-  - 
 - 自刷新时序
 - 自动刷新时序
 - 不带自动预充电的写操作
+
+SDRAM中的时间常数
+
+- tRCD，激活行地址的时间
+- CL，列选通潜伏期
+- tRP，precharge command period
+- tRFC，auto refresh period
+- tRAS，active to precharge period
+- tMRD，load mode register command to active or refresh command
+
+SDRAM的存储结构
+
+- SDRAM是分bank存储数据的，一个sdram有几个bank主要看其BA地址，有两位就是4个bank，有三位就是8个bank
+
+- sdram的存储容量平均分在每个bank之中，从数据位宽中可以看出一共有多少个存储单元，从地址位宽中可以产出地址有多少行，知道存储单元和行数可以算出列数
+
+  > 比如256Mbit的SDRAM，4个bank，数据位宽是4bit，那么每个bank中有16M个存储单元，地址位宽为13，那么每个bank中有8192行，2048列
+
+SDRAM的读写方式
+
+- 对SDRAM的读写方式是以突发的方式进行的，从一个指定的地址开始，顺序读写指定的长度
+
+通过命令指示SDRAM进行工作
+
+- ​	{ CS_N, RAS_N, CAS_N, WE }
