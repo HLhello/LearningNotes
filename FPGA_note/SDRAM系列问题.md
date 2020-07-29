@@ -217,6 +217,7 @@ SDRAM中的时间常数
 - tRFC，auto refresh period
 - tRAS，active to precharge period
 - tMRD，load mode register command to active or refresh command
+- tRCD，RAS to CAS Delay，行选通周期
 
 SDRAM的存储结构
 
@@ -233,3 +234,19 @@ SDRAM的读写方式
 通过命令指示SDRAM进行工作
 
 - ​	{ CS_N, RAS_N, CAS_N, WE }
+
+
+
+tRCD 决定了行寻址（有效）至列寻址（读/写命令）之间的间隔
+
+CL   决定了列寻址到数据进行真正被读取所花费的时间
+
+tRP  决定了相同L-Bank中不同工作行转换的速度。（分析写入操作时不用考虑CL即可）：
+
+1、要寻址的行与L-Bank是空闲的。也就是说该L-Bank的所有行是关闭的，此时可直接发送行有效命令，数据读取前的总耗时为tRCD+CL，这种情况我们称之为页命中（PH，Page Hit）
+
+2、要寻址的行正好是前一个操作的工作行，也就是说要寻址的行已经处于选通有效状态，此时可直接发送列寻址命令，数据读取前的总耗时仅为CL，这就是所谓的背靠背（Back to Back）寻址，我们称之为页快速命中（PFH，Page Fast Hit 或页直接命中（PDH，Page Direct Hit）。
+
+3、要寻址的行所在的L-Bank中已经有一个行处于活动状态（未关闭），这种现象就被称作寻址冲突，此时就必须要进行预充电来关闭工作行，再对新行发送行有效命令。结果，总耗时就是tRP+tRCD+CL，这种情况我们称之为页错失（PM，Page Miss）。
+
+显然，PFH是最理想的寻址情况，PM则是最糟糕的寻址情况。上述三种情况发生的机率各自简称为PHR—-PH Rate、PFHR—-PFH Rate、PMR—- PM Rate。因此，系统设计人员（包括内存与北桥芯片）都尽量想提高PHR与PFHR，同时减少PMR，以达到提高内存工作效率的目的。
