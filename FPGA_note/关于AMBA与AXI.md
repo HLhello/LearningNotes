@@ -48,18 +48,252 @@
 
 ## AXI
 
-从AMBA的发展历史可以知道，我们现在说的AMBA主要指的是他的4.0版本，ZYNQ作为首款将高性能ARMCortex-A系列处理器与高性能FPGA在单芯片内紧密结合的产品，为了实现ARM处理器和FPGA之间的高速通信和数据交互，发挥ARM处理器和FPGA的性能优势，需要设计高效的片内高性能处理器与 FPGA 之间的互联通路。因此，如何设计高效的 PL 和 PS 数据交互通路是 ZYNQ 芯片设计的重中之重，也是产品设计的成败关键之一。AXI 是 Xilinx 从 6 系列的 FPGA 开始引入的一个接口协议，主要描述了主设备和从设备之间的数据传输方式。在 ZYNQ 中继续使用，版本是AXI4.0，ZYNQ 内部设备都有AXI接口，用于PL和PS之间的通信。
+从AMBA的发展历史可以知道，我们现在说的AMBA主要指的是他的4.0版本，ZYNQ作为首款将高性能ARMCortex-A系列处理器与高性能FPGA在单芯片内紧密结合的产品，为了实现ARM处理器和FPGA之间的高速通信和数据交互，发挥ARM处理器和FPGA的性能优势，需要设计高效的片内高性能处理器与 FPGA 之间的互联通路。因此，如何设计高效的 PL 和 PS 数据交互通路是 ZYNQ 芯片设计的重中之重，也是产品设计的成败关键之一。AXI 是 Xilinx 从 6 系列的 FPGA 开始引入的一个接口协议，主要描述了主设备和从设备之间的数据传输方式。在 ZYNQ 中继续使用，版本是AXI4.0。在ZYNQ中，支持AXI-Lite，AXI4和AXI-Stream三种总线，但PS与PL之间的接口却只支持前两种，AXI-Stream只能在PL中实现，不能直接和PS相连，必须通过AXI-Lite或AXI4转接。PS与PL之间的物理接口有9个，包括4个AXI-GP接口和4个AXI-HP接口、1个AXI-ACP接口，均为内存映射型AXI接口。
 
-1. 在ZYNQ中有支持三种AXI总线。
-   - AXI4：（For high-performance memory-mapped requirements.）主要面向高性能地址映射通信的需求，是面向地址映射的接口，允许最大256轮的数据突发传输；
-   - AXI4-Lite：（For simple, low-throughput memory-mapped communication ）是一个轻量级的地址映射单次传输接口，占用很少的逻辑单元。
-   - AXI4-Stream：（For high-speed streaming data.）面向高速流数据传输；去掉了地址项，允许无限制的数据突发传输规模。
+在ZYNQ中有支持三种AXI总线。
+- AXI4：（For high-performance memory-mapped requirements.）主要面向高性能地址映射通信的需求，是面向地址映射的接口，允许最大256轮的数据突发传输；
+- AXI4-Lite：（For simple, low-throughput memory-mapped communication ）是一个轻量级的地址映射单次传输接口，占用很少的逻辑单元。
+- AXI4-Stream：（For high-speed streaming data.）面向高速流数据传输；去掉了地址项，允许无限制的数据突发传输规模。
+
+AXI总线和接口的区别：
+
+- 总线是一种标准化接口，由数据线、地址线、控制线等构成，具有一定的强制性。
+- 接口是其物理实现，即在硬件上的分配。
 
 ### AHB与AXI、APB的区别与联系
-
-![AMBA总线性能对比](了解AXI.assets/AMBA总线性能对比.png)
 
 - AHB是先进的高性能总线，AXI是先进的可扩展接口，APB是高级外围总线；
 - AHB和APB都是单通道总线，不支持读写并行；而AXI是多通道总线，总共分为五个通道，能够实现读写并行；
 - AHB和AXI都是多主/从设备，且通过仲裁机制实现总线控制权的分配；而APB是单主设备多从设备，其主设备就是APB桥，不具有仲裁机制；
 - 在数据操作方面，AHB和AXI支持突发传输，APB不支持；此外，AXI支持数据的非对齐操作，AHB不支持；
+
+![AMBA总线性能对比](了解AXI.assets/AMBA总线性能对比.png)
+
+## AXI 协议的特点
+
+- 地址，数据，与控制信号处于不同阶段
+- 支持非对齐数据传输
+- 支持突发传输，且仅需提供首地址
+- 独立的读写通道，可提供低资源消耗DMA
+- 支持发送多个待执行地址（outstanding address）
+- 支持乱序数据包收发
+- 允许插入寄存器已保证时序收敛
+- AXI区别与其他总线的地方在于他的通道分离特性，AXI4具有五个独立的通道：读地址通道，读数据通道，写地址通道，写数据通道，写回应通道
+- 每个通道中均含有ready信号和valid信号，并且除了ready信号，通道内其他信号的方向是一致的，如果抛开这两个信号来讲，通道内的信号是单向的。
+- 写回应信号被单独的剥离出来的原因
+  1. 从数据流向的角度分析，写回应的数据流与写数据的回应相反，而读回应与读数据的数据流方向相同
+  2. 从使用频率的角度分析，写回应信号的使用频率通常比写数据信号的使用频率要低，而读回应与读数据信号的使用频率是相同的
+  3. 综上，将写回应信号剥离而不剥离读回应是复合显示情况的，且节省了资源
+- 每个通道都具有ID标签，不同的传输任务具有不同的ID，这也是AXI支持乱序收发的基础
+- 不对齐传输（unaligned transfers）
+  1. AXI支持非对齐传输，在大于一个字节的传输中，第一个字节的传输可能是非对齐的，如32bit数据包起始地址在0x1002，非32bit对齐，主机可以
+     -  使用低位地址线来表示非对齐的起始地址
+     - 提供对齐的起始地址，使用字节线来表示非对齐的起始地址
+  2. 当传输位宽超过1byte，起始地址不为数据总线硬件带宽（byte单位）整数倍时，为不对齐传输，不对齐传输的时候需要配合数据选通在第一次传输的时候将某几个byte置为无效，使第二次突发传输的起始地址（从机自动计算）为突发尺寸的整数倍
+
+## 通道信号定义总览
+
+全局通道
+
+| 通道   | 信号    | 方向 | 描述             |
+| ------ | ------- | ---- | ---------------- |
+| Global | ACLK    |      | 全局时钟         |
+| Global | ARESETn |      | 全局复位，低有效 |
+
+读/写地址通道
+
+| 通道        | 信号              | 方向 | 描述           |
+| ----------- | ----------------- | ---- | -------------- |
+| WADDR/RADDR | AWID/ARID         | M2S  | 写/读地址ID号  |
+| WADDR/RADDR | AWADDR/ARADDR     | M2S  | 写/读地址      |
+| WADDR/RADDR | AWLEN/ARLEN       | M2S  | 突发长度       |
+| WADDR/RADDR | AWSIZE/ARSIZE     | M2S  | 突发数据包大小 |
+| WADDR/RADDR | AWBURST/ARBURST   | M2S  | 突发类型       |
+| WADDR/RADDR | AWLOCK/ARLOCK     | M2S  | 锁定类型       |
+| WADDR/RADDR | AWCACHE/ARCACHE   | M2S  | 存储类型       |
+| WADDR/RADDR | AWPORT/ARPORT     | M2S  | 保护类型       |
+| WADDR/RADDR | AWQOS/ARQOS       | M2S  | 服务质量       |
+| WADDR/RADDR | AWREGION/ARREGION | M2S  | 区域标志       |
+| WADDR/RADDR | AWUSER/ARUSER     | M2S  | 用户自定义     |
+| WADDR/RADDR | AWVALID/ARVALID   | M2S  | 写有效地址     |
+| WADDR/RADDR | AWREADY/ARREADY   | S2M  | 准备接受地址   |
+
+写数据通道
+
+| 通道  | 信号   | 方向 | 描述           |
+| ----- | ------ | ---- | -------------- |
+| WDATA | WDATA  | M2S  | 写数据         |
+| WDATA | WSTRB  | M2S  | 数据片选       |
+| WDATA | WLAST  | M2S  | 最后一个写数据 |
+| WDATA | WUSER  | M2S  | 用户自定义     |
+| WDATA | WVALID | M2S  | 写操作有效     |
+| WDATA | WREADY | S2M  | 准备接受数据   |
+
+写回应通道
+
+| 通道  | 信号   | 方向 | 描述           |
+| ----- | ------ | ---- | -------------- |
+| WRESP | BID    | S2M  | 写回应ID标签   |
+| WRESP | BRESP  | S2M  | 写回应         |
+| WRESP | BUSER  | S2M  | 用户自定义     |
+| WRESP | BVALID | S2M  | 写回应有效     |
+| WRESP | BREADY | M2S  | 准备接受写回应 |
+
+读数据通道
+
+| 通道  | 信号   | 方向 | 描述           |
+| ----- | ------ | ---- | -------------- |
+| RDATA | RID    | S2M  | 读操作ID标签   |
+| RDATA | RDATA  | S2M  | 读数据         |
+| RDATA | RLAST  | S2M  | 最后一个读数据 |
+| RDATA | RUSER  | S2M  | 用户自定义     |
+| RDATA | RVALID | S2M  | 读操作有效     |
+| RDATA | RREADY | M2S  | 准备接受读数据 |
+| RDATA | RRESP  | S2M  | 读回应         |
+
+通道描述解释
+
+1. 突发类型AXI
+   - 支持三种突发类型，FIXED，INCR，WRAP
+   - FIXED：固定突发模式每次突发传输的地址相同，用于fifo访问
+   - INCR：增量突发模式，突发传输地址递增，突发增量与突发尺寸有关，传输过程中，地址递增，增加量取决于AWLEN/ARLEN
+   - WRAP：回卷突发模式，和增量突发类似，但会在特定高地址的边界处回到低地址处，传输地址不会超出起始地址所在的块，一旦递增超出，则回到该快的起始地址，突发地址可以溢出性递增，突发长度仅支持2，4，8， 16
+   - 传输首地址和每次传输的大小对齐，最低的地址整个传输的数据大小对齐，地址空间被划分为长度（突发尺寸*突发长度）的块，即回环边界等于AxSIZE * AxLEN
+2. AXI支持不同的存储类型
+
+| ARCACHE[3:0] | ARCACHE[3:0] | memory type                           |
+| ------------ | ------------ | ------------------------------------- |
+| 0000         | 0000         | Device Non-bufferable                 |
+| 0001         | 0001         | Device Bufferable                     |
+| 0010         | 0010         | Nomal Non-cacheable Non-bufferable    |
+| 0011         | 0011         | Nomal Non-cacheable Bufferable        |
+| 1010         | 0110         | Write-through No-allocate             |
+| 1110(0110)   | 0110         | Write-through Read-allocate           |
+| 1010         | 1110(1010)   | Write-through Write-allocate          |
+| 1110         | 1110         | Write-through Read and Write-allocate |
+| 1011         | 0111         | Write-back No-allocate                |
+| 1111         | 0111(0111)   | Write-back Read-allocate              |
+| 1011         | 1111(1011)   | Write-back Write-allocate             |
+| 1111         | 1111         | Write-back Read and Write-allocate    |
+
+3. 数据片选（数据选通）WSTRB
+
+   1. WSTRB的每一位对应数据中8位（字节），用于标记数据中对应字节是否有效
+   2. WSTRB对应于对应的写字节，WSTRB[n]对应WDATA[8n+7:8n]
+   3. wvalid为低时，WSTRB为任意值
+   4. wvalid为高时，WSTRB为高的字节必须指示有效的数据
+
+4. 数据（xDATA）窄带传输（narrow transfers）
+
+   1. 当主机产生比他数据总线xDATA要窄的传输时，为窄带传输，每次传输的数据位数不同，由地址和控制信号决定哪个字节被传输
+      - 固定地址的突发下，使用同一段数据线
+      - 在递增地址和包装地址突发下，使用不同段信号线
+   2. INCR和WRAP，不同的字节线决定每次burst传输的数据，Fixed每次传输使用相同的字节线
+
+5. 读相应结构
+
+   1. 读传输的响应信息是附加在读数据通道上的，写传输的响应信息是独立在写响应通道上的
+   2. RRESP[1:0]/WRESP[1:0]
+      1. OKEY(b00)正常访问成功
+      2. EXOKEY（b01）Exclusive 访问成功
+      3. SLVERR（b10）从机错误，表明访问已经成功到达从机，但从机希望返回一个错误的情况给主机
+      4. DECERR（b11）译码错误，一般由组件给出，表明没有对应的从机地址
+
+6.   AWLEN/ARLEN
+
+   - 传输任务中的传输数据包的个数，在INCR传输类型下可以传输1-256个数据包，在其他类型下只能传输1-16个数据包，特别的，wrap传输类型只能传输2，4，8，16个固定的数据包，因此AxLEN 的位宽为8位，LEN=0代表传输一个数据包
+
+7.   AWSIZE/ARSIZE
+
+   - 传输数据包大小，位宽为3位
+
+     - | AxSIZE | 传输字节数 | AxSIZE | 传输字节数 |
+       | ------ | ---------- | ------ | ---------- |
+       | 3‘b000 | 1          | 3'b100 | 16         |
+       | 3’b001 | 2          | 3'b101 | 32         |
+       | 3'b010 | 4          | 3'b110 | 64         |
+       | 3'b011 | 8          | 3'b111 | 256        |
+
+8. AWBURST/ARBURST
+
+   1. | AxBURST | 传输类型      | AxBURST | 传输类型     |
+      | ------- | ------------- | ------- | ------------ |
+      | 2‘b00   | 固定（FIXED） | 2‘b10   | 回环（WRAP） |
+      | 2’b01   | 递增（INCR）  | 2’b11   | 未定义       |
+
+   2. 固定传输类型是对一个地址重复写入数据，递增传输类型是地址自动增长，不断写入数据流，需要特别说明的是回环传输类型，就是地址递增到一定边界后从起始位置继续递增
+
+9. AWLOCK/ARLOCK
+
+   1. 这个信号在AXI4中仅保留一位，为低指示传输为正常传输，为高指示独有传输
+
+10. AWPORT/ARPORT
+
+    1. 指明访问是否被允许的信号，位宽为3位，
+
+       1. | AxPORT    | 值   | 功能       | 值   | 功能       |
+          | --------- | ---- | ---------- | ---- | ---------- |
+          | AxPORT[0] | 0    | 非优先访问 | 1    | 优先访问   |
+          | AxPORT[1] | 0    | 安全访问   | 1    | 非安全访问 |
+          | AxPORT[2] | 0    | 数据访问   | 1    | 指令访问   |
+
+11. AWQoS/ARQoS
+
+    - 
+
+
+
+## AXI总线握手机制
+
+每个通道都有一个ready和valid信号，valid为高表示地址数据控制信息有效，ready为高示表示目标处于可以接受信息的状态
+
+当valid和ready信号同时为高的时候，握手即视为成功，握手成功之前有三种状态
+
+- valid先拉高
+- ready先拉高
+- 双方同时拉高
+
+> 单箭头：被指向的信号可以在箭头起始端的信号有效前或后变为有效状态
+>
+> 双箭头：被指向的信号只能在箭头起始端的信号有效后变为有效状态
+
+读传输过程（涉及到的信号：ARVALID，ARREADY，RVALID，RREADY）
+
+![读传输过程控制信号](关于AMBA与AXI.assets/读传输过程控制信号.png)
+
+ARVALID与ARREADY并无指定的先后顺序，但是RVALID需要等待ARVALID与ARREADY均有效后才能变为有效，RVALID与RREADY也没有指定的先后顺序，读数据操作需要在给出读地址操作之后才能执行
+
+写传输过程（涉及到的信号：AWVLID，AWREADY，WVALID，WREADY，BVALID，BREADY）
+
+![写传输过程控制信号](关于AMBA与AXI.assets/写传输过程控制信号.png)
+
+写传输过程大致分为两个部分，一是写信息过程，二是写回应过程，在写回应BVALID有效之前，必须要写地址通道和写数据通道握手信号均有效，写地址通道和写数据通道没有先后关系
+
+## AXI-Stream
+
+AXI-Stream是一种连续流接口，不需要地址线，类似于fifo，对于这类IP，ARM必须要一个转换装置才能对内存映射方式控制，例如AXI-DMA来实现内存映射到流式接口的转换
+
+AXI-Stream适用的场合很多：视频流处理；通信协议转换，数字信号处理，无线通信，其本质都是针对数据流构建的数据通路，从信源到信宿构建起连续的数据流，这种接口适合做实时信号处理
+
+在实际使用用，用户不需要了解AXI时序，只需要关注自己的逻辑就行
+
+AXI-Stream是用来连接需要交换数据的两个部件的标准接口，他可以用来连接一个产生数据的主机和一个接受数据的从机，当然他可以用来连接多个主机和从机，该协议支持多种数据流使用相同共享总线集合，允许构建类似于路由，宽窄总线，窄宽总线等更为普遍的互联
+
+AXI-Stream接口比较重要的信号线
+
+- ACLK时钟线，所有时钟上升沿采样
+- ARESETn复位线，低电平有效
+- Tvalid主机数据同步线。为高表示主机准备好发送数据
+- Tready从机数据同步线，为高表示从机准备好接受数据，这两根线完成了主机与从机的握手信号，一旦二者都变高有效，数据开始传输
+- Tdata数据线，主机发送，从机接受
+- Tlast主机发送最后一个数据指示，下一个clk数据将无效，Tvalid变为低
+- Tkeep主机数据有效指示，为高代表对应的字节为有效字节，否则代表发送的为空字节
+- TID，TUSER，TDEST均为多机通信信号线，不予考虑
+
+**AXI-DMA**：实现从PS内存到PL高速传输高速通道AXI-HP到AXI-Stream的转换；
+
+**AXI-FIFO-MM2S**：实现从PS内存到PL通用传输通道AXI-GP到AXI-Stream的转换；
+
+**AXI-Datamover**：实现从PS内存到PL高速传输高速通道AXI-HP到AXI-Stream的转换，只不过这次是完全由PL控制的，PS是完全被动的；
+
+**AXI-VDMA**：实现从PS内存到PL高速传输高速通道AXI-HP到AXI-Stream的转换，只不过是专门针对视频、图像等二维数据的。
