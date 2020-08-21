@@ -31,7 +31,7 @@
       - CoreLink的横空出世，使Cortex A15具备了和Intel的高端处理器Nehalem和Sandy Bridge抗衡的能力。在服务器领域，Cortex A15内核与Nehalem内核间的较量就是CoreLink和QPI之间的角逐。 
       - AMBA总线标准提供的AXI，AHB，ASB，APB和ATB总线，不仅使用在ARM处理器系统中，MIPS和PowerPC处理器也开始使用AMBA总线。TI和Freescale的DSP也在使用AMBA总线。AMBA总线已经无孔不入，在整个嵌入式领域，没有可以向其挑战的对手。 
       - 面对ARM内核，Intel并不畏惧，面对AMBA总线阵营，Intel只剩下无奈。可以预计在相当长的一段时间里，Intel无法推出一条能和AMBA总线抗衡的SoC平台总线。Intel只能暂时向AMBA总线示弱。
-   5. <img src="了解AXI.assets/AMBA发展过程.png" alt="AMBA发展过程" style="zoom: 80%;" />
+   5. <img src="关于AMBA与AXI.assets/AMBA发展过程.png" alt="AMBA发展过程" style="zoom:80%;" />
 
 3. 总的来说，AMBA4.0中包括AHB、APB、AXI、ASB、ATB总线，这些内容加起来就定义出一套为了高性能SoC而设计的片上通信的标准
 
@@ -78,7 +78,7 @@ AXI总线和接口的区别：
 - APB主要用在低速且低功率的外围，可针对外围设备作功率消耗及复杂接口的最佳化；APB在AHB和低带宽的外围设备之间提供了通信的桥梁，所以APB是AHB或ASB的二级拓展总线 
 - AXI：高速度、高带宽，管道化互联，单向通道，只需要首地址，读写并行，支持乱序，支持非对齐操作，有效支持初始延迟较高的外设，连线非常多
 
-![AMBA总线性能对比](了解AXI.assets/AMBA总线性能对比.png)
+![关于AMBA与AXI.assets/AMBA总线性能对比.png](关于AMBA与AXI.assets/AMBA总线性能对比.png)
 
 ## AXI 协议的特点
 
