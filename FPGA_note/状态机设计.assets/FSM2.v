@@ -1,4 +1,4 @@
-module flip_flop(
+module FSM2(
     clk,
     rst,
     i1,
