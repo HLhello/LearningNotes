@@ -1,4 +1,7 @@
-/**/
+//本文将一段式，两段式，三段式每两段都是一样的
+//其中一段式与三段式的状态机比较费资源，二段式最简单
+//
+/*
 //1-paragraph method to describe FSM
 //Describe state transition, state output, input condition in 1 always block
 module fsm(rst,clk,i1,i2,o1,o2,err);
@@ -51,7 +54,7 @@ module fsm(rst,clk,i1,i2,o1,o2,err);
                endcase
          end end
 endmodule
-/*
+*//*
 module fsm(
     clk,
     rst,

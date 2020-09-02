@@ -1,4 +1,4 @@
-/*
+/**/
 //输出迟滞一拍
 module seq_check_10010(
     clk,
@@ -84,7 +84,7 @@ always@(posedge clk or negedge rst)
         endcase
 
 endmodule 
-*/
+
 
 /*
 //检测到10010的0时立即输出
