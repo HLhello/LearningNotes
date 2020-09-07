@@ -10,6 +10,18 @@
    - 这种类型的题目也是非常容易考察的，快到慢、慢到快、多比特、单比特这四种不同场景所针对的解决方法都要明白，甚至要会写相关的代码，这部分内容最难的情况是让你手写异步FIFO的代码。
 5. Verilog语法
    - 这部分内容主要考察一些基本的语法、运算符的用法和优先级、任务、函数、仿真、Verilog编程大题。
+6. 补充
+   1. fifo
+   2. 时序约束
+   3. cdc（clock domain cross）
+   4. FSM（finite state machine）
+   5. 分频
+   6. SDRAM/SRAM
+   7. mos管道触发器
+   8. AXI
+   9. spi/uart/IIC
+   10. RISC CPU
+   11. crodic/fft
 
 ## wire与reg的区别
 
@@ -233,27 +245,31 @@ Verilog语言中预先定义了一些任务和函数，用于完成一些特殊�
   - 特性：能够将输入的周期信号就行分频和倍频，并最终输出一个或多个稳定的，与输入信号频率和相位相关的信号
   - 总结：能够通过对输入的时钟信号进行分频，倍频，相位控制，从而得到一路或者多路更高或者更低的时钟信号
 
-## 参数传递
+## define，parameter，localparam的异同
 
-- define 与localparam和parameter最大的区别就是 define 可以跨文件传递参数；parameter只能在模块间传递参数；而localparam只能在其所在的module中起作用，不能参与参数传递。
+* define 是宏定义，类似于c语言中，在编译文件时会提前处理，替换掉文件中所有被宏定义的字符
+* parameter可用作在顶层模块中例化底层模块时传递参数的接口
+* localparam的作用域仅仅限于当前module，不能作为参数传递的接口。
+* define 与localparam和parameter最大的区别就是 define 可以跨文件传递参数；parameter只能在模块间传递参数；而localparam只能在其所在的module中起作用，不能参与参数传递。
+* 在项目中我一般用define来定义一些位宽或配置信息，parameter定义后面可能的参数值，比如计数器的最大值之类，localparam一般用来定义当前文件中状态机的状态变量，等一些需要写死的参数
 
-  1. 新建参数模块文件（我命名为para.v）；
+1. 新建参数模块文件（我命名为para.v）；
 
-  2. 在para.v文件中使用'define宏定义参数（部分）
+2. 在para.v文件中使用'define宏定义参数（部分）
 
-     ```verilog 
-     //`define+name+参数 　
-     `define 　　STATE_INIT	3'd0
-     `define 　　STATE_IDLE	3'd1
-     `define 　　STATE_WRIT	3'd2
-     `define 　　STATE_READ	3'd3
-     `define 　　STATE_WORK	3'd4
-     `define 　　STATE_RETU	3'd5
-     ```
+   ```verilog 
+   //`define+name+参数 　
+   `define 　　STATE_INIT	3'd0
+   `define 　　STATE_IDLE	3'd1
+   `define 　　STATE_WRIT	3'd2
+   `define 　　STATE_READ	3'd3
+   `define 　　STATE_WORK	3'd4
+   `define 　　STATE_RETU	3'd5
+   ```
 
-  3. 在需要调用参数的文件init.v中使用`include "para.v"：
+3. 在需要调用参数的文件init.v中使用`include "para.v"：
 
-     ````include "para.v"```
+   ````include "para.v"```
 
 4. 在init.v文件需要参数的地方使用`name 调用（部分）：`
 
@@ -271,7 +287,24 @@ Verilog语言中预先定义了一些任务和函数，用于完成一些特殊�
   parameter       ADDR_WIDTH =  5;
   localparam      DW = DATA_WIDTH - 1;
   localparam      AW = ADDR_WIDTH - 1;
+  ```
   
+- ```verilog 
+  //定义
+  module xx #(
+      parameter yy = 8,
+      parameter zz = 256 
+  )(
+  	...
+  );
+      
+  //例化
+  xx #(
+      .yy(8),
+      .zz(256) 
+  )u_xx(
+      ...
+  );
   ```
 
 ## 电源设计
@@ -773,3 +806,127 @@ AHB 的传送模式包含二个阶段。第一阶段为地址的传递，另一�
 ## FPGA常用的资源
 
 ![资源使用情况](fpga笔记.assets/资源使用情况.png)
+
+## 竞争冒险
+
+1. 竞争与冒险定义
+   1. 简单来说就是几条路径上的门延时不同，出现竞争，出现竞争不一定会出现冒险
+   2. 竞争(Competition): 在组合逻辑电路中，某个输入变量通过两条或两条以上的途径传到输出端，由于每条途径延迟时间不同，到达输出门的时间就有先有后，这种现象称为竞争。
+   3. 冒险(risk)：多路信号的电平值发生变化时，在信号变化的瞬间，组合逻辑的输出有先后顺序，并不是同时变化，往往会出现一些不正确的尖峰信号，这些尖峰信号称为"毛刺"。如果一个组合逻辑电路中有"毛刺"出现，就说明该电路存在冒险。
+   4. 当一个门的输入有两个或两个以上的变量发生变化是，由于这些变量是经过不同组合逻辑路径产生的，使得他们状态改变的时刻有先有后，这种时差引起的现象称为竞争（Race），竞争的结果若导致冒险（Hazard），发生毛刺（glich）
+   5. 产生竞争冒险(Competition risk)产生原因：由于延迟时间的存在，当一个输入信号经过多条路径传送后又重新会合到某个门上，由于不同路径上门的级数不同，或者门电路延迟时间的差异，导致到达会合点的时间有先有后，从而产生瞬间的错误输出。
+2. 解决办法
+   1. 从根源上解决问题：竞争和冒险产生的根本原因是由于，同一时刻可能有多个信号发生变化。
+      1. 保证同一时刻只允许单个输入变量发生变化，即可避免产生毛刺。比如对数据进行格雷码编码，即可以解决这个问题。
+      2. 通过时钟对输出结果进行采样，当输出保持稳定时再将结果输出给后续模块。
+   2. 避免竞争冒险引起的毛刺对后续电路造成影响
+      1. 在毛刺进入到下一个模块之前，通过滤波电路将毛刺滤除。毛刺一般是非常窄的脉冲，可以在输出端接一个几百微法的电容将其滤出掉。
+      2. 在下一级模块中，对输入信号进行采样，当信号保持稳定后，再进行操作。
+3. 解决办法
+   1. 引入封锁脉冲
+      1. 在输入信号转换时间内，引入一个封锁脉冲，把可能产生干扰的门封住，封锁脉冲在输入信号的装换前到来，等信号转换完毕后消失
+   2. 引入选通脉冲
+      1. 在可能产生干扰的门电路上接入一个选通脉冲，当电路出现稳定状态后，引入选通脉冲，输出有效
+   3. 接入滤波电容
+      1. 在输出端并接一个不大的滤波电容，消除干扰脉冲，干扰脉冲很窄，由于电容的充放电过程，是的电容两端电压不能突变
+   4. 采用可靠性编码（格雷码）
+      1. 使得输入变量不会有两个或两个以上同时发生变化
+
+## Verilog中的可综合与不可综合
+
+1. 所有综合工具都支持的结构：always，assign，begin，end，case，wire，tri，aupply0，supply1，reg，integer，default，for，function，and，nand，or，nor，xor，xnor，buf，not，bufif0，bufif1，notif0，notif1，if，inout，input，instantitation，module，negedge，posedge，operators，output，parameter。
+2. 所有综合工具都不支持的结构：time，defparam，$finish，fork，join，initial，delays，UDP，wait。
+3. 有些工具支持有些工具不支持的结构：casex，casez，wand，triand，wor，trior，real，disable，forever，arrays，memories，repeat，task，while。
+4. 建立可综合模型的原则要保证Verilog HDL赋值语句的可综合性，在建模时应注意以下要点：
+
+  （1）不使用initial。
+
+  （2）不使用#10。
+
+  （3）不使用循环次数不确定的循环语句，如forever、while等。
+
+  （4）不使用用户自定义原语（UDP元件）。
+
+  （5）尽量使用同步方式设计电路。
+
+  （6）除非是关键路径的设计，一般不采用调用门级元件来描述设计的方法，建议采用行为语句来完成设计。
+
+  （7）用always过程块描述组合逻辑，应在敏感信号列表中列出所有的输入信号。
+
+（8）所有的内部寄存器都应该能够被复位，在使用FPGA实现设计时，应尽量使用器件的全局复位端作为系统总的复位。
+
+（9）对时序逻辑描述和建模，应尽量使用非阻塞赋值方式。对组合逻辑描述和建模，既可以用阻塞赋值，也可以用非阻塞赋值。但在同一个过程块中，最好不要同时用阻塞赋值和非阻塞赋值。
+
+  （10）不能在一个以上的always过程块中对同一个变量赋值。而对同一个赋值对象不能既使用阻塞式赋值，又使用非阻塞式赋值。
+
+  （11）如果不打算把变量推导成锁存器，那么必须在if语句或case语句的所有条件分支中都对变量明确地赋值。
+
+  （12）避免混合使用上升沿和下降沿触发的触发器。
+
+  （13）同一个变量的赋值不能受多个时钟控制，也不能受两种不同的时钟条件（或者不同的时钟沿）控制。
+
+（14）避免在case语句的分支项中使用x值或z值。
+
+5. 不能综合的语句：
+
+a)   initial          
+
+​         i.     只能在test bench中使用，不能综合。（我用ISE9.1综合时，有的简单的initial也可以综合，不知道为什么）
+
+b)   events         
+
+​         i.     event在同步test bench时更有用，不能综合
+
+c)   real 
+
+​         i.     支持real数据类型的综合。
+
+d)   time 
+
+​         i.     不支持time数据类型的综合。
+
+e)   force 和release   
+
+​         i.     不支持force和release的综合。
+
+f)    assign 和deassign   
+
+​         i.     不支持对reg 数据类型的assign或deassign进行综合，支持对wire数据类型的assign或deassign进行综合。
+
+g)   fork join
+
+​         i.     不可综合，可以使用非块语句达到同样的效果。
+
+h)   primitives        
+
+​         i.     支持门级原语的综合，不支持非门级原语的综合。
+
+i)    table          
+
+​         i.     不支持UDP 和table的综合。
+
+j)    敏感列表里同时带有posedge和negedge
+
+​         i.     如：always @(posedge clk or negedge clk) begin...end这个always块不可综合。
+
+k)   同一个reg变量被多个always块驱动
+
+l)    延时
+
+​         i.     以#开头的延时不可综合成硬件电路延时，综合工具会忽略所有延时代码，但不会报错。
+
+​        ii.     如：a=#10 b;
+
+​        iii.     这里的#10是用于仿真时的延时，在综合的时候综合工具会忽略它。也就是说，在综合的时候上式等同于a=b;
+
+m)  与X、Z的比较
+
+​         i.     可能会有人喜欢在条件表达式中把数据和X(或Z)进行比较，殊不知这是不可综合的，综合工具同样会忽略。所以要确保信号只有两个状态：0或1。
+
+ 
+
+ 
+
+ 
+
+ 
