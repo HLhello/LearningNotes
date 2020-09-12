@@ -88,3 +88,5 @@ Xilinx器件特性
 Altera器件特性
 
 ![Altera系列资源](FPGA资源及不同厂家器件.assets/Altera系列资源.png)
+
+![](FPGA资源及不同厂家器件.assets/芯片资源.png)
